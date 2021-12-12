@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/product_navigation"
+    app:startDestination="@id/productDetailsFragment">
+
+    <fragment
+        android:id="@+id/productDetailsFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.ProductDetailsFragment"
+        android:label="fragment_product_details"
+        tools:layout="@layout/fragment_product_details" >
+        <action
+            android:id="@+id/action_productDetailsFragment_to_productReviewFragment"
+            app:destination="@id/productReviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productReviewFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.ProductReviewFragment"
+        android:label="fragment_product_review"
+        tools:layout="@layout/fragment_product_review" />
+</navigation>

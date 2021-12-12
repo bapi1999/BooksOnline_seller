@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/menu_navigation"
+    app:startDestination="@id/profileMenuFragment2">
+
+    <fragment
+        android:id="@+id/profileMenuFragment2"
+        android:name="com.sbdevs.booksonlineseller.fragments.ProfileMenuFragment"
+        android:label="fragment_profile_menu"
+        tools:layout="@layout/fragment_profile_menu" >
+        <action
+            android:id="@+id/action_profileMenuFragment2_to_myAccountFragment"
+            app:destination="@id/myAccountFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/myAccountFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.MyAccountFragment"
+        android:label="fragment_my_account"
+        tools:layout="@layout/fragment_my_account" >
+        <action
+            android:id="@+id/action_myAccountFragment_to_addBusinessDetailsFragment2"
+            app:destination="@id/addBusinessDetailsFragment2" />
+        <action
+            android:id="@+id/action_myAccountFragment_to_addBankDetailsFragment"
+            app:destination="@id/addBankDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addBusinessDetailsFragment2"
+        android:name="com.sbdevs.booksonlineseller.fragments.register.AddBusinessDetailsFragment"
+        android:label="fragment_add_business_details"
+        tools:layout="@layout/fragment_add_business_details" >
+        <action
+            android:id="@+id/action_addBusinessDetailsFragment2_to_myAccountFragment"
+            app:destination="@id/myAccountFragment" />
+        <argument
+            android:name="came_from"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/addBankDetailsFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.register.AddBankDetailsFragment"
+        android:label="fragment_add_bank_details"
+        tools:layout="@layout/fragment_add_bank_details" >
+        <action
+            android:id="@+id/action_addBankDetailsFragment_to_myAccountFragment"
+            app:destination="@id/myAccountFragment" />
+    </fragment>
+</navigation>

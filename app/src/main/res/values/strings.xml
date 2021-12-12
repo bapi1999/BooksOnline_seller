@@ -1,0 +1,106 @@
+<resources>
+    <string name="app_name">Books Online Seller</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="orders">Orders</string>
+    <string name="add_new">Add new</string>
+    <string name="profile">Profile</string>
+
+
+    <string name="lorem_ipsum">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release333 of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</string>
+    <string name="view_all">View All</string>
+    <string name="seller">Seller:</string>
+    <string name="book_stall">Techno world book center</string>
+    <string name="fake_address">23 bidon street, near mShop, walington, kolkata</string>
+    <string name="phone">9876543210</string>
+    <string name="search_hint">Search here…</string>
+    <string name="refresh_hint">Swipe refresh…</string>
+    <string name="reset_password">Reset password</string>
+    <string name="reset_password_hint">Enter the email associated with your account and we\'ll send an email with instruction to reset your password</string>
+    <string name="forgot_instruction">Don\'t worry, we just need your registered email address and its done</string>
+    <string name="recovaryEmail">Recovery email sent successfully! Check your inbox </string>
+    <string name="email">Email</string>
+
+    <string name="addressline_1">Home No,Building Name, Apartment</string>
+    <string name="addressline_2">Road, Street, Area, Locality</string>
+    <string name="terms_condition"><![CDATA[Terms & Condition]]></string>
+    <string name="nothing_to_show_here">Nothing to show here</string>
+    <string name="continue_btn">Continue</string>
+    <string name="no_image_found">No image found</string>
+    <string name="enter_mobile_number">Enter mobile number</string>
+    <string name="product_name">Product Name</string>
+    <string name="order_id">ORDERID123456789</string>
+    <string name="trackingid">TRACKINGID</string>
+    <string name="tracking_id_won_t_generate">Tracking id won\'t generate until the seller shipped your order</string>
+    <string name="update">Update</string>
+    <string name="new_password_match_oldpass">New password matches the old password</string>
+    <string name="out_of_stock">OUT OF STOCK</string>
+    <string name="rs_0_rs_500">Rs.0 - Rs.500</string>
+    <string name="rs_500_rs_1000">Rs.500 - Rs.1000</string>
+    <string name="remove">Remove</string>
+    <string name="apply">Apply</string>
+    <string name="tags">Tags</string>
+    <string name="add_bank_account">Add bank account</string>
+    <string name="books_online">BOOKS ONLINE</string>
+    <string name="e_g_tags">e.g. school,geography</string>
+
+    <string name="welcome_notification_for_seller">Welcome to Book Online seller. Thank you for joining the seller community.</string>
+    <string name="address_verification_notification">Your proof of address will be verified within 2 days. In some cases, our agents may go to the shop(publishers,company) to verify the address. Be patient until your address is verified</string>
+    <string name="account_balance">Account Balance:</string>
+    <string name="minimum_account_balance_to_withdraw">minimum account balance</string>
+    <string name="sales_report">Sales Report</string>
+    <string name="you_are_not_a_verified_seller">you are not a verified, seller. Add the business address to get verified</string>
+    <string name="no_bank_account_linked">no bank account is linked to this account. Add bank account to receive payment</string>
+
+    <string-array name="business_type">
+        <item>Self</item>
+        <item>Shop</item>
+        <item>Publisher</item>
+    </string-array>
+
+    <string-array name="india_states">
+        <item>Andaman and Nicobar Islands</item>
+        <item>Andhra Pradesh</item>
+        <item>Arunachal Pradesh</item>
+        <item>Assam</item>
+        <item>Bihar</item>
+        <item>Chandigarh</item>
+        <item>Chhattisgarh</item>
+        <item>Dadra and Nagar Haveli</item>
+        <item>Daman and Diu</item>
+        <item>Delhi</item>
+        <item>Goa</item>
+        <item>Gujarat</item>
+        <item>Haryana</item>
+        <item>Himachal Pradesh</item>
+        <item>Jammu and Kashmir</item>
+        <item>Jharkhand</item>
+        <item>Karnataka</item>
+        <item>Kerala</item>
+        <item>Lakshadweep</item>
+        <item>Madhya Pradesh</item>
+        <item>Maharashtra</item>
+        <item>Manipur</item>
+        <item>Meghalaya</item>
+        <item>Mizoram</item>
+        <item>Nagaland</item>
+        <item>Orissa</item>
+        <item>Pondicherry</item>
+        <item>Punjab</item>
+        <item>Rajasthan</item>
+        <item>Sikkim</item>
+        <item>Tamil Nadu</item>
+        <item>Telangana</item>
+        <item>Tripura</item>
+        <item>Uttaranchal</item>
+        <item>Uttar Pradesh</item>
+        <item>West Bengal</item>
+    </string-array>
+
+    <!--    .backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)      -->
+    <!--    @Suppress("UNCHECKED_CAST")-->
+
+</resources>

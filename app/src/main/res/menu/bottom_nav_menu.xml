@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/dashboardFragment"
+        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:title="@string/title_dashboard" />
+
+    <item
+        android:id="@+id/ordersFragment"
+        android:icon="@drawable/ic_round_view_list_24"
+        android:title="@string/orders" />
+
+    <item
+        android:id="@+id/myProductFragment"
+        android:icon="@drawable/ic_round_widgets_24"
+        android:title="Products" />
+
+    <item
+        android:id="@+id/myEarningFragment"
+        android:icon="@drawable/ic_baseline_payments_24"
+        android:title="Earning" />
+
+</menu>

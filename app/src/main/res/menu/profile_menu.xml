@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+
+    <group >
+
+        <item
+            android:id="@+id/myAccountFragment"
+            android:icon="@drawable/ic_account_circle_24"
+            android:title="My Account" />
+
+        <item
+            android:id="@+id/profit_calculator"
+            android:icon="@drawable/ic_baseline_calculate_24"
+            android:title="Profit calculator" />
+        <item
+            android:id="@+id/sales_report"
+            android:icon="@drawable/ic_trending_down_24"
+            android:title="Sales Report" />
+
+        <item
+            android:id="@+id/help_center"
+            android:icon="@drawable/ic_help_24"
+            android:title="Help Center" />
+
+        <item
+            android:id="@+id/ads_service"
+            android:icon="@drawable/ic_baseline_picture_in_picture_24"
+            android:title="Ads service" />
+
+
+
+    </group>
+    <group>
+
+        <item android:id="@+id/policy"
+            android:title="Policies">
+            <menu>
+                <item
+                    android:id="@+id/termCondition"
+                    android:icon="@drawable/ic_baseline_description_24"
+                    android:title="@string/terms_condition" />
+                <item
+                    android:id="@+id/privacy_policy"
+                    android:icon="@drawable/ic_baseline_privacy_tip_24"
+                    android:title="Privacy Policy" />
+                <item
+                    android:id="@+id/help"
+                    android:icon="@drawable/ic_help_24"
+                    android:title="Help" />
+            </menu>
+        </item>
+
+    </group>
+
+</menu>

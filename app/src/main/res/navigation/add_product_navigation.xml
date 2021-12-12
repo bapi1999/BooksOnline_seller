@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/add_product_navigation"
+    app:startDestination="@id/addProductDetailsFragment">
+
+    <fragment
+        android:id="@+id/addProductDetailsFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.AddProductDetailsFragment"
+        android:label="fragment_add_product_details"
+        tools:layout="@layout/fragment_add_product_details" >
+        <action
+            android:id="@+id/action_addProductDetailsFragment_to_addProductImageFragment"
+            app:destination="@id/addProductImageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addProductImageFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.AddProductImageFragment"
+        android:label="fragment_add_product_image"
+        tools:layout="@layout/fragment_add_product_image" >
+        <argument
+            android:name="productId"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+</navigation>

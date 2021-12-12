@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/textView66"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Category:"
+        android:textColor="@color/grey_900"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <LinearLayout
+        android:id="@+id/categoryLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/s_border_1"
+        android:backgroundTint="@color/grey_600"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView66">
+
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/categoryChipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:singleSelection="false">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="arts"
+                android:text="Arts" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip2"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="adult"
+                android:text="Adult" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip3"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="biography"
+                android:text="Biography" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip4"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="business"
+                android:text="Business" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip4_1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="career"
+                android:text="Career" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip5"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="children"
+                android:text="Children" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip6"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="comics"
+                android:text="Comics" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip7"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="computer"
+                android:text="Computer" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip8"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="diary"
+                android:text="Diary" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip9"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="dictionary"
+                android:text="Dictionary" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip11"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="economics"
+                android:text="Economics" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip12"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="educational"
+                android:text="Educational" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip13"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="encyclopaedia"
+                android:text="Encyclopaedia" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip14"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="fantasy"
+                android:text="Fantasy" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip14_1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="fitness"
+                android:text="Fitness" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip15"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="food"
+                android:text="Food" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip16"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="general knowledge"
+                android:text="General knowledge" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip17"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="health"
+                android:text="Health" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip18"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="history"
+                android:text="History" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip19"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="job"
+                android:text="Job" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip20"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="journal"
+                android:text="Journal" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip21"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="Law"
+                android:text="Law" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip22"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="lifestyle"
+                android:text="Lifestyle" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip23"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="magazine"
+                android:text="Magazine" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip24"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="mathematics"
+                android:text="Mathematics" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip25"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="medicine"
+                android:text="Medicine" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip26"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="novels"
+                android:text="Novels" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip27"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="personality"
+                android:text="Personality" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip28"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="politics"
+                android:text="Politics" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip29"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="reference"
+                android:text="Reference" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip30"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="science"
+                android:text="Science" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip31"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="spiritual"
+                android:text="Spiritual" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip32"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="sports"
+                android:text="Sports" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip33"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="study materials"
+                android:text="Study materials" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip34"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="technology"
+                android:text="Technology" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip35"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="teen"
+                android:text="Teen" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip36"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="travel"
+                android:text="Travel" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip37"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="others"
+                android:text="Others" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+        <TextView
+            android:id="@+id/textView36"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            android:text="Type Own category (separate by comma)"
+            android:textColor="@color/grey_900"
+            android:textSize="17sp" />
+
+        <EditText
+            android:id="@+id/my_own_category_Edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:ems="10"
+            android:visibility="gone"
+            android:hint="@string/e_g_tags"
+            android:inputType="text" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView67"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:drawablePadding="4dp"
+        android:text="#Tags"
+        android:textColor="@color/grey_900"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:drawableEndCompat="@drawable/ic_info_24"
+        app:drawableTint="@color/light_black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryLayout" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edit_tags"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView67">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/grey_900"
+            android:textStyle="italic"
+            android:hint="@string/e_g_tags"
+            android:inputType="textMultiLine" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/auto_tag_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:text="TextView"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edit_tags" />
+
+    <Button
+        android:id="@+id/auto_tag_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="Auto Tag"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/auto_tag_text" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
