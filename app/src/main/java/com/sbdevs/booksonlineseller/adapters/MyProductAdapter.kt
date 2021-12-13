@@ -11,14 +11,13 @@ import com.bumptech.glide.Glide
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.ProductActivity
 import com.sbdevs.booksonlineseller.models.MyProductModel
-import com.squareup.picasso.Picasso
 
 class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<MyProductModel>):RecyclerView.Adapter<MyProductAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_wishlist_item_lay, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_my_product_item, parent, false)
         return ViewHolder(view)
     }
 

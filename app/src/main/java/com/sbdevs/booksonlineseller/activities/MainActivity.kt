@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun getNewOrder(){
-        FireStoreData.firebaseFirestore.collection("USERS")
+        firebaseFirestore.collection("USERS")
             .document(user!!.uid)
             .collection("SELLER_DATA")
             .document("SELLER_DATA")

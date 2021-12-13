@@ -73,13 +73,12 @@ class NotificationAdapter(var list:List<NotificationModel>, var docNameList:Arra
                 .placeholder(R.drawable.as_square_placeholder)
                 .into(notificationImage)
             val dateFormat = FireStoreData()
-//            val dayAgo = dateFormat.durationFromNow(item.date)
             val msAgo = dateFormat.msToTimeAgo(itemView.context,item.date)
             notificationTime.text = msAgo
         }
 
 
-        fun updateViewStatusInNotification(notificationID:String){
+        fun updateViewStatus(notificationID:String){
 
             val updateMap:MutableMap<String,Any> = HashMap()
             updateMap["seen"] = true

@@ -38,10 +38,8 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.sbdevs.booksonlineseller.adapters.UploadImageAdapter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 
 
@@ -154,10 +152,12 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
                             Toast.LENGTH_SHORT
                         ).show()
                         Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
+                        loadingDialog.dismiss()
                     }
                     else -> {
-                        Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
+                        loadingDialog.dismiss()
+
                     }
                 }
             }
@@ -188,11 +188,13 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
                             Toast.LENGTH_SHORT
                         ).show()
                         Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
+                        loadingDialog.dismiss()
                     }
                     else -> {
                         Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT)
                             .show()
                         Log.e("StartForProductImage", "Task Cancelled")
+                        loadingDialog.dismiss()
                     }
                 }
             }
@@ -200,6 +202,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
         productThumbnail.setOnClickListener {
             ImagePicker.with(this)
+                .crop()
                 .compress(100)
                 .maxResultSize(
                     500,
@@ -212,6 +215,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
         }
         binding.lay4.selectImageBtn.setOnClickListener {
             ImagePicker.with(this)
+                .crop()
                 .compress(600)
                 .maxResultSize(
                     900,
@@ -584,7 +588,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
 
     private fun checkAllDetails(v: View?) {
-        val documentName: String = "Product_testing_1"
+        val documentName: String = "product_testing_2"// generateDocName()
         if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage() or !checkPageCount()
             or !checkDimensionWidth() or !checkDimensionLength() or !checkDimensionHeight()
             or !checkDescription() or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()
@@ -733,7 +737,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
     }
 
-    private fun updateProductImageLIST(productID: String, uriList: MutableList<String>) {
+    private fun updateProductImageLIST(productID: String, uriList: MutableList<String>) = CoroutineScope(Dispatchers.IO).launch {
         val allMap: MutableMap<String, Any> = HashMap()
         allMap["productImage_List"] = uriList
 
@@ -742,11 +746,15 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
                 Log.i("Update Product Image", "Successfully updated")
                 Toast.makeText(requireContext(), "Product is successfully added", Toast.LENGTH_LONG)
                     .show()
-                loadingDialog.dismiss()
-                activity!!.finish()
+
             }.addOnFailureListener {
                 Log.e("Update Product Image", "${it.message}")
-            }
+            }.await()
+        delay(500)
+        withContext(Dispatchers.Main){
+            loadingDialog.dismiss()
+            activity!!.finish()
+        }
     }
 
     @SuppressLint("Range")

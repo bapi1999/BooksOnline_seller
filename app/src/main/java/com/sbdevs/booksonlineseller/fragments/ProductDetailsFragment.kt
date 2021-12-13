@@ -181,8 +181,6 @@ class ProductDetailsFragment : Fragment() {
                         lay2.stockState.text = "out of stock"
                         lay2.stockQuantity.visibility = gone
 
-                        binding.addToCartBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_400)
-                        binding.buyNowBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_400)
                     }
 
 // todo layout 2

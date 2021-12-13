@@ -23,47 +23,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="@string/lorem_ipsum"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout11"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toEndOf="@+id/product_image"
-        app:layout_constraintTop_toBottomOf="@+id/product_name">
-
-        <TextView
-            android:id="@+id/textView25"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:text="@string/seller"
-            android:textColor="@color/grey_700"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/seller_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:maxLines="1"
-            android:text="@string/book_stall"
-            android:textColor="@color/grey_700"
-            android:textSize="13sp" />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout3"
@@ -73,7 +41,7 @@
         android:layout_marginTop="4dp"
         android:orientation="horizontal"
         app:layout_constraintStart_toEndOf="@+id/product_image"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout11">
+        app:layout_constraintTop_toBottomOf="@+id/product_name">
 
         <TextView
             android:id="@+id/mini_product_rating"
@@ -89,8 +57,8 @@
             android:textColor="@color/white"
             android:textSize="12sp"
             android:textStyle="bold"
-            app:drawableTint="@color/white"
-            app:drawableRightCompat="@drawable/ic_star" />
+            app:drawableRightCompat="@drawable/ic_star"
+            app:drawableTint="@color/white" />
 
         <TextView
             android:id="@+id/mini_totalNumberOf_ratings"
@@ -98,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="4dp"
-            android:text="121 ratings"
+            android:text="0 ratings"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -110,13 +78,13 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="4dp"
         android:gravity="center"
-        android:text="Almost new"
+        android:text="condition"
         android:textColor="@color/purple_500"
         android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@+id/linearLayout3"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout11"
         app:drawableLeftCompat="@drawable/ic_label_important_24"
-        app:drawableTint="@color/purple_500" />
+        app:drawableTint="@color/purple_500"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout3"
+        app:layout_constraintTop_toBottomOf="@+id/product_name" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -134,7 +102,7 @@
             android:maxLength="9"
             android:text="Rs.XXXXXXX"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -152,11 +120,22 @@
             android:id="@+id/percent_off"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLength="13"
             android:layout_marginStart="8dp"
+            android:maxLength="13"
             android:text="00% off"
             android:textColor="@color/ratingGreen"
             android:textSize="13sp" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView86"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="8dp"
+        android:text="days ago"
+        android:textColor="@color/grey_700"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

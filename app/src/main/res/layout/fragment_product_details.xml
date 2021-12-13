@@ -27,15 +27,16 @@
             <include
                 android:id="@+id/lay_2"
                 layout="@layout/ar_product_detail_lay_2" />
+            <include
+                android:id="@+id/lay_4"
+                layout="@layout/ar_product_detail_lay_4" />
 
             <include
                 android:id="@+id/lay_3"
                 layout="@layout/ar_product_detail_lay_3" />
 
 
-<!--            <include-->
-<!--                android:id="@+id/lay_4"-->
-<!--                layout="@layout/ar_product_detail_lay_4" />-->
+
 
             <include
                 android:id="@+id/lay_5"
@@ -72,7 +73,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/addTo_cart_btn"
+            android:id="@+id/delete_product_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -83,12 +84,12 @@
             android:textStyle="bold" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/buy_now_btn"
+            android:id="@+id/edit_product_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/orange"
-            android:text="Buy now"
+            android:background="@color/teal_200"
+            android:text="Edit"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="17sp"
