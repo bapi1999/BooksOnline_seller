@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.ProductActivity
 import com.sbdevs.booksonlineseller.models.MyProductModel
+import com.sbdevs.booksonlineseller.otherclass.FireStoreData
 
 class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<MyProductModel>):RecyclerView.Adapter<MyProductAdapter.ViewHolder>() {
 
@@ -40,6 +41,7 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
         var ratingTotalTxt: TextView = itemView.findViewById(R.id.mini_totalNumberOf_ratings)
         var miniRatingTxt: TextView = itemView.findViewById(R.id.mini_product_rating)
         var bookSateTxt: TextView = itemView.findViewById(R.id.product_state)
+        var updatedTimeText: TextView = itemView.findViewById(R.id.updated_time_text)
 
         fun bind(productId:String,item:MyProductModel){
 
@@ -73,6 +75,8 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
                 priceOff.text = "${percent}% off"
 
             }
+
+            updatedTimeText.text = FireStoreData().msToTimeAgo(itemView.context,item.PRODUCT_UPDATE_ON)
 
 //            Picasso.get()
 //                .load(url)

@@ -74,7 +74,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/yellow"
+        android:backgroundTint="@color/amber_500"
         android:text="Withdraw"
         android:textColor="@color/grey_900"
         android:textSize="16sp"

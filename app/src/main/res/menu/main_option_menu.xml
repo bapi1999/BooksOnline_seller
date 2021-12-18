@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/notificationsFragment"
-        android:orderInCategory="100"
-        android:icon="@drawable/ic_notifications_none_32"
-        android:title="Notification"
-        app:showAsAction="ifRoom"
-        app:actionLayout="@layout/le_notification_badge"
-        />
+<!--    <item-->
+<!--        android:id="@+id/notificationsFragment"-->
+<!--        android:orderInCategory="100"-->
+<!--        android:icon="@drawable/ic_notifications_none_32"-->
+<!--        android:title="Notification"-->
+<!--        app:showAsAction="ifRoom"-->
+<!--        app:actionLayout="@layout/le_notification_badge"-->
+<!--        />-->
 
     <item
         android:id="@+id/profileMenuFragment"

@@ -14,11 +14,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.Dimension
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -140,17 +137,12 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
                         val namefile = getFileName(thumbUri!!)
                         binding.lay4.errorMessageText.text = namefile
-                        Glide.with(this).load(thumbUri)
-                            .placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
+                        Glide.with(this).load(thumbUri).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
 
                         loadingDialog.dismiss()
                     }
                     ImagePicker.RESULT_ERROR -> {
-                        Toast.makeText(
-                            requireContext(),
-                            ImagePicker.getError(data),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
                         Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
                         loadingDialog.dismiss()
                     }
@@ -176,17 +168,13 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
                         adapterUpload.notifyDataSetChanged()
                         nameList.add(names)
 
-                        binding.lay4.textView44.text = "url ${uriList.size}"
+                        binding.lay4.textView44.text = "${uriList.size} image selected"
 
                         loadingDialog.dismiss()
 //                        Glide.with(this).load(fileUri).placeholder(R.drawable.as_square_placeholder).into(image)
                     }
                     ImagePicker.RESULT_ERROR -> {
-                        Toast.makeText(
-                            requireContext(),
-                            ImagePicker.getError(data),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
                         Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
                         loadingDialog.dismiss()
                     }
@@ -204,10 +192,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
             ImagePicker.with(this)
                 .crop()
                 .compress(100)
-                .maxResultSize(
-                    500,
-                    500
-                ) //Final image resolution will be less than 1080 x 1080(Optional)
+                .maxResultSize(500, 500) //Final image resolution will be less than 1080 x 1080
                 .createIntent { intent ->
                     startForThumbnail.launch(intent)
                     loadingDialog.show(childFragmentManager, "Show")
@@ -217,10 +202,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
             ImagePicker.with(this)
                 .crop()
                 .compress(600)
-                .maxResultSize(
-                    900,
-                    900
-                ) //Final image resolution will be less than 1080 x 1080(Optional)
+                .maxResultSize(900, 900) //Final image resolution will be less than 1080 x 1080
                 .createIntent { intent ->
                     loadingDialog.show(childFragmentManager, "Show")
                     startForProductImages.launch(intent)
@@ -465,7 +447,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
     private fun checkType(): Boolean {
         return if (bookStateRadio == null) {
             binding.lay2.bookStateLayout.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.red)
+                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
             false
         } else {
             binding.lay2.bookStateLayout.backgroundTintList =
@@ -477,7 +459,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
     private fun checkCondition(): Boolean {
         return if (bookConditionRadio == null) {
             binding.lay2.bookConditionLayout.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.red)
+                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
             false
         } else {
             binding.lay2.bookConditionLayout.backgroundTintList =
@@ -493,7 +475,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
             (categoryList.size == 0) -> {
                 categoryContainer.backgroundTintList =
-                    AppCompatResources.getColorStateList(requireContext(), R.color.red)
+                    AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
                 false
             }
             (categoryList.size != 0) -> {
@@ -526,12 +508,12 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
         val stockQuantityString = stockQuantity.text.toString()
         return if (stockQuantityString.isEmpty()) {
             binding.lay2.stockquantityLayout.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.red)
+                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
             false
         } else {
             if (stockQuantityString.toInt() < 0) {
                 binding.lay2.stockquantityLayout.backgroundTintList =
-                    AppCompatResources.getColorStateList(requireContext(), R.color.red)
+                    AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
                 false
             } else {
                 binding.lay2.stockquantityLayout.backgroundTintList =
@@ -576,13 +558,19 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
         val selectBtn = binding.lay4.selectImageBtn
         return if (uriList.size == 0) {
             selectBtn.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.red)
+                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+            binding.lay4.textView44.text = "No image selected"
             selectBtn.requestFocus()
             false
         } else {
-            selectBtn.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.purple_500)
-            true
+            if(uriList.size <3) {
+                binding.lay4.textView44.text = "Select minimum 3 image"
+                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.purple_500)
+                false
+            }else{
+                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.purple_500)
+                true
+            }
         }
     }
 
@@ -674,7 +662,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
         addProductMap["rating_Star_3"] = 0L
         addProductMap["rating_Star_2"] = 0L
         addProductMap["rating_Star_1"] = 0L
-        addProductMap["PRODUCT_CREATED_ON"] = FieldValue.serverTimestamp()
+        addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
         addProductMap["PRODUCT_SELLER_ID"] = user!!.uid
         //loadingDialog.show()
         firebaseFirestore.collection("PRODUCTS").document(documentName).set(addProductMap)
@@ -886,7 +874,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
         uriList.removeAt(position)
         nameList.removeAt(position)
         adapterUpload.notifyItemRemoved(position)
-        binding.lay4.textView44.text = "url ${uriList.size}"
+        binding.lay4.textView44.text = "${uriList.size} image selected"
     }
 
 }

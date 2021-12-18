@@ -55,7 +55,7 @@ class ForgotPasswordFragment : Fragment() {
     fun validateEmail(){
         val email:String =  emailEditText.text.toString().trim()
         if (email.isEmpty()){
-            emailEditText.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)
+            emailEditText.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red_a700)
             emailEditText.requestFocus()
         } else {
             Toast.makeText(context,email,Toast.LENGTH_SHORT).show()
@@ -65,7 +65,7 @@ class ForgotPasswordFragment : Fragment() {
                 forgotPassWord(email)
 
             }else{
-                emailEditText.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)
+                emailEditText.backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red_a700)
                 emailEditText.requestFocus()
             }
 

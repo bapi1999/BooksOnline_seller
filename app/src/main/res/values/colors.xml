@@ -9,8 +9,14 @@
     <color name="white">#FFFFFFFF</color>
 
 
-    <color name="yellow">#FFC107</color>
-    <color name="lemon">#FFEB3B</color>
+    <color name="amber_500">#FFC107</color>
+    <color name="amber_600">#FFB300</color>
+    <color name="amber_700">#FFA000</color>
+    <color name="amber_800">#FF8F00</color>
+    <color name="amber_900">#FF6F00</color>
+
+
+    <color name="yellow_600">#FFEB3B</color>
 
     <color name="successGreen">#0DCB62</color>
     <color name="ratingGreen">#0AAE59</color>
@@ -18,7 +24,19 @@
     <color name="orange">#FF3D00</color>
     <color name="viewAll">#0288D1</color>
     <color name="blueLink">#0199FF</color>
-    <color name="red">#D50000</color>
+
+    <color name="red_500">#F44336</color>
+    <color name="red_600">#E53935</color>
+    <color name="red_700">#D32F2F</color>
+    <color name="red_900">#B71C1C</color>
+
+    <color name="red_a40c">#FF1744</color>
+    <color name="red_a700">#D50000</color>
+
+    <color name="indigo_500">#3F51B5</color>
+    <color name="indigo_600">#3949AB</color>
+    <color name="indigo_700">#303F9F</color>
+    <color name="indigo_900">#1A237E</color>
 
     <color name="grey_50">#FAFAFA</color>
     <color name="grey_100">#F5F5F5</color>

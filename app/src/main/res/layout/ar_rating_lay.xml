@@ -176,7 +176,7 @@
             android:layout_weight="1"
             android:max="100"
             android:progress="50"
-            android:progressTint="@color/red" />
+            android:progressTint="@color/red_a700" />
     </LinearLayout>
 
     <LinearLayout
@@ -249,7 +249,7 @@
             android:layout_marginBottom="2dp"
             android:drawableRight="@drawable/ic_star"
             android:drawablePadding="2dp"
-            android:drawableTint="@color/red"
+            android:drawableTint="@color/red_a700"
             android:text="1"
             android:textColor="@color/black"
             android:textSize="12sp"

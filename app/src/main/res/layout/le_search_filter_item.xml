@@ -163,7 +163,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:background="@drawable/s_shape_bg_3"
-            android:backgroundTint="@color/red"
+            android:backgroundTint="@color/red_a700"
             android:gravity="center"
             android:paddingStart="5dp"
             android:paddingTop="2dp"

@@ -16,9 +16,9 @@
     </fragment>
     <fragment
         android:id="@+id/addProductImageFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.AddProductImageFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.AddProductInstructionFragment"
         android:label="fragment_add_product_image"
-        tools:layout="@layout/fragment_add_product_image" >
+        tools:layout="@layout/fragment_add_product_instruction" >
         <argument
             android:name="productId"
             app:argType="string"

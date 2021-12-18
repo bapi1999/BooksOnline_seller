@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -40,6 +41,8 @@ class DashboardFragment : Fragment() {
     private lateinit var recyclerView:RecyclerView
     private lateinit var newOrder:String
 
+    private lateinit var bottomSheetDialog: BottomSheetDialog
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,6 +53,10 @@ class DashboardFragment : Fragment() {
         recyclerView = binding.layOrder.orderDashboardRecycler
         recyclerView.layoutManager = GridLayoutManager(requireContext(),2)
 
+
+        bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.CustomBottomSheetDialog)
+        val view: View = layoutInflater.inflate(R.layout.ar_date_filter_bottom_sheet, null)
+        bottomSheetDialog.setContentView(view)
 
 
 
@@ -66,6 +73,10 @@ class DashboardFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         orderList.clear()
+
+        binding.lay1.calenderImageButton.setOnClickListener {
+            bottomSheetDialog.show()
+        }
 
         viewModel.data.observe(viewLifecycleOwner,{
             newOrder = it.toString()

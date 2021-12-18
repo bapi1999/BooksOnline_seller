@@ -13,10 +13,22 @@
         <action
             android:id="@+id/action_productDetailsFragment_to_productReviewFragment"
             app:destination="@id/productReviewFragment" />
+        <action
+            android:id="@+id/action_productDetailsFragment_to_productImageZoomFragment"
+            app:destination="@id/productImageZoomFragment" />
     </fragment>
     <fragment
         android:id="@+id/productReviewFragment"
         android:name="com.sbdevs.booksonlineseller.fragments.ProductReviewFragment"
         android:label="fragment_product_review"
         tools:layout="@layout/fragment_product_review" />
+    <fragment
+        android:id="@+id/productImageZoomFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.ProductImageZoomFragment"
+        android:label="fragment_product_image_zoom"
+        tools:layout="@layout/fragment_product_image_zoom" >
+        <argument
+            android:name="image_url"
+            app:argType="string" />
+    </fragment>
 </navigation>

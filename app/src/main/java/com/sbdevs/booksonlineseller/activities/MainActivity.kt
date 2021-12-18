@@ -22,16 +22,20 @@ import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.ActivityMainBinding
 
 import com.google.android.material.badge.BadgeDrawable
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import com.sbdevs.booksonlineseller.models.MyProductModel
+import com.sbdevs.booksonlineseller.models.NotificationModel
 import com.sbdevs.booksonlineseller.otherclass.FireStoreData
 import com.sbdevs.booksonlineseller.otherclass.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.ArrayList
 import kotlin.properties.Delegates
@@ -44,12 +48,13 @@ class MainActivity : AppCompatActivity() {
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
 
-    lateinit var notificationBadgeText: TextView
+    private lateinit var notificationBadgeText: TextView
     var productlist: ArrayList<MyProductModel> = ArrayList()
     private lateinit var newOrder :String
     private lateinit var orderBadge: BadgeDrawable
     private val fragmentViewModel:MainViewModel by viewModels()
-
+    private lateinit var timeStamp: Timestamp
+    private var notificationList:List<NotificationModel> = ArrayList()
     private val loadingDialog = LoadingDialog()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,9 +63,24 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        notificationBadgeText  = binding.layNotify.notificationBadgeCounter
+
         loadingDialog.show(supportFragmentManager,"show")
 
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.Main) {
+
+            withContext(Dispatchers.IO){
+                firebaseFirestore.collection("USERS")
+                    .document(user!!.uid)
+                    .collection("SELLER_DATA")
+                    .document("SELLER_DATA").
+                    get().addOnSuccessListener {
+                        timeStamp = it.getTimestamp("new_notification")!!
+                        getNotificationForOptionMenu(timeStamp,notificationBadgeText)
+                    }.addOnFailureListener {
+                        Log.e("get Notification time","${it.message}")
+                    }.await()
+            }
             withContext(Dispatchers.IO){
                 getNewOrder()
 
@@ -95,23 +115,15 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onStart() {
+        super.onStart()
+       //getNotificationForOptionMenu()
+    }
+
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_option_menu, menu)
-
-        val notificationMenu = menu.findItem(R.id.notificationsFragment)
-
-
-
-        val notifyActionView = notificationMenu!!.actionView
-        notificationBadgeText = notifyActionView!!.findViewById(R.id.notification_badge_counter)
-        getNotificationForOptionMenu(notificationBadgeText)
-        notifyActionView.setOnClickListener {
-            onOptionsItemSelected(notificationMenu)
-        }
-
-
 
         return true
     }
@@ -134,33 +146,36 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getNotificationForOptionMenu(textView: TextView) {
-        if (user != null){
-            val ref = firebaseFirestore.collection("USERS")
-                .document(user.uid)
-                .collection("SELLER_DATA")
-                .document("SELLER_DATA")
+    private fun getNotificationForOptionMenu(timeStamp1:Timestamp,textView: TextView) {
 
-            ref.addSnapshotListener { value, error ->
-                error?.let {
-                    Log.e("Notification","can not load notification",it.cause)
-                    textView.visibility = View.GONE
-                    return@addSnapshotListener
-                }
-                value?.let {
-                    val newNotification = it.getLong("new_notification")
-                    if (newNotification == 0L) {
-                        textView.visibility = View.GONE
-                    } else {
-                        textView.text = newNotification.toString()
-                        textView.visibility = View.VISIBLE
-                    }
+        val ref = firebaseFirestore.collection("USERS")
+            .document(user!!.uid)
+            .collection("SELLER_DATA")
+            .document("SELLER_DATA")
+            .collection("NOTIFICATION")
+            .whereGreaterThan("date",timeStamp1)
 
-                }
+        ref.get().addOnSuccessListener {
+            notificationList = it.toObjects(NotificationModel::class.java)
+
+            //binding.layNotify.notificationBadgeCounter.text= notificationList.size.toString()
+            if (notificationList.isEmpty()){
+                textView.visibility = View.GONE
+            }else{
+                textView.visibility = View.VISIBLE
+                textView.text = notificationList.size.toString()
             }
-        }else{
-            Log.w("Notification","User not logged in")
+
+        }.addOnFailureListener {
+            Log.e("Notification","can not load notification",it.cause)
+            textView.visibility = View.GONE
         }
+
+    }
+
+    private fun notificationForOptionMenu() {
+
+
 
     }
 
@@ -172,13 +187,12 @@ class MainActivity : AppCompatActivity() {
                 .document("SELLER_DATA")
 
             val notiMAp: MutableMap<String, Any> = HashMap()
-            notiMAp["new_notification"] = 0L
+            notiMAp["new_notification"] = ""
             ref.update(notiMAp)
         }
 
 
     }
-
 
     private fun getNewOrder(){
         firebaseFirestore.collection("USERS")
@@ -186,17 +200,10 @@ class MainActivity : AppCompatActivity() {
             .collection("SELLER_DATA")
             .document("SELLER_DATA")
             .collection("ORDERS")
-            .whereEqualTo("state","new")
-            .orderBy("date")
-            .addSnapshotListener { value, error ->
-            error?.let {
-                Log.e("New order snapshot","${it.message}")
-                fragmentViewModel.setData("0")
-                orderBadge.isVisible = false
-                return@addSnapshotListener
-            }
-            value?.let {
-
+            .whereEqualTo("status","new")
+            .orderBy("Time_ordered")
+            .get()
+            .addOnSuccessListener{
 
                 productlist = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
                 newOrder = productlist.size.toString()
@@ -209,10 +216,48 @@ class MainActivity : AppCompatActivity() {
                 }
                 fragmentViewModel.setData(newOrder)
 
+            }.addOnFailureListener {
+                Log.e("New order snapshot","${it.message}")
+                fragmentViewModel.setData("0")
+                orderBadge.isVisible = false
             }
-        }
 
     }
+
+
+//    private fun getNewOrder(){
+//        firebaseFirestore.collection("USERS")
+//            .document(user!!.uid)
+//            .collection("SELLER_DATA")
+//            .document("SELLER_DATA")
+//            .collection("ORDERS")
+//            .whereEqualTo("status","new")
+//            .orderBy("Time_ordered")
+//            .addSnapshotListener { value, error ->
+//            error?.let {
+//                Log.e("New order snapshot","${it.message}")
+//                fragmentViewModel.setData("0")
+//                orderBadge.isVisible = false
+//                return@addSnapshotListener
+//            }
+//            value?.let {
+//
+//
+//                productlist = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
+//                newOrder = productlist.size.toString()
+//
+//                if (productlist.size == 0){
+//                    orderBadge.isVisible = false
+//                }else{
+//                    orderBadge.number = productlist.size
+//                    orderBadge.isVisible = true
+//                }
+//                fragmentViewModel.setData(newOrder)
+//
+//            }
+//        }
+//
+//    }
 
 
 }

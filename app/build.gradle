@@ -88,4 +88,6 @@ dependencies {
     implementation 'com.tbuonomo:dotsindicator:4.2'
     implementation 'com.github.wching:Android-Indefinite-Pager-Indicator:1.4'
 
+    implementation 'com.github.MikeOrtiz:TouchImageView:3.1.1'
+
 }

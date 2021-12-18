@@ -11,24 +11,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.sbdevs.booksonlineseller.R
 
 
-class ProductImgAdapter(var productImgList: ArrayList<String>) :
+class ProductImgAdapter(var productImgList: ArrayList<String>,val listener:MyOnItemClickListener) :
     RecyclerView.Adapter<ProductImgAdapter.ViewHolder>() {
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val productImg:ImageView = itemView.findViewById(R.id.product_image)
-
-        fun bind(url:String) {
-            Glide.with(itemView.context).load(url)
-                .apply(RequestOptions().placeholder(R.drawable.as_square_placeholder))
-                .into(productImg)
-//            Picasso.get()
-//                .load(url)
-//                .placeholder(R.drawable.as_square_placeholder)
-//                .resize(300, 300)
-//                .centerCrop()
-//                .into(productImage)
-        }
-
+    interface MyOnItemClickListener{
+        fun onItemClicked(position:Int,url: String)
     }
 
 
@@ -43,6 +30,28 @@ class ProductImgAdapter(var productImgList: ArrayList<String>) :
 
     override fun getItemCount(): Int {
         return productImgList.size
+    }
+
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val productImg:ImageView = itemView.findViewById(R.id.product_image)
+
+        fun bind(url:String) {
+
+            itemView.setOnClickListener {
+                listener.onItemClicked(adapterPosition,url)
+            }
+
+            Glide.with(itemView.context).load(url)
+                .apply(RequestOptions().placeholder(R.drawable.as_square_placeholder))
+                .into(productImg)
+//            Picasso.get()
+//                .load(url)
+//                .placeholder(R.drawable.as_square_placeholder)
+//                .resize(300, 300)
+//                .centerCrop()
+//                .into(productImage)
+        }
+
     }
 
 }

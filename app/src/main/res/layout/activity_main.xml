@@ -20,7 +20,16 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/Theme.BooksOnlineSeller" />
+            app:popupTheme="@style/Theme.BooksOnlineSeller" >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal">
+                <include android:id="@+id/lay_notify"
+                    layout="@layout/le_notification_badge"/>
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
     <com.google.android.material.bottomnavigation.BottomNavigationView

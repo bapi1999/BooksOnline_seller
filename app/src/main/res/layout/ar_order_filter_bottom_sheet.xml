@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -43,7 +44,7 @@
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="tag_new"
+                android:tag="new"
                 android:text="New" />
 
 
@@ -52,7 +53,7 @@
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="tag_accepted"
+                android:tag="accepted"
                 android:text="Accepted" />
 
             <com.google.android.material.chip.Chip
@@ -60,7 +61,7 @@
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="tag_packed"
+                android:tag="packed"
                 android:text="Packed" />
 
             <com.google.android.material.chip.Chip
@@ -68,7 +69,7 @@
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="tag_shipped"
+                android:tag="shipped"
                 android:text="Shipped" />
 
             <com.google.android.material.chip.Chip
@@ -76,7 +77,7 @@
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="tag_delivered"
+                android:tag="delivered"
                 android:text="Delivered" />
 
             <com.google.android.material.chip.Chip
@@ -84,8 +85,15 @@
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="tag_returned"
+                android:tag="returned"
                 android:text="Returned" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/type_chip7"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="canceled"
+                android:text="Canceled" />
 
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
@@ -99,6 +107,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/type_container">
@@ -183,56 +192,25 @@
 
     </LinearLayout>
 
-    <androidx.cardview.widget.CardView
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/apply_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="30dp"
+        android:layout_marginBottom="16dp"
+        android:layout_weight="1"
+        android:background="@drawable/s_shape_bg_1"
+        android:backgroundTint="@color/blueLink"
+        android:text="@string/apply"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout24">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/cancel_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/grey_800"
-                android:gravity="center"
-                android:paddingTop="13dp"
-                android:paddingBottom="13dp"
-                android:text="@string/action_cancel"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/apply_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/teal_700"
-                android:gravity="center"
-                android:paddingTop="13dp"
-                android:paddingBottom="13dp"
-                android:text="@string/apply"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout24" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

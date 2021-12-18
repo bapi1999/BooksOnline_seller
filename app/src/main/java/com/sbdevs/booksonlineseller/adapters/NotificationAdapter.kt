@@ -26,7 +26,7 @@ class NotificationAdapter(var list:List<NotificationModel>, var docNameList:Arra
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_notification_item_lay, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_notification_item, parent, false)
         return ViewHolder(view)
     }
 

@@ -10,7 +10,7 @@
         android:layout_width="409dp"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
-        android:background="@color/yellow"
+        android:background="@color/amber_500"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

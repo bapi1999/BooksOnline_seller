@@ -1,13 +1,19 @@
 package com.sbdevs.booksonlineseller.adapters
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.OrderDetailsActivity
 import com.sbdevs.booksonlineseller.models.OrderModel
@@ -21,7 +27,7 @@ class OrderAdapter(var list:List<OrderModel>, var orderIdList:ArrayList<String>)
     }
 
     override fun onBindViewHolder(holder: OrderAdapter.ViewHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(list[position],orderIdList[position])
     }
 
     override fun getItemCount(): Int {
@@ -36,15 +42,18 @@ class OrderAdapter(var list:List<OrderModel>, var orderIdList:ArrayList<String>)
         private val orderStatus:TextView = itemView.findViewById(R.id.status_txt)
         private val orderTime:TextView = itemView.findViewById(R.id.order_time)
 
-        fun bind(item:OrderModel){
+
+        fun bind(item:OrderModel,orderId: String){
             itemView.setOnClickListener {
                 val orderIntent = Intent(itemView.context,OrderDetailsActivity::class.java)
+                orderIntent.putExtra("orderId",orderId)
                 itemView.context.startActivity(orderIntent)
             }
+            val status:String = item.status
             productName.text = item.productTitle
-            orderPrice.text = item.price
-            orderQTY.text = item.ordered_Qty.toString()
-            orderStatus.text = item.status
+            orderPrice.text = item.price.toString()
+            orderQTY.text =" Qty ${item.ordered_Qty}"
+            orderStatus.text = status
 
             val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.orderTime)
             orderTime.text = dateFormat
@@ -55,6 +64,8 @@ class OrderAdapter(var list:List<OrderModel>, var orderIdList:ArrayList<String>)
                 .into(productImage)
 
         }
+
+
     }
 
 }

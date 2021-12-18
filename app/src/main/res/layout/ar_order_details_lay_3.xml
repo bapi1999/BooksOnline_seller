@@ -17,7 +17,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:text="Track ID: "
-        android:textColor="@color/grey_500"
+        android:textColor="@color/grey_700"
         android:textSize="17sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -30,9 +30,8 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="U299j-wsin-nkj29823-80"
-        android:textColor="@color/grey_500"
+        android:textColor="@color/grey_900"
         android:textSize="17sp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/orderDetails_productName"
         app:layout_constraintTop_toTopOf="parent" />
@@ -115,7 +114,7 @@
         android:id="@+id/ship_delivered_progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="60dp"
-        android:layout_height="3dp"
+        android:layout_height="5dp"
         android:layout_marginTop="8dp"
         android:progress="0"
         android:progressBackgroundTint="@color/grey_50"
@@ -132,6 +131,8 @@
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:layout_marginTop="50dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/shipping_indicator"
         app:layout_constraintStart_toStartOf="@+id/shipping_indicator"
         app:layout_constraintTop_toBottomOf="@+id/shipping_indicator"
@@ -162,17 +163,6 @@
         app:layout_constraintTop_toTopOf="@+id/ordered_text" />
 
     <TextView
-        android:id="@+id/order_placed_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Your order has been placed"
-        android:textColor="@color/black"
-        android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="@+id/ordered_text"
-        app:layout_constraintTop_toBottomOf="@+id/ordered_text" />
-
-    <TextView
         android:id="@+id/packed_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -194,17 +184,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/packed_text"
         app:layout_constraintStart_toEndOf="@+id/packed_text"
         app:layout_constraintTop_toTopOf="@+id/packed_text" />
-
-    <TextView
-        android:id="@+id/order_packed_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Your order has been packed"
-        android:textColor="@color/black"
-        android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="@+id/packed_text"
-        app:layout_constraintTop_toBottomOf="@+id/packed_text" />
 
     <TextView
         android:id="@+id/shipping_text"
@@ -230,17 +209,6 @@
         app:layout_constraintTop_toTopOf="@+id/shipping_text" />
 
     <TextView
-        android:id="@+id/order_shipped_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Your order has been shipped"
-        android:textColor="@color/black"
-        android:textSize="10sp"
-        app:layout_constraintStart_toStartOf="@+id/shipping_text"
-        app:layout_constraintTop_toBottomOf="@+id/shipping_text" />
-
-    <TextView
         android:id="@+id/delivered_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -262,19 +230,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/delivered_text"
         app:layout_constraintStart_toEndOf="@+id/delivered_text"
         app:layout_constraintTop_toTopOf="@+id/delivered_text" />
-
-    <TextView
-        android:id="@+id/ordered_delivered_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:text="Your order has been shipped"
-        android:textColor="@color/black"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/delivered_text"
-        app:layout_constraintTop_toBottomOf="@+id/delivered_text" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

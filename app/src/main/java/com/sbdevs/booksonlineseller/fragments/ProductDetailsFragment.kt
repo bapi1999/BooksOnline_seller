@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class ProductDetailsFragment : Fragment() {
+class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private var _binding:FragmentProductDetailsBinding? =null
     private val binding get() = _binding!!
 
@@ -143,7 +143,7 @@ class ProductDetailsFragment : Fragment() {
 
                     productImgList = it.get("productImage_List") as ArrayList<String>
 
-                    val adapter = ProductImgAdapter(productImgList)
+                    val adapter = ProductImgAdapter(productImgList,this@ProductDetailsFragment)
 
                     productImgViewPager.adapter = adapter
                     binding.lay1.dotsIndicator.setViewPager2(productImgViewPager)
@@ -239,6 +239,11 @@ class ProductDetailsFragment : Fragment() {
                 Log.e("Review","${it.message}",it.cause)
             }.await()
 
+    }
+
+    override fun onItemClicked(position: Int, url: String) {
+        val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductImageZoomFragment(url)
+        findNavController().navigate(action)
     }
 
 }

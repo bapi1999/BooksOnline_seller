@@ -8,8 +8,9 @@
 
     <ScrollView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
 
+        app:layout_constraintBottom_toTopOf="@+id/button_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -33,6 +34,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Status: "
+
                     android:textColor="@color/black"
                     android:textSize="17sp" />
 
@@ -42,18 +44,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
                     android:layout_marginEnd="16dp"
-                    android:text="New"
+                    android:text=""
+                    android:layout_weight="1"
                     android:textAllCaps="true"
                     android:textColor="@color/black"
                     android:textSize="17sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/ordered_date_text"
+                    android:id="@+id/ordered_time_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
-                    android:layout_marginStart="16dp"
                     android:text="ago"
                     android:textColor="@color/grey_900"
                     android:textSize="15sp" />
@@ -83,7 +84,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
-                    android:text="@string/order_id"
+                    android:layout_weight="@integer/material_motion_duration_long_1"
+                    android:text=""
                     android:textColor="@color/grey_900"
                     android:textSize="15sp" />
             </LinearLayout>
@@ -101,18 +103,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
                     android:text="Tracking ID: "
                     android:textColor="@color/grey_900"
                     android:textSize="15sp" />
 
 
                 <TextView
-                    android:id="@+id/trakingId_txt"
+                    android:id="@+id/trackingId_txt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
                     android:text=""
+                    android:layout_weight="1"
                     android:textColor="@color/grey_900"
                     android:textSize="15sp" />
             </LinearLayout>
@@ -122,23 +124,58 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:orientation="horizontal">
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    app:srcCompat="@drawable/ic_info_24" />
-
-
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
+                    android:gravity="center_vertical|start"
                     android:text="@string/tracking_id_won_t_generate"
-                    android:textColor="@color/grey_900"
-                    android:textSize="15sp" />
+                    android:textColor="@color/grey_500"
+                    android:textSize="12sp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/brikeRed"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/order_cancel_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Order is canceled"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:layout_weight="1"
+                    android:layout_margin="10dp"
+                    android:visibility="gone"
+                    />
+
+                <TextView
+                    android:id="@+id/order_wrong_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical|start"
+                    android:text="something is wrong with this order. Please reject/cancel this order"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    app:drawableStartCompat="@drawable/ic_error_outline_24"
+                    app:drawableTint="@color/white"
+                    android:visibility="gone"/>
+
+
+
             </LinearLayout>
 
             <LinearLayout
@@ -151,9 +188,20 @@
                     android:id="@+id/lay_1"
                     layout="@layout/ar_order_details_lay_1" />
 
-                <include
-                    android:id="@+id/lay2"
-                    layout="@layout/ar_order_details_lay_2" />
+
+
+                <LinearLayout
+                    android:id="@+id/order_address_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <include
+                        android:id="@+id/lay2"
+                        layout="@layout/ar_order_details_lay_2" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/order_track_container"
@@ -163,8 +211,8 @@
                     android:visibility="visible">
 
                     <include
-                        layout="@layout/ar_order_details_lay_3"
-                        android:visibility="visible" />
+                        android:id="@+id/lay_3"
+                        layout="@layout/ar_order_details_lay_3_1" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -176,50 +224,117 @@
 
 
     <LinearLayout
-        android:id="@+id/cancel_order_btn"
+        android:id="@+id/button_container"
         android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:background="@color/brikeRed"
+        android:layout_height="wrap_content"
         android:elevation="8dp"
 
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Cancel Order"
 
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+        <LinearLayout
+            android:id="@+id/accept_button_container"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:elevation="8dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/reject_order_btn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/grey_100"
+                android:stateListAnimator="@null"
+                android:text="Reject"
+                android:textAllCaps="false"
+                android:textColor="@color/red_a700"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/accept_order_btn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/successGreen"
+                android:stateListAnimator="@null"
+                android:text="Accept"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/button_container_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cancel_order_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cancel Order"
+                android:textAllCaps="false"
+                android:background="@color/brikeRed"
+                android:textColor="@color/white"
+                android:textSize="17sp"
+                android:textStyle="bold" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/packed_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/teal_200"
+                    android:stateListAnimator="@null"
+                    android:text="Packed"
+                    android:textAllCaps="false"
+                    android:textColor="@color/grey_900"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/shipped_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/teal_700"
+                    android:stateListAnimator="@null"
+                    android:text="Shipped"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/return_order_btn"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:background="@color/orange"
-        android:elevation="8dp"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Return Order"
 
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

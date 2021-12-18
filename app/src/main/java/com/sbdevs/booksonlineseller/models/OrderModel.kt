@@ -8,6 +8,6 @@ data class OrderModel (
     val productTitle:String = "",
     val status:String = "",
     val ordered_Qty:Long = 0L,
-    val price:String = ""
+    val price:Long = 0L
 
         )

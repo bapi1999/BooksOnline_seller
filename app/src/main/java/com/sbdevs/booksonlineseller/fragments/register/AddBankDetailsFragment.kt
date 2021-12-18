@@ -1,7 +1,6 @@
 package com.sbdevs.booksonlineseller.fragments.register
 
 import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,7 +24,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.sbdevs.booksonlineseller.R
-import com.sbdevs.booksonlineseller.activities.MainActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentAddBankDetailsBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.Dispatchers
@@ -198,7 +195,7 @@ class AddBankDetailsFragment : Fragment() {
         return if (fileUri == null) {
 
             binding.bankDetails.hintAndError.text ="Select image"
-            binding.bankDetails.hintAndError.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.red))
+            binding.bankDetails.hintAndError.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.red_a700))
             false
         } else {
             binding.bankDetails.hintAndError.text =""

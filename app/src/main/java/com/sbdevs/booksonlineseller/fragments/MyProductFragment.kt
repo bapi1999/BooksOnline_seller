@@ -45,17 +45,6 @@ class MyProductFragment : Fragment() {
         val view: View = layoutInflater.inflate(R.layout.ar_product_filter_bottom_sheet, null)
         bottomSheetDialog.setContentView(view)
 
-        binding.toolbar.inflateMenu(R.menu.filter_option_menu)
-        binding.toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.bottom_filter -> {
-                    bottomSheetDialog.show()
-                    true
-                }
-                else -> false
-            }
-        }
-
 
 
         binding.addNewProduct.setOnClickListener {
@@ -82,15 +71,12 @@ class MyProductFragment : Fragment() {
         return binding.root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.filter_option_menu, menu)
-
+    override fun onStart() {
+        super.onStart()
+        binding.filterBtn.setOnClickListener {
+            bottomSheetDialog.show()
+        }
     }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return super.onOptionsItemSelected(item)
-    }
-
 
 
     private fun getMyProduct(){

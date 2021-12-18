@@ -22,35 +22,26 @@ class FireStoreData {
 
 
 
-    companion object{
-        val firebaseFirestore = Firebase.firestore
-
-    }
-
-
-
-
-
-    fun durationFromNow(startDate: Date): String {
-        var different: Long = System.currentTimeMillis() - startDate.time
-        val secondsInMilli: Long = 1000
-        val minutesInMilli = secondsInMilli * 60
-        val hoursInMilli = minutesInMilli * 60
-        val daysInMilli = hoursInMilli * 24
-        val elapsedDays = different / daysInMilli
-        different %= daysInMilli
-        val elapsedHours = different / hoursInMilli
-        different %= hoursInMilli
-        val elapsedMinutes = different / minutesInMilli
-        different %= minutesInMilli
-        val elapsedSeconds = different / secondsInMilli
-        var output = ""
-        if (elapsedDays > 0) output += elapsedDays.toString() + "days "
-        if (elapsedDays > 0 || elapsedHours > 0) output += "$elapsedHours hours "
-        if (elapsedHours > 0 || elapsedMinutes > 0) output += "$elapsedMinutes minutes "
-        if (elapsedMinutes > 0 || elapsedSeconds > 0) output += "$elapsedSeconds seconds"
-        return output
-    }
+//    fun durationFromNow(startDate: Date): String {
+//        var different: Long = System.currentTimeMillis() - startDate.time
+//        val secondsInMilli: Long = 1000
+//        val minutesInMilli = secondsInMilli * 60
+//        val hoursInMilli = minutesInMilli * 60
+//        val daysInMilli = hoursInMilli * 24
+//        val elapsedDays = different / daysInMilli
+//        different %= daysInMilli
+//        val elapsedHours = different / hoursInMilli
+//        different %= hoursInMilli
+//        val elapsedMinutes = different / minutesInMilli
+//        different %= minutesInMilli
+//        val elapsedSeconds = different / secondsInMilli
+//        var output = ""
+//        if (elapsedDays > 0) output += elapsedDays.toString() + "days "
+//        if (elapsedDays > 0 || elapsedHours > 0) output += "$elapsedHours hours "
+//        if (elapsedHours > 0 || elapsedMinutes > 0) output += "$elapsedMinutes minutes "
+//        if (elapsedMinutes > 0 || elapsedSeconds > 0) output += "$elapsedSeconds seconds"
+//        return output
+//    }
 
     fun msToTimeAgo(context: Context,startDate:Date): String {
         val seconds = (System.currentTimeMillis() - startDate.time) / 1000f
