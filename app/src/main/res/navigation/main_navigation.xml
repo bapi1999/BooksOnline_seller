@@ -8,12 +8,22 @@
         android:id="@+id/dashboardFragment"
         android:name="com.sbdevs.booksonlineseller.fragments.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/action_dashboardFragment_to_ordersFragment"
+            app:destination="@id/ordersFragment" />
+    </fragment>
     <fragment
         android:id="@+id/ordersFragment"
         android:name="com.sbdevs.booksonlineseller.fragments.OrdersFragment"
         android:label="@string/orders"
-        tools:layout="@layout/fragment_orders" />
+        tools:layout="@layout/fragment_orders" >
+        <argument
+            android:name="orderStatus"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="new" />
+    </fragment>
 
     <fragment
         android:id="@+id/notificationsFragment"

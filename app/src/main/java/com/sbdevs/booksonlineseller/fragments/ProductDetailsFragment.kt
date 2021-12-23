@@ -6,14 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -52,6 +51,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
     private val loadingDialog = LoadingDialog()
 
+    private lateinit var enterStockQty:TextInputLayout
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,6 +86,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
         reviewAdapter = ProductReviewAdapter(reviewList)
         reviewRecyclerView.adapter = reviewAdapter
 
+        enterStockQty = binding.lay4.enterStockEditText
+
 
         return binding.root
     }
@@ -99,11 +102,27 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.lay4.updateStockBtn.setOnClickListener {
+            loadingDialog.show(childFragmentManager,"show")
+            updateStock()
+        }
+
+        binding.lay4.hideProductBtn.setOnClickListener {
+            hideOrShowProduct(true)
+        }
+        binding.lay4.unHideProductBtn.setOnClickListener {
+            hideOrShowProduct(false)
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     private fun getProductData(productId: String) = CoroutineScope(Dispatchers.IO).launch {
         val lay1 = binding.lay1
         val lay2 = binding.lay2
         val lay3 = binding.lay3
+        val lay4 = binding.lay4
         val lay5 = binding.lay5
         val lay6 = binding.lay6
         val layR = binding.layRating
@@ -129,18 +148,19 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
                     val tagList: ArrayList<String> = it.get("tags") as ArrayList<String>
                     val url = it.get("product_thumbnail").toString().trim()
+                    val hideProduct:Boolean = it.getBoolean("hide_this_product")!!
 
                     dbStockQty = stock.toInt()
 
-                    for (catrgorys in categoryList) {
-                        categoryString += "$catrgorys,  "
+                    for (categories in categoryList) {
+                        categoryString += "$categories,  "
                     }
 
                     for (tag in tagList) {
                         tagsString += "#$tag  "
                     }
 
-
+                    lay4.stockQuantity.text = stock.toString()
                     productImgList = it.get("productImage_List") as ArrayList<String>
 
                     val adapter = ProductImgAdapter(productImgList,this@ProductDetailsFragment)
@@ -149,6 +169,16 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     binding.lay1.dotsIndicator.setViewPager2(productImgViewPager)
 
                     lay2.productName.text = productName
+
+                    if (hideProduct){
+                        binding.lay4.productHideStatus.text = "Product is hidden to user"
+                        lay4.unHideProductBtn.visibility = visible
+                        lay4.hideProductBtn.visibility = gone
+                    }else{
+                        binding.lay4.productHideStatus.text = getString(R.string.product_is_visible_to_user)
+                        lay4.unHideProductBtn.visibility = gone
+                        lay4.hideProductBtn.visibility = visible
+                    }
 
 
                     if (priceOriginal == 0L) {
@@ -171,16 +201,20 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     lay2.miniProductRating.text = avgRating
                     lay2.miniTotalNumberOfRatings.text = "(${totalRating} ratings)"
 
-                    if (stock > 5) {
-                        lay2.stockState.visibility = gone
-                        lay2.stockQuantity.visibility = gone
-                    } else if (stock in 1..5) {
-                        lay2.stockState.text = "low"
-                        lay2.stockQuantity.text = "only $stock available in stock"
-                    } else {
-                        lay2.stockState.text = "out of stock"
-                        lay2.stockQuantity.visibility = gone
+                    when {
+                        stock > 5 -> {
+                            lay2.stockState.visibility = gone
+                        }
+                        stock in 1..5 -> {
+                            lay2.stockState.text = "low"
+                        }
+                        stock == 0L -> {
+                            lay2.stockState.text = "out of stock"
+                        }
+                        else -> {
+                            lay2.stockState.visibility = gone
 
+                        }
                     }
 
 // todo layout 2
@@ -211,7 +245,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                         ratingtxt.text = (it.get("rating_Star_" + (5 - x)).toString())
                         val progressBar: ProgressBar =
                             layR.ratingBarContainter.getChildAt(x) as ProgressBar
-                        val maxProgress: Int = it.getLong("rating_total")!!.toInt()
+                        val maxProgress: Int =  totalRating //it.getLong("rating_total")!!.toInt()
                         progressBar.max = maxProgress
                         val perccing: String = it.get("rating_Star_" + (5 - x)).toString()
                         val progress = Integer.valueOf(perccing)
@@ -244,6 +278,69 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
     override fun onItemClicked(position: Int, url: String) {
         val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductImageZoomFragment(url)
         findNavController().navigate(action)
+    }
+
+    private fun checkEnterStockQuantity(): Boolean {
+        val input: String = enterStockQty.editText?.text.toString()
+        return if (input.isEmpty()) {
+            enterStockQty.isErrorEnabled = true
+            enterStockQty.error = "Field can't be empty"
+            false
+        } else {
+            enterStockQty.isErrorEnabled = false
+            enterStockQty.error = null
+            true
+        }
+    }
+
+    private fun updateStock(){
+        if (!checkEnterStockQuantity()){
+            loadingDialog.dismiss()
+            return
+        }else{
+            val stock = enterStockQty.editText?.text.toString().toLong()
+
+            when {
+                stock > 5 -> {
+                    binding.lay2.stockState.visibility = gone
+                }
+                stock in 1..5 -> {
+                    binding.lay2.stockState.visibility = visible
+                    binding.lay2.stockState.text = "low"
+                }
+                stock == 0L -> {
+                    binding.lay2.stockState.visibility = visible
+                    binding.lay2.stockState.text = "out of stock"
+                }
+                else -> {
+                    binding.lay2.stockState.visibility = gone
+
+                }
+            }
+
+
+            val updateStockMap:MutableMap<String,Any> = HashMap()
+            updateStockMap["in_stock_quantity"] = stock.toLong()
+
+            firebaseFirestore.collection("PRODUCTS").document(productId)
+                .update(updateStockMap).addOnSuccessListener {
+                    Log.i("Update Stock","Successful")
+                    loadingDialog.dismiss()
+                }.addOnFailureListener {
+                    Log.e("Update Stock","${it.message}")
+                    Toast.makeText(requireContext(),"Failed to update stock",Toast.LENGTH_LONG).show()
+                    loadingDialog.dismiss()
+                }
+        }
+
+    }
+
+    private fun hideOrShowProduct(condition:Boolean){
+        val map:MutableMap<String,Any> = HashMap()
+        map["hide_this_product"] = condition
+        firebaseFirestore.collection("PRODUCTS").document(productId)
+            .update(map).addOnSuccessListener {}
+
     }
 
 }

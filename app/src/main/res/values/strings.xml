@@ -54,6 +54,7 @@
     <string name="sales_report">Sales Report</string>
     <string name="you_are_not_a_verified_seller">you are not a verified, seller. Add the business address to get verified</string>
     <string name="no_bank_account_linked">no bank account is linked to this account. Add bank account to receive payment</string>
+    <string name="product_is_visible_to_user">this product is visible to user</string>
 
     <string-array name="business_type">
         <item>Self</item>
@@ -98,9 +99,12 @@
         <item>Uttaranchal</item>
         <item>Uttar Pradesh</item>
         <item>West Bengal</item>
+
     </string-array>
 
     <!--    .backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)      -->
     <!--    @Suppress("UNCHECKED_CAST")-->
+
+<!--    order details is not complete as auto delivered status update is needed to verify returned method-->
 
 </resources>

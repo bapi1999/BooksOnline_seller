@@ -220,17 +220,13 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
     override fun onStart() {
         super.onStart()
-        val lay1 = binding.lay1
         val lay2 = binding.lay2
         val lay3 = binding.lay3
 
 
-        binding.nextBtn.setOnClickListener {
+        binding.publishProductBtn.setOnClickListener {
             loadingDialog.show(childFragmentManager, "Show")
             checkAllDetails(it)
-
-//            val action = AddProductDetailsFragmentDirections.actionAddProductDetailsFragmentToAddProductImageFragment("Product_testing_1")
-//            findNavController().navigate(action)
 
         }
 
@@ -576,7 +572,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
 
     private fun checkAllDetails(v: View?) {
-        val documentName: String = "product_testing_2"// generateDocName()
+        val documentName: String =  generateDocName()
         if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage() or !checkPageCount()
             or !checkDimensionWidth() or !checkDimensionLength() or !checkDimensionHeight()
             or !checkDescription() or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()

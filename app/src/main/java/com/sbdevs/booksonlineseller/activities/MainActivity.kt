@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -28,9 +27,9 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
+import com.sbdevs.booksonlineseller.models.DashboardCountModel
 import com.sbdevs.booksonlineseller.models.MyProductModel
 import com.sbdevs.booksonlineseller.models.NotificationModel
-import com.sbdevs.booksonlineseller.otherclass.FireStoreData
 import com.sbdevs.booksonlineseller.otherclass.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -38,7 +37,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.ArrayList
-import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity() {
@@ -85,6 +83,7 @@ class MainActivity : AppCompatActivity() {
                 getNewOrder()
 
             }
+
             withContext(Dispatchers.Main){
                 delay(1000)
                 loadingDialog.dismiss()
@@ -118,6 +117,13 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
        //getNotificationForOptionMenu()
+
+        binding.layNotify.notificationContainer.setOnClickListener {
+            updateNotificationForOptionMenu()
+            notificationBadgeText.visibility = View.GONE
+            //navController.navigateUp() // to clear previous navigation history
+            navController.navigate(R.id.notificationsFragment)
+        }
     }
 
 
@@ -130,12 +136,6 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        if (item.itemId == R.id.notificationsFragment) {
-            updateNotificationForOptionMenu()
-            //navController.navigateUp() // to clear previous navigation history
-            navController.navigate(R.id.notificationsFragment)
-        }
         if (item.itemId == R.id.profileMenuFragment) {
             val menuIntent = Intent(this,MenuActivity::class.java)
             //menuIntent.putExtra("newOrder",)
@@ -155,27 +155,27 @@ class MainActivity : AppCompatActivity() {
             .collection("NOTIFICATION")
             .whereGreaterThan("date",timeStamp1)
 
-        ref.get().addOnSuccessListener {
-            notificationList = it.toObjects(NotificationModel::class.java)
-
-            //binding.layNotify.notificationBadgeCounter.text= notificationList.size.toString()
-            if (notificationList.isEmpty()){
+        ref.addSnapshotListener { value, error ->
+            error?.let {
+                Log.e("Notification","can not load notification",it.cause)
                 textView.visibility = View.GONE
-            }else{
-                textView.visibility = View.VISIBLE
-                textView.text = notificationList.size.toString()
             }
 
-        }.addOnFailureListener {
-            Log.e("Notification","can not load notification",it.cause)
-            textView.visibility = View.GONE
+            value?.let {
+
+                notificationList = it.toObjects(NotificationModel::class.java)
+
+                //binding.layNotify.notificationBadgeCounter.text= notificationList.size.toString()
+                if (notificationList.isEmpty()){
+                    textView.visibility = View.GONE
+                }else{
+                    textView.visibility = View.VISIBLE
+                    textView.text = notificationList.size.toString()
+                }
+            }
+
+
         }
-
-    }
-
-    private fun notificationForOptionMenu() {
-
-
 
     }
 
@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
                 .document("SELLER_DATA")
 
             val notiMAp: MutableMap<String, Any> = HashMap()
-            notiMAp["new_notification"] = ""
+            notiMAp["new_notification"] = FieldValue.serverTimestamp()
             ref.update(notiMAp)
         }
 
@@ -214,11 +214,11 @@ class MainActivity : AppCompatActivity() {
                     orderBadge.number = productlist.size
                     orderBadge.isVisible = true
                 }
-                fragmentViewModel.setData(newOrder)
+                fragmentViewModel.setNewOrder(newOrder)
 
             }.addOnFailureListener {
                 Log.e("New order snapshot","${it.message}")
-                fragmentViewModel.setData("0")
+                fragmentViewModel.setNewOrder("0")
                 orderBadge.isVisible = false
             }
 

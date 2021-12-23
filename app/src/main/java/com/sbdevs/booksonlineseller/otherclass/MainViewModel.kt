@@ -4,9 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MainViewModel:ViewModel() {
-    val data = MutableLiveData<String>()
+    val newOrderData = MutableLiveData<String>()
 
-    fun setData(newData:String){
-        data.value = newData
+    fun setNewOrder(newData:String){
+        newOrderData.value = newData
     }
+
 }

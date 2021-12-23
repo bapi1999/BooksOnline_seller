@@ -18,6 +18,8 @@ import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.OrderDetailsActivity
 import com.sbdevs.booksonlineseller.models.OrderModel
 import com.sbdevs.booksonlineseller.otherclass.FireStoreData
+import java.util.*
+import kotlin.collections.ArrayList
 
 class OrderAdapter(var list:List<OrderModel>, var orderIdList:ArrayList<String>) :RecyclerView.Adapter<OrderAdapter.ViewHolder> (){
 
@@ -55,13 +57,60 @@ class OrderAdapter(var list:List<OrderModel>, var orderIdList:ArrayList<String>)
             orderQTY.text =" Qty ${item.ordered_Qty}"
             orderStatus.text = status
 
-            val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.orderTime)
-            orderTime.text = dateFormat
+
 
             Glide.with(itemView.context)
                 .load(item.productThumbnail)
                 .placeholder(R.drawable.as_square_placeholder)
                 .into(productImage)
+
+
+            when(status){
+                "new" ->{
+                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_ordered)
+                    orderTime.text = dateFormat
+                }
+                "accepted" ->{
+
+                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_accepted)
+                    orderTime.text = dateFormat
+
+
+                }
+                "packed" ->{
+
+                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_packed)
+                    orderTime.text = dateFormat
+
+                }
+
+                "shipped"->{
+
+                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_shipped)
+                    orderTime.text = dateFormat
+
+                }
+                "delivered"->{
+
+                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_delivered)
+                    orderTime.text = dateFormat
+
+                }
+                "returned"->{
+                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_returned)
+                    orderTime.text = dateFormat
+                }
+                "canceled"->{
+                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_canceled)
+                    orderTime.text = dateFormat
+
+
+                }
+                else ->{
+                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_ordered)
+                    orderTime.text = dateFormat
+                }
+            }
 
         }
 

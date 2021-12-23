@@ -23,7 +23,7 @@
             android:id="@+id/item_icon"
             android:layout_width="38dp"
             android:layout_height="38dp"
-            app:srcCompat="@drawable/ic_fill_add_circle_24"
+            app:srcCompat="@drawable/ic_add_24"
             app:tint="@color/white" />
     </LinearLayout>
 

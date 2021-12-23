@@ -17,6 +17,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.ActivityOrderDetailsBinding
+import com.sbdevs.booksonlineseller.databinding.ArOrderDetailsLay31Binding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import com.sbdevs.booksonlineseller.otherclass.FireStoreData
 import kotlinx.coroutines.CoroutineScope
@@ -76,27 +77,74 @@ class OrderDetailsActivity : AppCompatActivity() {
 //        }
 
         binding.acceptOrderBtn.setOnClickListener {
+            loadingDialog.show(supportFragmentManager,"Show")
+
+            binding.lay3.acceptImageButton.backgroundTintList = AppCompatResources
+                .getColorStateList(this@OrderDetailsActivity,R.color.successGreen)
+            binding.lay3.acceptImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+
             updateOrder(orderId,"accepted")
+            binding.statusTxt.text = "accepted"
+
+            binding.acceptButtonContainer.visibility = gone
+            binding.buttonContainer2.visibility = visible
+            binding.packedBtn.visibility = visible
+            binding.shippedBtn.visibility =gone
+
         }
 
         binding.rejectOrderBtn.setOnClickListener {
+            loadingDialog.show(supportFragmentManager,"Show")
+
             updateOrder(orderId,"rejected")
+            binding.statusTxt.text = "rejected"
+
         }
 
 
         binding.packedBtn.setOnClickListener {
+            loadingDialog.show(supportFragmentManager,"Show")
+
+            binding.lay3.packedImageButton.backgroundTintList = AppCompatResources
+                .getColorStateList(this@OrderDetailsActivity,R.color.blueLink)
+            binding.lay3.packedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+
             updateOrder(orderId,"packed")
+
+            binding.statusTxt.text = "packed"
+            binding.acceptButtonContainer.visibility = gone
+            binding.buttonContainer2.visibility = visible
+            binding.packedBtn.visibility = gone
+            binding.shippedBtn.visibility =visible
+
+
         }
 
 
         binding.shippedBtn.setOnClickListener {
+            loadingDialog.show(supportFragmentManager,"Show")
+
+            binding.lay3.shippedImageButton.backgroundTintList = AppCompatResources
+                .getColorStateList(this@OrderDetailsActivity,R.color.indigo_500)
+            binding.lay3.shippedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+
             //send notification may produce runtime exception
+            binding.acceptButtonContainer.visibility = gone
+            binding.buttonContainer2.visibility = gone
+            binding.statusTxt.text = "shipped"
+
             updateOrder(orderId,"shipped")
             sendNotification(buyerId,productName,imageUrl,"Shipped")
         }
 
         binding.cancelOrderBtn.setOnClickListener {
+            loadingDialog.show(supportFragmentManager,"Show")
             updateOrder(orderId,"canceled")
+            binding.statusTxt.text = "canceled"
+
+            binding.acceptButtonContainer.visibility = gone
+            binding.buttonContainer2.visibility = gone
+            binding.orderCancelText.visibility = visible
         }
 
     }
@@ -104,7 +152,6 @@ class OrderDetailsActivity : AppCompatActivity() {
 
     private fun getOrderDetails(orderId:String)  = CoroutineScope(Dispatchers.IO).launch{
         val lay3 = binding.lay3
-
         firebaseFirestore.collection("USERS")
             .document(user!!.uid)
             .collection("SELLER_DATA")
@@ -123,6 +170,13 @@ class OrderDetailsActivity : AppCompatActivity() {
                 buyerId =  it.getString("buyerId").toString()
                 val productId =  it.getString("productId")
                 val tracKingId =  it.getString("tracKingId")
+
+                val acceptedTime= it.getTimestamp("Time_accepted")
+                val packedTime= it.getTimestamp("Time_packed")
+                val shippedTime= it.getTimestamp("Time_shipped")
+                val deliveredTime= it.getTimestamp("Time_delivered")
+                val returnedTime= it.getTimestamp("Time_returned")
+                //val acceptTime: Date = it.getTimestamp("Time_accepted")!!.toDate()
 
                 binding.statusTxt.text = status
                 binding.orderIdTxt.text = orderId
@@ -161,63 +215,74 @@ class OrderDetailsActivity : AppCompatActivity() {
                     "new" ->{
                         binding.acceptButtonContainer.visibility = visible
                         binding.buttonContainer2.visibility = gone
-                        lay3.orderDate.text = getDateTime(orderTime)
 
-                        lay3.orderImageButton.backgroundTintList = AppCompatResources
-                            .getColorStateList(this@OrderDetailsActivity,R.color.amber_600)
-                        lay3.orderImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+                        orderNew(orderTime)
+
                     }
                     "accepted" ->{
-                        val acceptTime: Date = it.getTimestamp("Time_accepted")!!.toDate()
+
 
                         binding.acceptButtonContainer.visibility = gone
                         binding.buttonContainer2.visibility = visible
                         binding.packedBtn.visibility = visible
                         binding.shippedBtn.visibility =gone
                         //
-                        binding.lay3.acceptDate.text = getDateTime(acceptTime)
-                        lay3.acceptImageButton.backgroundTintList = AppCompatResources
-                            .getColorStateList(this@OrderDetailsActivity,R.color.successGreen)
-                        lay3.acceptImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+                        val acceptedT= acceptedTime!!.toDate()
+                        orderNew(orderTime)
+                        orderAccepted(acceptedT)
+
+
 
                     }
                     "packed" ->{
-                        val packTime: Date = it.getTimestamp("Time_packed")!!.toDate()
+
                         binding.acceptButtonContainer.visibility = gone
                         binding.buttonContainer2.visibility = visible
                         binding.packedBtn.visibility = gone
                         binding.shippedBtn.visibility =visible
 
-                        binding.lay3.packedDate.text = getDateTime(packTime)
-                        lay3.packedImageButton.backgroundTintList = AppCompatResources
-                            .getColorStateList(this@OrderDetailsActivity,R.color.blueLink)
-                        lay3.packedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+                        val acceptedT= acceptedTime!!.toDate()
+                        val packT = packedTime!!.toDate()
+                        orderNew(orderTime)
+                        orderAccepted(acceptedT)
+                        orderPacked(packT)
+
+
 
                     }
 
                     "shipped"->{
-                        val shipTime: Date = it.getTimestamp("Time_shipped")!!.toDate()
                         binding.acceptButtonContainer.visibility = gone
                         binding.buttonContainer2.visibility = gone
 
-                        binding.lay3.shippedDate.text = getDateTime(shipTime)
-                        lay3.shippedImageButton.backgroundTintList = AppCompatResources
-                            .getColorStateList(this@OrderDetailsActivity,R.color.indigo_500)
-                        lay3.shippedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+                        val acceptedT= acceptedTime!!.toDate()
+                        val packT = packedTime!!.toDate()
+                        val shippedT = shippedTime!!.toDate()
+                        orderNew(orderTime)
+                        orderAccepted(acceptedT)
+                        orderPacked(packT)
+                        orderShipped(shippedT)
+
                     }
                     "delivered"->{
-                        val deliveredTime: Date = it.getTimestamp("Time_delivered")!!.toDate()
+
                         binding.acceptButtonContainer.visibility = gone
                         binding.buttonContainer2.visibility = gone
 
-                        binding.lay3.deliveredDate.text = getDateTime(deliveredTime)
-                        lay3.deliveredImageButton.backgroundTintList = AppCompatResources
-                            .getColorStateList(this@OrderDetailsActivity,R.color.ratingGreen)
-                        lay3.deliveredImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+                        val acceptT= acceptedTime!!.toDate()
+                        val packT = packedTime!!.toDate()
+                        val shipT = shippedTime!!.toDate()
+                        val deliverT = deliveredTime!!.toDate()
+                        orderNew(orderTime)
+                        orderAccepted(acceptT)
+                        orderPacked(packT)
+                        orderShipped(shipT)
+                        orderDelivered(deliverT)
+
 
                     }
                     "returned"->{
-                        val returnTime: Date = it.getTimestamp("Time_return")!!.toDate()
+                        val returnTime: Date = it.getTimestamp("Time_returned")!!.toDate()
                         binding.acceptButtonContainer.visibility = gone
                         binding.buttonContainer2.visibility = gone
                     }
@@ -226,6 +291,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                         binding.acceptButtonContainer.visibility = gone
                         binding.buttonContainer2.visibility = gone
                         binding.orderCancelText.visibility = visible
+
                     }
                     else ->{
                         binding.acceptButtonContainer.visibility = gone
@@ -248,6 +314,45 @@ class OrderDetailsActivity : AppCompatActivity() {
             }.await()
     }
 
+    private fun orderNew(orderTime:Date){
+
+        binding.lay3.orderDate.text = getDateTime(orderTime)
+
+        binding.lay3.orderImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@OrderDetailsActivity,R.color.amber_600)
+        binding.lay3.orderImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+
+    private fun orderAccepted(acceptTime:Date){
+        binding.lay3.acceptDate.text = getDateTime(acceptTime)
+
+        binding.lay3.acceptImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@OrderDetailsActivity,R.color.successGreen)
+        binding.lay3.acceptImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+    private fun orderPacked(packedTime:Date){
+        binding.lay3.packedDate.text = getDateTime(packedTime)
+        binding.lay3.packedImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@OrderDetailsActivity,R.color.blueLink)
+        binding.lay3.packedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+    private fun orderShipped(shippedTime:Date){
+        binding.lay3.shippedDate.text = getDateTime(shippedTime)
+        binding.lay3.shippedImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@OrderDetailsActivity,R.color.indigo_500)
+        binding.lay3.shippedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+    private fun orderDelivered(deliveredTime:Date){
+
+        binding.lay3.deliveredDate.text = getDateTime(deliveredTime)
+        binding.lay3.deliveredImageButton.backgroundTintList = AppCompatResources
+            .getColorStateList(this@OrderDetailsActivity,R.color.ratingGreen)
+        binding.lay3.deliveredImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
+    }
+    private fun orderReturned(){
+
+    }
+
 
     private fun updateOrder(orderId: String, status:String){
 
@@ -263,8 +368,10 @@ class OrderDetailsActivity : AppCompatActivity() {
             .document(orderId).update(orderMap)
             .addOnSuccessListener {
                 Log.i("$status order","successful")
+                loadingDialog.dismiss()
             }
             .addOnFailureListener {
+                loadingDialog.dismiss()
                 Log.e("$status order","${it.message}")
             }
 
@@ -281,7 +388,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         notificationMap["order_id"] = orderId
         notificationMap["seller_id"] = user!!.uid
         notificationMap["seen"] = false
-
+//
 
         ref.add(notificationMap)
             .addOnSuccessListener {

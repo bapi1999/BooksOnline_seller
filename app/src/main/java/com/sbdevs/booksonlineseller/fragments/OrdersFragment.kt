@@ -1,9 +1,12 @@
 package com.sbdevs.booksonlineseller.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -17,6 +20,10 @@ import com.sbdevs.booksonlineseller.adapters.OrderAdapter
 import com.sbdevs.booksonlineseller.databinding.FragmentOrdersBinding
 import com.sbdevs.booksonlineseller.models.NotificationModel
 import com.sbdevs.booksonlineseller.models.OrderModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 
 class OrdersFragment : Fragment() {
     private var _binding:FragmentOrdersBinding? = null
@@ -25,15 +32,14 @@ class OrdersFragment : Fragment() {
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
 
-
-    private lateinit var bottomSheetDialog:BottomSheetDialog
-
     private var orderList:MutableList<OrderModel> = ArrayList()
 
     private var orderIdLList:ArrayList<String> = ArrayList()
     private lateinit var orderAdapter:OrderAdapter
-    private lateinit var statusString: String
-
+    private var statusString: String = "new"
+    private val args:OrdersFragmentArgs by navArgs()
+    private val loadingDialog = LoadingDialog()
+    private lateinit var typeChipGroup: ChipGroup
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,12 +47,26 @@ class OrdersFragment : Fragment() {
     ): View {
         _binding = FragmentOrdersBinding.inflate(inflater, container, false)
 
-        bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.CustomBottomSheetDialog)
-        val view: View = layoutInflater.inflate(R.layout.ar_order_filter_bottom_sheet,null)
-        bottomSheetDialog.setContentView(view)
-        dialogFunction(bottomSheetDialog)
+        typeChipGroup = binding.typeChipGroup
 
-        getOrdersByTags("new")
+
+
+        val orderStatus = args.orderStatus
+        loadingDialog.show(childFragmentManager,"SHow")
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+
+            if (orderStatus != null){
+                statusString = orderStatus
+                getOrdersByTags(statusString)
+                setSelectedChip(orderStatus)
+            }else{
+                getOrdersByTags(statusString)
+            }
+
+        }
+
+
+
 
         val recyclerView = binding.orderRecycler
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -59,84 +79,101 @@ class OrdersFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        binding.filterBtn.setOnClickListener {
-            bottomSheetDialog.show()
-        }
-    }
-
-    private fun dialogFunction(dialog: BottomSheetDialog) {
-
-        val applyBtn: TextView = dialog.findViewById(R.id.apply_btn)!!
-        val typeChipGroup: ChipGroup = dialog.findViewById(R.id.type_chipGroup)!!
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         chipListenerForType(typeChipGroup)
-
-        applyBtn.setOnClickListener {
-            getOrdersByTags(statusString)
-
-            dialog.dismiss()
-        }
-
-
     }
+
 
     private fun chipListenerForType(chipGroup: ChipGroup) {
-        for (index in 0 until chipGroup.childCount) {
-            val chip: Chip = chipGroup.getChildAt(index) as Chip
 
-            // Set the chip checked change listener
-            chip.setOnCheckedChangeListener { view, isChecked ->
+        chipGroup.setOnCheckedChangeListener { group, checkedId ->
 
-                statusString = if (isChecked) {
-                    view.tag.toString()
+            //val chip: Chip = group.findViewById(checkedId) as Chip
 
-                } else {
-                    "new"
+            when (checkedId) {
+                R.id.type_chip1 -> {
+                    statusString = "new"
+                    loadingDialog.show(childFragmentManager,"Show")
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        getOrdersByTags(statusString)
+                    }
                 }
+                R.id.type_chip2 -> {
+                    statusString = "accepted"
+                    loadingDialog.show(childFragmentManager,"Show")
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        getOrdersByTags(statusString)
+                    }
+                }
+                R.id.type_chip3 -> {
+                    statusString = "packed"
+                    loadingDialog.show(childFragmentManager,"Show")
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        getOrdersByTags(statusString)
+                    }
+                }
+                R.id.type_chip4 -> {
+                    statusString = "shipped"
+                    loadingDialog.show(childFragmentManager,"Show")
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        getOrdersByTags(statusString)
+                    }
+                }
+                R.id.type_chip5 -> {
+                    statusString = "delivered"
+                    loadingDialog.show(childFragmentManager,"Show")
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        getOrdersByTags(statusString)
+                    }
+                }
+                R.id.type_chip6 -> {
+                    statusString = "returned"
+                    loadingDialog.show(childFragmentManager,"Show")
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        getOrdersByTags(statusString)
+                    }
+                }
+                R.id.type_chip7 -> {
+                    statusString = "canceled"
+                    loadingDialog.show(childFragmentManager,"Show")
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        getOrdersByTags(statusString)
+                    }
+                }
+                else -> {
+                    statusString = "new"
 
+                }
             }
+
+
         }
 
-//        chipGroup.setOnCheckedChangeListener { group, checkedId ->
-//
-//            val chip: Chip = group.findViewById(checkedId) as Chip
-//
-//            when (checkedId) {
-//                R.id.type_chip1 -> {
-//                    statusString = "new"
-//                }
-//                R.id.type_chip2 -> {
-//                    statusString = "accepted"
-//                }
-//                R.id.type_chip3 -> {
-//                    statusString = "packed"
-//                }
-//                R.id.type_chip4 -> {
-//                    statusString = "shipped"
-//                }
-//                R.id.type_chip5 -> {
-//                    statusString = "delivered"
-//                }
-//                R.id.type_chip6 -> {
-//                    statusString = "returned"
-//                }
-//                R.id.type_chip7 -> {
-//                    statusString = "canceled"
-//                }
-//                else -> {
-//                    statusString = ""
-//                }
-//            }
-//
-//
-//        }
+    }
 
+    private fun setSelectedChip( stype:String){
+        when(stype){
+            "new"->{
+//                typeChipGroup.check(R.id.type_chip1)
+                //
+            }
+            "accepted"->{
+                typeChipGroup.check(R.id.type_chip2)
+            }
+            "packed"->{
+                typeChipGroup.check(R.id.type_chip3)
+            }
+            "shipped"->{
+                typeChipGroup.check(R.id.type_chip4)
+            }
+
+        }
     }
 
 
-    private fun getOrdersByTags(status:String){
+    private suspend fun getOrdersByTags(status:String){
         firebaseFirestore.collection("USERS")
             .document(user!!.uid)
             .collection("SELLER_DATA")
@@ -163,39 +200,13 @@ class OrdersFragment : Fragment() {
                     orderAdapter.list = orderList
                     orderAdapter.notifyDataSetChanged()
                 }
-            }.addOnFailureListener {  }
+                loadingDialog.dismiss()
+            }.addOnFailureListener {
+                Log.e("Load orders","${it.message}")
+                loadingDialog.dismiss()
+            }.await()
     }
 
-    private fun getOrdersByTagAndDate(status:String,dateString: String){
-        firebaseFirestore.collection("USERS")
-            .document(user!!.uid)
-            .collection("SELLER_DATA")
-            .document("SELLER_DATA")
-            .collection("ORDERS")
-            .whereEqualTo("status",status)
-            .whereEqualTo("order_day",dateString)
-            .orderBy("orderTime")
-            .get().addOnSuccessListener {
-                val allDocumentSnapshot = it.documents
-                for (item in allDocumentSnapshot){
-                    orderIdLList.add(item.id)
-
-                }
-
-                orderAdapter.orderIdList = orderIdLList
-                orderList = it.toObjects(OrderModel::class.java)
-                if (orderList.isEmpty()){
-                    binding.emptyContainer.visibility = View.VISIBLE
-                    binding.orderRecycler.visibility = View.GONE
-                }else{
-                    binding.emptyContainer.visibility = View.GONE
-                    binding.orderRecycler.visibility = View.VISIBLE
-
-                    orderAdapter.list = orderList
-                    orderAdapter.notifyDataSetChanged()
-                }
-            }.addOnFailureListener {  }
-    }
 
     private fun getOrdersByDate(dateString: String){
         firebaseFirestore.collection("USERS")

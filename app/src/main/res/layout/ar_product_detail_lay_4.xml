@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
     android:layout_marginBottom="4dp"
+    android:background="@color/white"
     android:elevation="3dp">
 
     <TextView
@@ -20,13 +20,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView77"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/stock_quantity"
+        android:layout_width="11dp"
+        android:layout_height="19dp"
         android:layout_marginTop="16dp"
         android:text="0"
-        android:textSize="17sp"
         android:textColor="@color/grey_900"
+        android:textSize="17sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/textView53"
         app:layout_constraintTop_toTopOf="parent" />
@@ -38,26 +38,37 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:gravity="top"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView53">
 
-        <EditText
-            android:id="@+id/editTextNumber2"
-            android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/enter_stock_editText"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:ems="10"
-            android:hint="Enter quantity"
-            android:inputType="number" />
+            app:errorEnabled="false"
+            tools:layout_editor_absoluteX="1dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter quantity"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/update_stock_btn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:backgroundTint="@color/indigo_900"
+            android:text="Update stock"
             android:textAllCaps="false"
-            android:text="Update stock" />
+            android:textStyle="bold" />
     </LinearLayout>
 
     <View
@@ -73,32 +84,48 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout18" />
 
     <TextView
-        android:id="@+id/textView87"
+        android:id="@+id/product_hide_status"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="this product is visible to user"
-        android:textSize="16sp"
+        android:text="@string/product_is_visible_to_user"
         android:textColor="@color/grey_900"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider21" />
 
-    <Button
-        android:id="@+id/button4"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
-        android:text="Hide this product"
-        android:textAllCaps="false"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView87" />
+        app:layout_constraintTop_toBottomOf="@+id/product_hide_status">
+
+        <Button
+            android:id="@+id/hide_product_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hide this product"
+            android:textAllCaps="false"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/un_hide_product_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Show this product"
+            android:textAllCaps="false"
+            android:visibility="gone" />
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -40,8 +40,8 @@ class DashboardCountAdapter(var list: MutableList<DashboardCountModel>):Recycler
 
         fun bind(item:DashboardCountModel) {
             itemTitle.text = item.title
-            itemCount.text = item.count.toString()
-            imageContainer.setBackgroundColor(parseColor(item.backgroundColor.toString()))
+            itemCount.text = item.count
+            imageContainer.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,item.backgroundColor)
             Glide.with(itemView.context).load(item.icon).into(imageView)
         }
 

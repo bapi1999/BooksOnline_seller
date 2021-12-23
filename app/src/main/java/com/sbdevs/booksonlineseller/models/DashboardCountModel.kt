@@ -4,7 +4,7 @@ import android.text.style.BackgroundColorSpan
 
 data class DashboardCountModel (
     val icon:Int = 0,
-    val backgroundColor:String="",
+    val backgroundColor:Int=0,
     val title:String = "",
     val count:String = ""
         )
