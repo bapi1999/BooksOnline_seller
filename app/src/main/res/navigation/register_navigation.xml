@@ -47,5 +47,10 @@
         android:name="com.sbdevs.booksonlineseller.fragments.register.AddBusinessDetailsFragment"
         android:label="fragment_add_business_details"
         tools:layout="@layout/fragment_add_business_details" >
+        <argument
+            android:name="came_from"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
     </fragment>
 </navigation>

@@ -8,13 +8,14 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="100dp"
+        android:layout_width="200dp"
         android:layout_height="100dp"
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/as_circle_placeholder" />
+        app:srcCompat="@drawable/books_online_seller_logo"
+        app:tint="@color/black" />
 
     <TextView
         android:id="@+id/error_message_text"
@@ -25,7 +26,7 @@
         android:text="Email or Password is incorrect"
         android:textColor="@color/red_a700"
         android:textSize="20sp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/email_input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
@@ -95,7 +96,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/amber_500"
+        android:backgroundTint="@color/purple_500"
         android:text="Login"
         android:textAllCaps="false"
         android:textColor="@color/white"

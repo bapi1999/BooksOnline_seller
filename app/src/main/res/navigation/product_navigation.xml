@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/productDetailsFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.ProductDetailsFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.product.ProductDetailsFragment"
         android:label="fragment_product_details"
         tools:layout="@layout/fragment_product_details" >
         <action
@@ -16,19 +16,36 @@
         <action
             android:id="@+id/action_productDetailsFragment_to_productImageZoomFragment"
             app:destination="@id/productImageZoomFragment" />
+        <action
+            android:id="@+id/action_productDetailsFragment_to_changeProductImageFragment"
+            app:destination="@id/changeProductImageFragment" />
     </fragment>
     <fragment
         android:id="@+id/productReviewFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.ProductReviewFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.product.ProductReviewFragment"
         android:label="fragment_product_review"
         tools:layout="@layout/fragment_product_review" />
     <fragment
         android:id="@+id/productImageZoomFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.ProductImageZoomFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.product.ProductImageZoomFragment"
         android:label="fragment_product_image_zoom"
         tools:layout="@layout/fragment_product_image_zoom" >
         <argument
             android:name="image_url"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/changeProductImageFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.product.ChangeProductImageFragment"
+        android:label="fragment_change_product_image"
+        tools:layout="@layout/fragment_change_product_image" >
+        <action
+            android:id="@+id/action_changeProductImageFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:popUpTo="@id/productDetailsFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="productId"
             app:argType="string" />
     </fragment>
 </navigation>

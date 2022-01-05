@@ -101,35 +101,6 @@ class AddBusinessDetailsFragment : Fragment() {
         _binding = FragmentAddBusinessDetailsBinding.inflate(inflater, container, false)
         val businessLay = binding.businessDetails
 
-        loadingDialog.show(childFragmentManager, "Show")
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.IO){
-                firebaseFirestore.collection("USERS")
-                    .document(user!!.uid)
-                    .collection("SELLER_DATA")
-                    .document("SELLER_DATA").get().addOnSuccessListener {
-                        val newNotification = it.get("new_notification").toString().toLong()
-                        newNotificationLong = newNotification
-
-                    }.addOnFailureListener {
-                        Log.e("Notification","${it.message}")
-                    }.await()
-            }
-            withContext(Dispatchers.Main){
-                delay(2000)
-                loadingDialog.dismiss()
-            }
-            withContext(Dispatchers.Main){
-                //binding.businessDetails.textView28.text = newNotificationLong.toString()
-            }
-
-
-
-
-
-        }
-
 
 
         businessType = businessLay.businessType
@@ -143,17 +114,14 @@ class AddBusinessDetailsFragment : Fragment() {
 
         cameFrom = args.cameFrom
 
-
-        binding.proceedBtn.setOnClickListener {
-            loadingDialog.show(childFragmentManager, "Show")
-            checkAllDetails()
+        if (cameFrom == null) {
+            binding.skipBtn.visibility = View.VISIBLE
+        } else {
+            binding.skipBtn.visibility = View.GONE
         }
 
-        binding.skipBtn.setOnClickListener {
-            val intent = Intent(context, MainActivity::class.java)
-            startActivity(intent)
-            activity?.finish()
-        }
+
+
         image = businessLay.uploadAddressProfBtn
 
         businessLay.uploadAddressProfBtn.setOnClickListener {
@@ -172,6 +140,22 @@ class AddBusinessDetailsFragment : Fragment() {
 
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.proceedBtn.setOnClickListener {
+            loadingDialog.show(childFragmentManager, "Show")
+            checkAllDetails()
+        }
+
+        binding.skipBtn.setOnClickListener {
+            val intent = Intent(context, MainActivity::class.java)
+            startActivity(intent)
+            activity?.finish()
+        }
+
     }
 
 
@@ -341,12 +325,6 @@ class AddBusinessDetailsFragment : Fragment() {
         notificationMap["order_id"] = ""
         notificationMap["seen"] = false
 
-
-
-        val sellerDataMap: MutableMap<String, Any> = HashMap()
-        sellerDataMap["new_notification"] = (newNotificationLong+1)
-
-
         //(not completed, did not added address)
 
 
@@ -366,9 +344,6 @@ class AddBusinessDetailsFragment : Fragment() {
             .addOnSuccessListener { Log.i("Notification","Successfully added") }
             .addOnFailureListener { Log.e("Notification","${it.message}") }
 
-        sellerRef.document("SELLER_DATA").update(sellerDataMap)
-            .addOnSuccessListener { Log.i("New_Notification","Successfully added") }
-            .addOnFailureListener { Log.e("New_Notification","${it.message}") }
 
     }
 

@@ -16,6 +16,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.activities.MainActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentLoginBinding
+import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -34,7 +35,7 @@ class LoginFragment : Fragment() {
 
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
 
-    lateinit var loadingDialog : Dialog
+    private  val loadingDialog  = LoadingDialog()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,11 +47,20 @@ class LoginFragment : Fragment() {
         errorTxt.visibility =View.GONE
         email = binding.loginLay.emailInput
         pass = binding.loginLay.passwordInput
+
+
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
         binding.loginLay.signupText.setOnClickListener {
             val action  = LoginFragmentDirections.actionLoginFragmentToSignUpFragment()
             findNavController().navigate(action)
         }
-
 
         binding.loginLay.forgotPassword.setOnClickListener {
             val action1 = LoginFragmentDirections.actionLoginFragmentToForgotPasswordFragment()
@@ -58,15 +68,11 @@ class LoginFragment : Fragment() {
         }
 
 
-
         binding.loginLay.loginBtn.setOnClickListener {
+            loadingDialog.show(childFragmentManager,"show")
             checkAllDetails()
         }
-
-
-        return binding.root
     }
-
 
     private fun checkMail(): Boolean {
         val emailInput: String = email.editText?.text.toString().trim()
@@ -115,18 +121,27 @@ class LoginFragment : Fragment() {
         } else {
             lifecycleScope.launch(Dispatchers.IO){
                 try {
-                    firebaseAuth.signInWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString()).await()
-                    withContext(Dispatchers.Main){
-                        Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(context, MainActivity::class.java)
-                        startActivity(intent)
+                    firebaseAuth.signInWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString())
+                        .addOnSuccessListener {
+                            loadingDialog.dismiss()
 
-                        activity?.finish()
-                    }
+                            Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
+                            val intent = Intent(context, MainActivity::class.java)
+                            startActivity(intent)
+
+                            activity?.finish()
+                        }
+                        .addOnFailureListener {
+                            loadingDialog.dismiss()
+                            Toast.makeText(context,it.message, Toast.LENGTH_LONG).show()
+                        }
+                        .await()
+
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
                         errorTxt.visibility = View.VISIBLE
-                        Toast.makeText(context,e.message, Toast.LENGTH_LONG).show()
+                        loadingDialog.dismiss()
+
                     }
                 }
             }

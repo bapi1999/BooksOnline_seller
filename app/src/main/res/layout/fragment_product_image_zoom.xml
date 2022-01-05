@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey_900"
-    tools:context=".fragments.ProductImageZoomFragment">
+    tools:context=".fragments.product.ProductImageZoomFragment">
 
     <com.ortiz.touchview.TouchImageView
         android:id="@+id/touch_image"

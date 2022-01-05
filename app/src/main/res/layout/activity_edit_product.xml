@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.AddProductDetailsFragment">
+    tools:context=".activities.EditProductActivity">
 
 
     <com.google.android.material.appbar.AppBarLayout
@@ -42,22 +42,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/read_instruction_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/read_instruction"
-                android:textColor="@color/white"
-                android:textAllCaps="false"
-                android:drawableStart="@drawable/ic_info_24"
-                android:drawableTint="@color/white"
-                android:gravity="center"
-                android:backgroundTint="@color/brikeRed"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"/>
-
-
             <include android:id="@+id/lay1"
                 layout="@layout/ar_add_product_lay_1" />
 
@@ -65,18 +49,15 @@
                 layout="@layout/ar_add_product_lay_2" />
 
             <include android:id="@+id/lay3"
-                layout="@layout/ar_add_product_lay_3" />
+                layout="@layout/ar_edit_product_lay_3" />
 
-            <include android:id="@+id/lay4"
-                layout="@layout/ar_add_product_lay_4" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/publish_product_btn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
+                android:layout_height="40dp"
                 android:text="Publish"
-                android:textSize="17dp"
+                android:textAllCaps="false"
                 android:layout_margin="16dp"
                 android:textColor="@color/white"
                 android:background="@drawable/s_shape_bg_1"
@@ -85,10 +66,21 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/buyer_address_type"/>
 
+            <TextView
+                android:id="@+id/update_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/indigo_500"
+                android:textSize="16sp"
+                android:textStyle="bold"
+
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"/>
+
         </LinearLayout>
     </ScrollView>
-
-
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

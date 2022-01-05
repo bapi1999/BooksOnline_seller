@@ -15,6 +15,7 @@
         android:drawablePadding="4dp"
         android:text="Set product thumbnail*: "
         android:textSize="17sp"
+        android:textColor="@color/grey_900"
         app:drawableEndCompat="@drawable/ic_info_24"
         app:drawableTint="@color/light_black"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,6 +72,7 @@
         android:drawablePadding="4dp"
         android:text="Set product image*: "
         android:textSize="17sp"
+        android:textColor="@color/grey_900"
         app:drawableEndCompat="@drawable/ic_info_24"
         app:drawableTint="@color/grey_700"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,7 +90,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView72"
-        tools:listitem="@layout/le_upload_image_item" />
+        tools:listitem="@layout/le_upload_new_image_item" />
 
     <com.rbrooks.indefinitepagerindicator.IndefinitePagerIndicator
         android:id="@+id/recyclerview_pager_indicator"

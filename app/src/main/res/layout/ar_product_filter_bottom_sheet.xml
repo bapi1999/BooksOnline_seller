@@ -3,8 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@drawable/s_dialog_bg">
+
 
     <LinearLayout
         android:id="@+id/relevance_container"
@@ -31,10 +32,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            app:checkedChip="@+id/relevance_chip1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView61"
-            app:checkedChip="@+id/relevance_chip1"
             app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
@@ -58,6 +59,15 @@
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
 
+    <View
+        android:id="@+id/divider30"
+        android:layout_width="409dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relevance_container" />
 
     <LinearLayout
         android:id="@+id/type_container"
@@ -84,10 +94,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            app:checkedChip="@+id/type_chip1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView61"
-            app:checkedChip="@+id/type_chip1"
             app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
@@ -126,7 +136,6 @@
         </com.google.android.material.chip.ChipGroup>
     </LinearLayout>
 
-
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/apply_btn"
         android:layout_width="match_parent"
@@ -135,7 +144,6 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="24dp"
-        android:layout_weight="1"
         android:background="@drawable/s_shape_bg_1"
         android:backgroundTint="@color/blueLink"
         android:text="@string/apply"
@@ -145,20 +153,9 @@
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/type_container"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <View
-        android:id="@+id/divider30"
-        android:layout_width="409dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relevance_container" />
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

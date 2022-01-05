@@ -16,7 +16,9 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.chip.Chip
@@ -34,15 +36,15 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import com.sbdevs.booksonlineseller.adapters.UploadImageAdapter
+import com.sbdevs.booksonlineseller.adapters.NewUploadImageAdapter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 
 
-class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickListener {
+class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClickListener {
 
-    private var _binding: FragmentAddProductDetailsBinding? = null
+    private var _binding: FragmentAddProductDetailsBinding?= null
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
@@ -80,11 +82,34 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
     private var fileUri: Uri? = null
     private var uriList: ArrayList<Uri> = ArrayList()
     var nameList: ArrayList<String> = ArrayList()
-    lateinit var adapterUpload: UploadImageAdapter
+    lateinit var adapterNewUpload: NewUploadImageAdapter
     private var downloadUriList: MutableList<String> = ArrayList()
     private lateinit var docname: String
 
     private val loadingDialog = LoadingDialog()
+
+    private val simpleCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.START or ItemTouchHelper.END,0){
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            val fromPosition = viewHolder.adapterPosition
+            val toPosition = target.adapterPosition
+            Collections.swap(uriList,fromPosition,toPosition)
+
+            adapterNewUpload.notifyItemMoved(fromPosition,toPosition)
+
+
+
+            return false
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            //TODO("Not yet implemented")
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -123,7 +148,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
             requireContext(),
             LinearLayoutManager.HORIZONTAL, false
         )
-        adapterUpload = UploadImageAdapter(uriList, this)
+        adapterNewUpload = NewUploadImageAdapter(uriList, this)
 
         val startForThumbnail =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -135,8 +160,8 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
                         //Image Uri will not be null for RESULT_OK
                         thumbUri = data?.data!!
 
-                        val namefile = getFileName(thumbUri!!)
-                        binding.lay4.errorMessageText.text = namefile
+//                        val namefile = getFileName(thumbUri!!)
+//                        binding.lay4.errorMessageText.text = namefile
                         Glide.with(this).load(thumbUri).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
 
                         loadingDialog.dismiss()
@@ -165,13 +190,13 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
                         fileUri = data?.data!!
                         val names = getFileName(fileUri!!)
                         uriList.add(fileUri!!)
-                        adapterUpload.notifyDataSetChanged()
+                        adapterNewUpload.notifyDataSetChanged()
                         nameList.add(names)
 
                         binding.lay4.textView44.text = "${uriList.size} image selected"
 
                         loadingDialog.dismiss()
-//                        Glide.with(this).load(fileUri).placeholder(R.drawable.as_square_placeholder).into(image)
+
                     }
                     ImagePicker.RESULT_ERROR -> {
                         Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
@@ -211,8 +236,11 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
 
         val indicator = binding.lay4.recyclerviewPagerIndicator
-        recyclerView.adapter = adapterUpload
+        recyclerView.adapter = adapterNewUpload
         indicator.attachToRecyclerView(recyclerView)
+
+        val itemTouchHelper1 = ItemTouchHelper(simpleCallback)
+        itemTouchHelper1.attachToRecyclerView(recyclerView)
 
 
         return binding.root
@@ -242,22 +270,6 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
                     printDateMandatory = false
                 }
             }
-        }
-
-        lay2.stockDownBtn.setOnClickListener {
-            val quantity = stockQuantity.text.toString().toInt()
-            if (quantity > 0) {
-                val num = (quantity - 1).toString()
-                stockQuantity.setText(num)
-            } else {
-                Toast.makeText(requireContext(), " can't be less than 0", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-        lay2.stockUpBtn.setOnClickListener {
-            val quantity = stockQuantity.text.toString().toInt()
-            val num = (quantity + 1).toString()
-            stockQuantity.setText(num)
         }
 
         lay2.bookConditionToggle.setOnCheckedChangeListener { group, checkedId ->
@@ -502,24 +514,24 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
     private fun checkStock(): Boolean {
         val stockQuantityString = stockQuantity.text.toString()
+
         return if (stockQuantityString.isEmpty()) {
-            binding.lay2.stockquantityLayout.backgroundTintList =
+            stockQuantity.backgroundTintList =
                 AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
             false
         } else {
             if (stockQuantityString.toInt() < 0) {
-                binding.lay2.stockquantityLayout.backgroundTintList =
+                stockQuantity.backgroundTintList =
                     AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
                 false
             } else {
-                binding.lay2.stockquantityLayout.backgroundTintList =
+                stockQuantity.backgroundTintList =
                     AppCompatResources.getColorStateList(requireContext(), R.color.white)
                 true
             }
 
         }
     }
-
 
     private fun checkPrintDate(): Boolean {
         val printDateString = printDateInput.editText?.text.toString()
@@ -536,7 +548,6 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
             true
         }
     }
-
 
     private fun checkThumbnail(): Boolean {
         return if (thumbUri == null) {
@@ -638,12 +649,12 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
         addProductMap["process_complete"] = true
 
         if (printDateMandatory) {
-            addProductMap["book_printed_ON"] = printDateInput.editText?.text.toString().trim()
+            addProductMap["book_printed_ON"] = printDateInput.editText?.text.toString().trim().toLong()
         } else {
             if (printDateInput.editText?.text.toString().isNotEmpty()) {
-                addProductMap["book_printed_ON"] = printDateInput.editText?.text.toString().trim()
+                addProductMap["book_printed_ON"] = printDateInput.editText?.text.toString().trim().toLong()
             } else {
-                addProductMap["book_printed_ON"] = "Not available"
+                addProductMap["book_printed_ON"] = 0L
             }
         }
 
@@ -673,8 +684,10 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
     }
 
     private fun uploadThumbnail(productID: String) {
+        //val mRef: StorageReference = storageReference.child("image/" + user!!.uid + "/").child(getFileName(thumbUri!!))
         val mRef: StorageReference =
-            storageReference.child("image/" + user!!.uid + "/").child(getFileName(thumbUri!!))
+            storageReference.child("image/" + user!!.uid + "/").child(productID+"thumb")
+
         mRef.putFile(thumbUri!!)
             .addOnCompleteListener {
                 mRef.downloadUrl.addOnSuccessListener {
@@ -783,9 +796,7 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
 
         tagList.addAll(tagArray)
 
-        binding.lay3.autoTagText.text = "${tagList[0]} and ${tagList.size}"
 
-        binding.lay3.autoTagText.visibility = View.VISIBLE
 
         return tagList
     }
@@ -801,8 +812,6 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
             categoryList.addAll(categoryArray)
 
 //        binding.lay3.autoTagText.text = "${tagList[0]} and ${tagList.size}"
-
-            binding.lay3.autoTagText.visibility = View.VISIBLE
 
             categoryList
         } else {
@@ -869,8 +878,10 @@ class AddProductDetailsFragment : Fragment(), UploadImageAdapter.MyOnItemClickLi
     override fun onItemClick(position: Int) {
         uriList.removeAt(position)
         nameList.removeAt(position)
-        adapterUpload.notifyItemRemoved(position)
+        adapterNewUpload.notifyItemRemoved(position)
         binding.lay4.textView44.text = "${uriList.size} image selected"
     }
+
+
 
 }

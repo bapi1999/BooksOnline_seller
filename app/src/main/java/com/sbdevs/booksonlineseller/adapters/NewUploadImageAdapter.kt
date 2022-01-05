@@ -5,22 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sbdevs.booksonlineseller.R
 
-class UploadImageAdapter(var list:ArrayList<Uri>, val listener: MyOnItemClickListener):RecyclerView.Adapter<UploadImageAdapter.ViewHolder>() {
+class NewUploadImageAdapter(var list:ArrayList<Uri>, val listener: MyOnItemClickListener):RecyclerView.Adapter<NewUploadImageAdapter.ViewHolder>() {
 
     interface MyOnItemClickListener{
         fun onItemClick(position: Int)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UploadImageAdapter.ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_upload_image_item, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewUploadImageAdapter.ViewHolder {
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_upload_already_image_item, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: UploadImageAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: NewUploadImageAdapter.ViewHolder, position: Int) {
         holder.bind(list[position])
     }
 
@@ -31,9 +32,10 @@ class UploadImageAdapter(var list:ArrayList<Uri>, val listener: MyOnItemClickLis
 
     inner class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
         val imageView:ImageView = itemView.findViewById(R.id.product_image)
+        val deleteImageBtn: LinearLayout = itemView.findViewById(R.id.delete_image_button)
 
         fun bind(url:Uri){
-            imageView.setOnClickListener {
+            deleteImageBtn.setOnClickListener {
                 listener.onItemClick(adapterPosition)
             }
 

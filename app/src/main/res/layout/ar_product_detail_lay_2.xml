@@ -18,7 +18,7 @@
         android:layout_marginEnd="16dp"
         android:text="Product Name"
         android:textColor="@color/grey_900"
-        android:textSize="20sp"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:text="1213"
             android:textColor="@color/black"
-            android:textSize="20sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -129,7 +129,7 @@
             android:text="Low"
             android:textAllCaps="true"
             android:textColor="@color/orange"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -144,6 +144,7 @@
         android:paddingStart="3dp"
         android:paddingEnd="3dp"
         android:text="000"
+        android:textSize="13sp"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayout13"
         app:layout_constraintStart_toEndOf="@+id/linearLayout13" />
 
@@ -154,7 +155,7 @@
         android:layout_marginStart="8dp"
         android:text="70% off"
         android:textColor="@color/ratingGreen"
-
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/linearLayout13"
         app:layout_constraintStart_toEndOf="@+id/strikeThroughPrice" />
 

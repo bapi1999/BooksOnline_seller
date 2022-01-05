@@ -16,21 +16,32 @@
             android:gravity="center_horizontal">
             <include android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:layout_marginTop="24dp"
                 layout="@layout/le_books_onlikne_header_lay"/>
-            <TextView
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/read_instruction_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Instruction(add instruction for users on what type of document thay upload and fill)"
-                android:textColor="@color/brikeRed"/>
+                android:text="@string/read_instruction"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:drawableStart="@drawable/ic_info_24"
+                android:drawableTint="@color/white"
+                android:gravity="center"
+                android:backgroundTint="@color/brikeRed"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"/>
 
             <include android:id="@+id/business_details"
                 layout="@layout/ar_register_layout_2_1"/>
+
             <Button
                 android:id="@+id/proceed_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Next" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

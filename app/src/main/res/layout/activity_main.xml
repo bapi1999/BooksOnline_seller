@@ -18,15 +18,23 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/indigo_500"
+            android:background="@color/purple_500"
             app:layout_scrollFlags="scroll|enterAlways"
             android:layout_gravity="end"
             app:popupTheme="@style/Theme.BooksOnlineSeller" >
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/books_online_seller_logo"
+                app:tint="@color/white" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="end"
                 android:orientation="horizontal">
+
                 <include android:id="@+id/lay_notify"
                     layout="@layout/le_notification_badge"/>
             </LinearLayout>

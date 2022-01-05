@@ -55,6 +55,10 @@
     <string name="you_are_not_a_verified_seller">you are not a verified, seller. Add the business address to get verified</string>
     <string name="no_bank_account_linked">no bank account is linked to this account. Add bank account to receive payment</string>
     <string name="product_is_visible_to_user">this product is visible to user</string>
+    <string name="read_instruction">Read instruction</string>
+    <string name="i_agree_to_the_terms_of_service">I agree to the Terms of Service and Privacy Policy</string>
+    <string name="updated_successfully">Updated successfully</string>
+    <string name="failed_to_update">Failed to update</string>
 
     <string-array name="business_type">
         <item>Self</item>
@@ -104,7 +108,7 @@
 
     <!--    .backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)      -->
     <!--    @Suppress("UNCHECKED_CAST")-->
-
-<!--    order details is not complete as auto delivered status update is needed to verify returned method-->
+    <!--    myText.setTextColor(AppCompatResources.getColorStateList(this, R.color.xxx))-->
+    <!--    order details is not complete as auto delivered status update is needed to verify returned method-->
 
 </resources>

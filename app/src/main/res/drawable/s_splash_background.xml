@@ -2,12 +2,14 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <solid android:color="@color/white"/>
+            <solid android:color="#6600cc"/>
         </shape>
     </item>
-    <item>
-        <bitmap android:src="@drawable/as_circle_placeholder"
-            android:gravity="center"/>
+    <item android:gravity="center"
+        android:height="200dp"
+        android:width="355dp"
+        android:drawable="@drawable/books_online_seller_splash">
+
     </item>
 
 

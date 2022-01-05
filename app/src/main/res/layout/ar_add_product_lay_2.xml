@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/s_border_1"
+        android:background="@drawable/s_border_2"
         android:backgroundTint="@color/white"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,10 +64,11 @@
             android:id="@+id/textView62"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:text="Book Type*"
             android:textColor="@color/grey_900"
             android:textSize="17sp"
-            android:textStyle="bold" />
+            />
 
         <RadioGroup
             android:id="@+id/book_State_toggle"
@@ -82,7 +83,7 @@
                 android:layout_height="wrap_content"
                 android:tag="new"
                 android:text="New printed"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
             <RadioButton
                 android:id="@+id/used_radioButton"
@@ -90,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:tag="used"
                 android:text="Used"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
 
             <RadioButton
                 android:id="@+id/refurb_radioButton"
@@ -98,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:tag="refurbished"
                 android:text="Refurbished"
-                android:textSize="17sp" />
+                android:textSize="15sp" />
         </RadioGroup>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -113,6 +114,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="Printed year"
                 android:inputType="number"
                 android:maxLength="4" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -125,8 +127,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/s_border_1"
+        android:background="@drawable/s_border_2"
         android:backgroundTint="@color/white"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -137,10 +140,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:text="Book Condition*"
             android:textColor="@color/grey_900"
-            android:textSize="17sp"
-            android:textStyle="bold"/>
+            android:textSize="17sp" />
 
         <RadioGroup
             android:id="@+id/book_condition_toggle"
@@ -153,33 +156,33 @@
                 android:id="@+id/cradioButton1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Good"
                 android:tag="good"
-                android:textSize="17sp" />
+                android:text="Good"
+                android:textSize="15sp" />
 
             <RadioButton
                 android:id="@+id/cradioButton2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Almost new"
                 android:tag="almost_new"
-                android:textSize="17sp" />
+                android:text="Almost new"
+                android:textSize="15sp" />
 
             <RadioButton
                 android:id="@+id/cradioButton3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Half bad"
                 android:tag="half_bad"
-                android:textSize="17sp" />
+                android:text="Half bad"
+                android:textSize="15sp" />
 
             <RadioButton
                 android:id="@+id/cradioButton4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Bad"
                 android:tag="bad"
-                android:textSize="17sp" />
+                android:text="Bad"
+                android:textSize="15sp" />
         </RadioGroup>
     </LinearLayout>
 
@@ -190,8 +193,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/s_border_1"
+        android:backgroundTint="@color/white"
         android:orientation="horizontal"
-        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bookConditionLayout">
@@ -201,54 +205,30 @@
             android:id="@+id/textView8"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:text="Stock Quantity* :"
-
+            android:textColor="@color/grey_900"
             android:textSize="17sp"
-            android:textStyle="bold"
-            android:textColor="@color/grey_900"/>
+            />
 
-        <ImageButton
-            android:id="@+id/stock_Down_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="10dp"
-            android:scaleX="1.5"
-
-            android:scaleY="1.5"
-            android:tintMode="src_atop"
-            app:srcCompat="@drawable/ic_baseline_horizontal_rule_24"
-            app:tint="@color/viewAll" />
 
         <EditText
             android:id="@+id/stock_quantity"
-            android:layout_width="95dp"
+            android:layout_width="105dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/s_border_2"
+            android:backgroundTint="@color/splash"
             android:ems="10"
             android:gravity="center"
             android:inputType="number"
-            android:text="1"
             android:maxLength="7"
-            android:textStyle="bold"
+            android:padding="5dp"
+            android:text="1"
             android:textColor="@color/grey_900"
-            android:textSize="20sp"/>
-
-        <ImageButton
-            android:id="@+id/stock_Up_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:padding="10dp"
-            android:scaleX="1.5"
-
-            android:scaleY="1.5"
-            android:tintMode="src_atop"
-            app:srcCompat="@drawable/ic_add_24"
-            app:tint="@color/viewAll" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

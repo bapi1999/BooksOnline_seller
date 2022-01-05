@@ -153,7 +153,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="Book contion :"
+                android:text="Book condition :"
                 android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 
@@ -228,7 +228,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="Dimension(wxhxl) :"
+                android:text="Dimension(WxLxH) :"
                 android:textColor="@color/grey_700"
                 android:textSize="15sp" />
 

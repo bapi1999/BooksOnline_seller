@@ -9,18 +9,32 @@ import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
+import com.sbdevs.booksonlineseller.databinding.ActivitySplashBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SplashActivity : AppCompatActivity() {
+
+    val currentUser = Firebase.auth.currentUser
+    private lateinit var binding:ActivitySplashBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
+        binding = ActivitySplashBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
 
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        val currentUser = Firebase.auth.currentUser
+
+
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+
         if (currentUser == null) {
             val loginintent = Intent(this@SplashActivity, RegisterActivity::class.java)
             startActivity(loginintent)
@@ -33,11 +47,6 @@ class SplashActivity : AppCompatActivity() {
                     startActivity(mainintent)
                     finish()
 
-//                    FirebaseFirestore.getInstance().collection("USERS").document(currentUser.uid)
-//                        .update("Last seen", FieldValue.serverTimestamp()).await()
-//                    withContext(Dispatchers.Main){
-//
-//                    }
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
                         Toast.makeText(this@SplashActivity,e.message,Toast.LENGTH_LONG).show()

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -40,6 +41,7 @@ class MyProductFragment : Fragment() {
     private val loadingDialog = LoadingDialog()
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private var dateModified = Query.Direction.DESCENDING
+    private var searchCode:Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,8 +53,7 @@ class MyProductFragment : Fragment() {
         bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.CustomBottomSheetDialog)
         val view: View = layoutInflater.inflate(R.layout.ar_product_filter_bottom_sheet, null)
         bottomSheetDialog.setContentView(view)
-
-
+        dialogFunction(bottomSheetDialog)
 
         binding.addNewProduct.setOnClickListener {
             val intent = Intent(context,AddProductActivity::class.java)
@@ -78,33 +79,54 @@ class MyProductFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.filterBtn.setOnClickListener {
             bottomSheetDialog.show()
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-    }
-
     private fun dialogFunction(dialog: BottomSheetDialog) {
-        val applyBtn: AppCompatButton = dialog.findViewById(R.id.apply_btn)!!
-
+        val applyBtn:AppCompatButton = dialog.findViewById(R.id.apply_btn)!!
         val typeChipGroup: ChipGroup = dialog.findViewById(R.id.type_chipGroup)!!
         val dateModifiedChipGroup: ChipGroup = dialog.findViewById(R.id.relevance_chipGroup)!!
 
         chipListenerForDateModified(dateModifiedChipGroup)
         chipListenerForType(typeChipGroup)
 
-
         applyBtn.setOnClickListener {
-            //todo  apply btn method
-            // when btn clicked
+            Toast.makeText(requireContext(),"clicked",Toast.LENGTH_SHORT).show()
+
+            //getOutOfStockProduct(dateModified)
+
+            when(searchCode){
+                0 ->{
+                    getMyProduct(dateModified)
+                }
+                1 -> {
+                    //out of stock = 1
+                    getOutOfStockProduct(dateModified)
+                }
+                2 -> {
+                    //low in stock = 2
+                    getLowStockProduct(dateModified)
+                }
+                3 -> {
+                    //hidden = 3
+                    getHiddenProduct(dateModified)
+                }
+                else -> {
+                    //all = 0
+                    getMyProduct(dateModified)
+                }
+            }
+            bottomSheetDialog.dismiss()
         }
+
+
+
 
     }
 
@@ -117,21 +139,25 @@ class MyProductFragment : Fragment() {
             //val chip: Chip = group.findViewById(checkedId) as Chip
 
             dateModified = when (checkedId) {
-                R.id.type_chip1 -> {
+                R.id.relevance_chip1 -> {
                     Query.Direction.DESCENDING
+
                 }
-                R.id.type_chip2 -> {
+                R.id.relevance_chip2 -> {
                     Query.Direction.ASCENDING
                 }
                 else -> {
                     Query.Direction.DESCENDING
                 }
             }
+            binding.textView83.text = dateModified.toString()
 
 
         }
 
     }
+
+    //todo - add click listener to type chip
 
     private fun chipListenerForType(chipGroup: ChipGroup) {
 
@@ -141,23 +167,24 @@ class MyProductFragment : Fragment() {
 
             when (checkedId) {
                 R.id.type_chip1 -> {
-                    //all
-
+                    //all = 0
+                   searchCode = 0
                 }
                 R.id.type_chip2 -> {
-                   //out of stock
+                   //out of stock = 1
+                    searchCode = 1
                 }
                 R.id.type_chip3 -> {
-                    // low in stock
-
+                    //low in stock = 2
+                    searchCode = 2
                 }
                 R.id.type_chip4 -> {
-                    //hidden
-
+                    //hidden = 3
+                    searchCode = 3
                 }
                 else -> {
-                    //all
-
+                    //all = 0
+                    searchCode = 0
                 }
             }
 
@@ -165,6 +192,8 @@ class MyProductFragment : Fragment() {
         }
 
     }
+
+
 
 
 
@@ -241,6 +270,7 @@ class MyProductFragment : Fragment() {
             .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
             .whereLessThan("in_stock_quantity",5L)
             .whereGreaterThan("in_stock_quantity",0L)
+            .orderBy("in_stock_quantity")
             .orderBy("PRODUCT_UPDATE_ON",direction)
             .get().addOnSuccessListener {
                 val allDocumentSnapshot = it.documents

@@ -100,16 +100,5 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/divider33"
-        android:layout_width="60dp"
-        android:layout_height="0dp"
-        android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/add_new_product"
-        app:layout_constraintEnd_toEndOf="@+id/add_new_product"
-        app:layout_constraintStart_toStartOf="@+id/add_new_product"
-        app:layout_constraintTop_toTopOf="@+id/add_new_product" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

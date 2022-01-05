@@ -1,4 +1,4 @@
-package com.sbdevs.booksonlineseller.fragments
+package com.sbdevs.booksonlineseller.fragments.product
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

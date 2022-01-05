@@ -180,7 +180,7 @@ class OrdersFragment : Fragment() {
             .document("SELLER_DATA")
             .collection("ORDERS")
             .whereEqualTo("status",status)
-            .orderBy("orderTime")
+            .orderBy("Time_ordered")
             .get().addOnSuccessListener {
                 val allDocumentSnapshot = it.documents
                 for (item in allDocumentSnapshot){

@@ -7,8 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
@@ -18,7 +20,9 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.FragmentSignUpBinding
+import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -33,8 +37,11 @@ class SignUpFragment : Fragment() {
     lateinit var phone:TextInputLayout
     lateinit var pass: TextInputLayout
     lateinit var confirmPass:TextInputLayout
+    private lateinit var termAndPolicyBox:CheckBox
     lateinit var errorTxt: TextView
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
+
+    private val loadingDialog = LoadingDialog()
 
 
     override fun onCreateView(
@@ -47,6 +54,7 @@ class SignUpFragment : Fragment() {
         phone = binding.signupLay.mobileInput
         pass = binding.signupLay.passwordInput
         confirmPass = binding.signupLay.confirmPassInput
+        termAndPolicyBox = binding.signupLay.checkBox6
 
         binding.signupLay.loginText.setOnClickListener {
             val action = SignUpFragmentDirections.actionSignUpFragmentToLoginFragment()
@@ -54,11 +62,17 @@ class SignUpFragment : Fragment() {
         }
 
         binding.signupLay.signupBtn.setOnClickListener {
+            loadingDialog.show(childFragmentManager,"show")
             checkAllDetails()
 
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
     }
 
     private fun checkMail(): Boolean {
@@ -69,7 +83,7 @@ class SignUpFragment : Fragment() {
             false
         } else {
             if(emailInput.matches(emailPattern.toRegex())){
-                email.isErrorEnabled = false
+
                 email.error = null
                 true
             }else{
@@ -90,7 +104,6 @@ class SignUpFragment : Fragment() {
             false
         } else {
             if(phoneInput.length==10){
-                phone.isErrorEnabled = false
                 phone.error = null
                 true
             }else{
@@ -115,7 +128,6 @@ class SignUpFragment : Fragment() {
                 pass.error = "must be at least 8 character"
                 false
             }else{
-                pass.isErrorEnabled = false
                 pass.error = null
                 true
             }
@@ -131,7 +143,6 @@ class SignUpFragment : Fragment() {
             false
         } else {
             if (confirmPassInput == passInput){
-                confirmPass.isErrorEnabled = false
                 confirmPass.error = null
                 true
             }else{
@@ -143,36 +154,64 @@ class SignUpFragment : Fragment() {
         }
     }
 
+    private fun checkTermsAndPolicyBox(): Boolean {
+
+        val container = binding.signupLay.linearLayout11
+
+        return if (termAndPolicyBox.isChecked) {
+            container.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.white)
+            true
+        } else {
+            container.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_500)
+            false
+        }
+    }
+
     private fun checkAllDetails() {
-        if (!checkMail() or !checkPhone() or !checkPassword() or !checkConfirmPassword()) {
+        if (!checkMail() or !checkPhone() or !checkPassword() or !checkConfirmPassword() or !checkTermsAndPolicyBox()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            loadingDialog.dismiss()
             return
         } else {
             lifecycleScope.launch(Dispatchers.IO){
                 try {
                     firebaseAuth.createUserWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString()).await()
 
+                    delay(1000L)
+
                     withContext(Dispatchers.IO){
                         createPaths()
                     }
 
-                    withContext(Dispatchers.Main){
-                        Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
 
-                        val action = SignUpFragmentDirections.actionSignUpFragmentToAddBusinessDetailsFragment()
-                        findNavController().navigate(action)
-                    }
                 }catch (e:Exception){
                     withContext(Dispatchers.Main){
                         errorTxt.visibility = View.VISIBLE
                         Toast.makeText(context,e.message, Toast.LENGTH_LONG).show()
+                        loadingDialog.dismiss()
                     }
                 }
             }
 
         }
     }
-    private fun createPaths(){
+    private suspend  fun createPaths(){
+
+
+        val timstamp1 = FieldValue.serverTimestamp()
+
+        val userMap: MutableMap<String, Any> = HashMap()
+        userMap["name"] = ""
+        userMap["email"] = email.editText?.text.toString().trim()
+        userMap["Is_user"] = true
+        userMap["Is_seller"] = true
+        userMap["signup_date"] = timstamp1
+        userMap["mobile_No"] = phone.editText?.text.toString().trim()
+        userMap["profile"] = ""
+
+
+        val sellerDataMap: MutableMap<String, Any> = HashMap()
+        sellerDataMap["new_notification"] = timstamp1
 
         val listSizeMap: MutableMap<String, Any> = HashMap()
         listSizeMap["listSize"] = 0L
@@ -193,30 +232,12 @@ class SignUpFragment : Fragment() {
 
         val welcomeNoti: String = getString(R.string.welcome_notification_for_seller)
 
-        val notificationMap: MutableMap<String, Any> = HashMap()
-        notificationMap["date"] = FieldValue.serverTimestamp()
-        notificationMap["description"] = welcomeNoti
-        notificationMap["image"] = ""
-        notificationMap["order_id"] = ""
-        notificationMap["seen"] = false
 
 
 
-        val sellerDataMap: MutableMap<String, Any> = HashMap()
-        sellerDataMap["new_notification"] = 0
-
-        val userMap: MutableMap<String, Any> = HashMap()
-
-        userMap["name"] = ""
-        userMap["email"] = email.editText?.text.toString().trim()
-        userMap["Is_user"] = true
-        userMap["Is_seller"] = true
-        userMap["signup_date"] = FieldValue.serverTimestamp()
-        userMap["mobile_No"] = phone.editText?.text.toString().trim()
-        userMap["profile"] = ""
 
 
-        lifecycleScope.launch{
+
             if (firebaseAuth.currentUser!=null){
                 val currentUser = firebaseAuth.currentUser!!.uid
 
@@ -233,9 +254,17 @@ class SignUpFragment : Fragment() {
                 val sellerRef = docRef.document("SELLER_DATA")
                 sellerRef.set(sellerDataMap).await()
 
+                val notificationMap: MutableMap<String, Any> = HashMap()
+                notificationMap["date"] = FieldValue.serverTimestamp()
+                notificationMap["description"] = welcomeNoti
+                notificationMap["image"] = ""
+                notificationMap["order_id"] = ""
+                notificationMap["seen"] = false
+
+
                 sellerRef.collection("NOTIFICATION").add(notificationMap)
                     .addOnSuccessListener { Log.i("Notification","Successfully added") }
-                    .addOnFailureListener { Log.e("Notification","${it.message}") }
+                    .addOnFailureListener { Log.e("Notification","${it.message}") }.await()
 
 
 //                SELLER_DATA ->document
@@ -248,17 +277,16 @@ class SignUpFragment : Fragment() {
 
 //                sub collections will be created automatically when a document added
 
-
-
                 withContext(Dispatchers.Main){
-                    activity?.finish()
-                    Toast.makeText(context,"Signed up successfully",Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
+
+                    val action = SignUpFragmentDirections.actionSignUpFragmentToAddBusinessDetailsFragment(null)
+                    findNavController().navigate(action)
+                    loadingDialog.dismiss()
                 }
-
-
             }
 
-        }
+
 
 
 

@@ -1,5 +1,6 @@
-package com.sbdevs.booksonlineseller.fragments
+package com.sbdevs.booksonlineseller.fragments.product
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,10 +18,13 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
+import com.sbdevs.booksonlineseller.activities.EditProductActivity
 import com.sbdevs.booksonlineseller.adapters.ProductImgAdapter
 import com.sbdevs.booksonlineseller.adapters.ProductReviewAdapter
 import com.sbdevs.booksonlineseller.models.ProductReviewModel
 import com.sbdevs.booksonlineseller.databinding.FragmentProductDetailsBinding
+import com.sbdevs.booksonlineseller.fragments.LoadingDialog
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,8 +36,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
-    private val firebaseAuth = Firebase.auth
-    private val user = firebaseAuth.currentUser
+    private val user = Firebase.auth.currentUser
 
 
     private val gone = View.GONE
@@ -52,6 +54,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
     private val loadingDialog = LoadingDialog()
 
     private lateinit var enterStockQty:TextInputLayout
+    private lateinit var productThumbnail:ImageView
 
 
     override fun onCreateView(
@@ -62,6 +65,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
         loadingDialog.show(childFragmentManager,"show")
 
         productImgViewPager = binding.lay1.productImgViewPager
+        productThumbnail = binding.lay1.productThumbnail
 
         val intent = requireActivity().intent
         productId = intent.getStringExtra("productId").toString().trim()
@@ -95,9 +99,25 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
     override fun onStart() {
         super.onStart()
 
+        binding.editProductBtn.setOnClickListener {
+            val editIntent = Intent(requireContext(),EditProductActivity::class.java)
+            editIntent.putExtra("productId",productId)
+            startActivity(editIntent)
+        }
+
         binding.layRating.viewAllButton.setOnClickListener {
             val action =
                 ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductReviewFragment()
+            findNavController().navigate(action)
+        }
+
+        binding.lay1.changeProductImageBtn.setOnClickListener {
+            val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToChangeProductImageFragment(productId)
+            findNavController().navigate(action)
+        }
+        binding.lay1.changeThumbnailBtn.setOnClickListener {
+
+            val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToChangeProductImageFragment(productId)
             findNavController().navigate(action)
         }
     }
@@ -128,10 +148,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
         val layR = binding.layRating
         firebaseFirestore.collection("PRODUCTS").document(productId).get()
             .addOnSuccessListener {
-                if (it.exists()) {
-//                    lifecycleScope.launch(Dispatchers.IO) {
-//
-//                    }
+
+
                     var categoryString = ""
                     var tagsString = ""
 
@@ -141,14 +159,24 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     val priceSelling = it.getLong("price_selling")!!.toLong()
 
                     val avgRating = it.getString("rating_avg")!!
-                    val sellerId = it.getString("PRODUCT_SELLER_ID")!!
                     val totalRating: Int = it.getLong("rating_total")!!.toInt()
                     val stock = it.getLong("in_stock_quantity")!!
                     val description = it.getString("book_details")!!
                     val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
                     val tagList: ArrayList<String> = it.get("tags") as ArrayList<String>
-                    val url = it.get("product_thumbnail").toString().trim()
+                    val url = it.getString("product_thumbnail").toString()
                     val hideProduct:Boolean = it.getBoolean("hide_this_product")!!
+
+                    val bookWriter = it.getString("book_writer")
+                    val bookPublisherName = it.getString("book_publisher")
+                    val bookLanguage = it.getString("book_language")
+                    val bookType = it.getString("book_type")!!
+                    val bookPrintDate = it.getLong("book_printed_ON")
+                    val bookCondition = it.getString("book_condition")
+                    val bookPageCount = it.getString("book_pageCount")
+                    val isbnNumber = it.getString("book_ISBN")
+                    val bookDimension = it.getString("book_dimension")
+                    val dimensionArray: List<String> = bookDimension!!.split("x")
 
                     dbStockQty = stock.toInt()
 
@@ -159,6 +187,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     for (tag in tagList) {
                         tagsString += "#$tag  "
                     }
+
+
 
                     lay4.stockQuantity.text = stock.toString()
                     productImgList = it.get("productImage_List") as ArrayList<String>
@@ -175,7 +205,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                         lay4.unHideProductBtn.visibility = visible
                         lay4.hideProductBtn.visibility = gone
                     }else{
-                        binding.lay4.productHideStatus.text = getString(R.string.product_is_visible_to_user)
+                        binding.lay4.productHideStatus.text = "this product is visible to user" // getString(R.string.product_is_visible_to_user)
                         lay4.unHideProductBtn.visibility = gone
                         lay4.hideProductBtn.visibility = visible
                     }
@@ -196,8 +226,14 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
                     }
 
+                    //Glide.with(requireContext()).load(url).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
+                    Picasso.get().load(url).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
+                    productThumbnail.setOnClickListener {
+                        val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductImageZoomFragment(url)
+                        findNavController().navigate(action)
+                    }
 
-                    lay2.productState.text = it.getString("book_type")!!
+                    lay2.productState.text = bookType
                     lay2.miniProductRating.text = avgRating
                     lay2.miniTotalNumberOfRatings.text = "(${totalRating} ratings)"
 
@@ -222,14 +258,21 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     lay3.productDetailsText.text = description
 
                     //todo layout 3
-                    lay5.writerName.text = it.getString("book_writer")
-                    lay5.publisherName.text = it.getString("book_publisher")
-                    lay5.bookLanguage.text = it.getString("book_language")
-                    lay5.printDate.text = it.getString("book_printed_ON")
-                    lay5.bookCondition.text = it.getString("book_condition")
-                    lay5.pageCount.text = it.getString("book_pageCount")
-                    lay5.isbnNumber.text = it.getString("book_ISBN")
-//                    lay3.bookDimension.text = it.getString("")
+                    lay5.writerName.text = bookWriter
+                    lay5.publisherName.text = bookPublisherName
+                    lay5.bookLanguage.text = bookLanguage
+
+
+                    if (bookPrintDate == 0L){
+                        lay5.printDate.text = "Not available"
+                    }else{
+                        lay5.printDate.text = bookPrintDate.toString()
+                    }
+
+                    lay5.bookCondition.text = bookCondition
+                    lay5.pageCount.text = bookPageCount
+                    lay5.isbnNumber.text = isbnNumber
+                    lay5.bookDimension.text = bookDimension
 
                     //todo layout 4
                     lay6.categoryText.text = categoryString
@@ -252,8 +295,6 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                         progressBar.progress = progress
                     }
 
-
-                }
             }.addOnFailureListener {
                 Log.e("Product","${it.message}",it.cause)
             }.await()

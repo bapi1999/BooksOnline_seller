@@ -15,7 +15,6 @@
             android:gravity="center_horizontal">
             <include android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:layout_marginTop="24dp"
                 layout="@layout/le_books_onlikne_header_lay"/>
 
             <include android:id="@+id/bank_details"
