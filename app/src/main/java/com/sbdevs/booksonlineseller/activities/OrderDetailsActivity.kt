@@ -139,7 +139,8 @@ class OrderDetailsActivity : AppCompatActivity() {
 
         binding.cancelOrderBtn.setOnClickListener {
             loadingDialog.show(supportFragmentManager,"Show")
-            updateOrder(orderId,"canceled")
+            cancelOrder(orderId)
+
             binding.statusTxt.text = "canceled"
 
             binding.acceptButtonContainer.visibility = gone
@@ -376,6 +377,32 @@ class OrderDetailsActivity : AppCompatActivity() {
             }
 
     }
+
+    private fun cancelOrder(orderId: String){
+
+        val orderMap:MutableMap<String,Any> = HashMap()
+        orderMap["status"] = "canceled"
+        orderMap["is_order_canceled"] = true
+
+        orderMap["Time_canceled"] = FieldValue.serverTimestamp()
+        firebaseFirestore.collection("USERS")
+            .document(user!!.uid)
+            .collection("SELLER_DATA")
+            .document("SELLER_DATA")
+            .collection("ORDERS")
+            .document(orderId).update(orderMap)
+            .addOnSuccessListener {
+                Log.i("canceled order","successful")
+                loadingDialog.dismiss()
+            }
+            .addOnFailureListener {
+                loadingDialog.dismiss()
+                Log.e("canceled order","${it.message}")
+            }
+
+    }
+
+
 
     private fun sendNotification(buyerId:String,productName:String,url:String,status: String){
         val ref = firebaseFirestore.collection("USERS").document(buyerId).collection("USER_DATA")

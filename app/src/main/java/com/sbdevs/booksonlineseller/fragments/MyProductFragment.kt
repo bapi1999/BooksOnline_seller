@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.ChipGroup
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -22,8 +24,9 @@ import com.sbdevs.booksonlineseller.activities.AddProductActivity
 import com.sbdevs.booksonlineseller.adapters.MyProductAdapter
 import com.sbdevs.booksonlineseller.databinding.FragmentMyProductBinding
 import com.sbdevs.booksonlineseller.models.MyProductModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.sbdevs.booksonlineseller.models.ProductReviewModel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 
 class MyProductFragment : Fragment() {
 
@@ -31,8 +34,7 @@ class MyProductFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
-    private val firebaseAuth = Firebase.auth
-    private val user = firebaseAuth.currentUser
+    private val user = Firebase.auth.currentUser
 
     private lateinit var recyclerView:RecyclerView
     private lateinit var productAdapter: MyProductAdapter
@@ -42,6 +44,11 @@ class MyProductFragment : Fragment() {
     private lateinit var bottomSheetDialog: BottomSheetDialog
     private var dateModified = Query.Direction.DESCENDING
     private var searchCode:Int = 0
+
+    private var lastResult:DocumentSnapshot ? = null
+    private lateinit var times:Timestamp
+    private var inStockOrder:Long = 0L
+    private var isReachLast:Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,21 +67,16 @@ class MyProductFragment : Fragment() {
             startActivity(intent)
         }
 
-//        val myproducts = firbaseFirestore.collection("Products")
-
-
         recyclerView = binding.myProductRecycler
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        firebaseFirestore.collection("PRODUCTS")
-
-
 
         productAdapter = MyProductAdapter(productIdsList,productlist)
 
         recyclerView.adapter = productAdapter
 
         getMyProduct(dateModified)
+
+
 
         return binding.root
     }
@@ -86,6 +88,67 @@ class MyProductFragment : Fragment() {
         binding.filterBtn.setOnClickListener {
             bottomSheetDialog.show()
         }
+
+
+
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+
+                if (!recyclerView.canScrollVertically(RecyclerView.FOCUS_DOWN) && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+                    // end scrolling: do what you want here and after calling the function change the value of boolean
+
+                    binding.textView83.text = isReachLast.toString()
+
+                    if (isReachLast){
+                        Log.w("Query item","Last item is reached already")
+                        binding.progressBar2.visibility = View.GONE
+
+                    }else{
+                        binding.progressBar2.visibility = View.VISIBLE
+
+                        Log.e("last query", "${lastResult.toString()}")
+                        when(searchCode){
+                            0 ->{
+
+                                getMyProduct(dateModified)
+                            }
+                            1 -> {
+                                //out of stock = 1
+                                getOutOfStockProduct(dateModified)
+                            }
+                            2 -> {
+                                //low in stock = 2
+                                getLowStockProduct(dateModified)
+                            }
+                            3 -> {
+                                //hidden = 3
+                                getHiddenProduct(dateModified)
+                            }
+                            else -> {
+                                //all = 0
+                                getMyProduct(dateModified)
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+            }
+
+        })
+
+
+
+
     }
 
     private fun dialogFunction(dialog: BottomSheetDialog) {
@@ -97,12 +160,16 @@ class MyProductFragment : Fragment() {
         chipListenerForType(typeChipGroup)
 
         applyBtn.setOnClickListener {
-            Toast.makeText(requireContext(),"clicked",Toast.LENGTH_SHORT).show()
+//            Toast.makeText(requireContext(),"clicked",Toast.LENGTH_SHORT).show()
+            productAdapter.notifyItemRangeRemoved(0,productlist.size)
+            lastResult = null
+            productlist.clear()
+            productIdsList.clear()
 
-            //getOutOfStockProduct(dateModified)
 
             when(searchCode){
                 0 ->{
+
                     getMyProduct(dateModified)
                 }
                 1 -> {
@@ -131,7 +198,6 @@ class MyProductFragment : Fragment() {
     }
 
 
-
     private fun chipListenerForDateModified(chipGroup: ChipGroup) {
 
         chipGroup.setOnCheckedChangeListener { group, checkedId ->
@@ -150,7 +216,7 @@ class MyProductFragment : Fragment() {
                     Query.Direction.DESCENDING
                 }
             }
-            binding.textView83.text = dateModified.toString()
+//            binding.textView83.text = dateModified.toString()
 
 
         }
@@ -196,21 +262,50 @@ class MyProductFragment : Fragment() {
 
 
 
-
     private fun getMyProduct(direction:Query.Direction){
-        firebaseFirestore.collection("PRODUCTS")
-            .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
-            .whereEqualTo("hide_this_product",false)
-            .orderBy("PRODUCT_UPDATE_ON",direction)
-            .get().addOnSuccessListener {
-            val allDocumentSnapshot = it.documents
-            for (item in allDocumentSnapshot){
-                productIdsList.add(item.id)
-            }
-            productAdapter.productIdList = productIdsList
 
-            productlist = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
-            productAdapter.list = productlist
+        Toast.makeText(requireContext(),"my product fired",Toast.LENGTH_SHORT).show()
+
+        var query:Query = if (lastResult == null){
+            firebaseFirestore.collection("PRODUCTS")
+                .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
+                .whereEqualTo("hide_this_product",false)
+                .orderBy("PRODUCT_UPDATE_ON",direction)
+        }else{
+            firebaseFirestore.collection("PRODUCTS")
+                .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
+                .whereEqualTo("hide_this_product",false)
+                .orderBy("PRODUCT_UPDATE_ON",direction)
+                .startAfter(times)
+
+        }
+
+
+        query.limit(7L).get().addOnSuccessListener {
+            val allDocumentSnapshot = it.documents
+
+            if (allDocumentSnapshot.isNotEmpty()){
+
+                isReachLast = allDocumentSnapshot.size != 7
+
+                for (item in allDocumentSnapshot){
+                    productIdsList.add(item.id)
+
+                }
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+
+            }else{
+                isReachLast = true
+
+            }
+
+
+
+            val resultList = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
+            productlist.addAll(resultList)
+
 
             if (productlist.isEmpty()){
                 binding.emptyContainer.visibility = View.VISIBLE
@@ -219,8 +314,98 @@ class MyProductFragment : Fragment() {
             }else{
                 binding.emptyContainer.visibility = View.GONE
                 binding.myProductRecycler.visibility = View.VISIBLE
-                productAdapter.notifyDataSetChanged()
+
+                productAdapter.productIdList = productIdsList
+                productAdapter.list = productlist
+
+                if (lastResult == null ){
+                    productAdapter.notifyItemRangeInserted(0,resultList.size)
+                }else{
+                    productAdapter.notifyItemRangeInserted(productlist.size-1,resultList.size)
+                }
+
                 loadingDialog.dismiss()
+
+                binding.progressBar2.visibility = View.GONE
+            }
+        }.addOnFailureListener {
+            Log.e("MyProducts","${it.message}")
+            binding.progressBar2.visibility = View.GONE
+            loadingDialog.dismiss()
+
+        }
+
+    }
+
+
+
+
+    private fun getOutOfStockProduct(direction:Query.Direction){
+
+
+        Toast.makeText(requireContext(),"OutOfStock fired",Toast.LENGTH_SHORT).show()
+
+        val query:Query = if (lastResult == null){
+            firebaseFirestore.collection("PRODUCTS")
+                .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
+                .whereEqualTo("in_stock_quantity",0L)
+                .orderBy("PRODUCT_UPDATE_ON",direction)
+        }else{
+            firebaseFirestore.collection("PRODUCTS")
+                .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
+                .whereEqualTo("in_stock_quantity",0L)
+                .orderBy("PRODUCT_UPDATE_ON",direction)
+                .startAfter(times)
+
+        }
+
+
+        query.limit(7L).get().addOnSuccessListener {
+            val allDocumentSnapshot = it.documents
+
+
+            if (allDocumentSnapshot.isNotEmpty()){
+
+                isReachLast = allDocumentSnapshot.size != 7 // limit is 7
+
+                for (item in allDocumentSnapshot){
+                    productIdsList.add(item.id)
+
+                }
+
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+
+            }else{
+                isReachLast = true
+
+            }
+
+
+            productAdapter.productIdList = productIdsList
+
+            val resultList = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
+            productlist.addAll(resultList)
+            productAdapter.list = productlist
+
+            if (productlist.isEmpty()){
+                binding.emptyContainer.visibility = View.VISIBLE
+                binding.myProductRecycler.visibility = View.GONE
+                loadingDialog.dismiss()
+            }else{
+
+                binding.emptyContainer.visibility = View.GONE
+                binding.myProductRecycler.visibility = View.VISIBLE
+                if (lastResult == null ){
+                    productAdapter.notifyItemRangeInserted(0,resultList.size)
+                }else{
+                    productAdapter.notifyItemRangeInserted(productlist.size-1,resultList.size)
+                }
+
+                loadingDialog.dismiss()
+
+                binding.progressBar2.visibility = View.GONE
             }
         }.addOnFailureListener {
             Log.e("MyProducts","${it.message}")
@@ -231,107 +416,148 @@ class MyProductFragment : Fragment() {
 
     }
 
-    private fun getOutOfStockProduct(direction:Query.Direction){
-        firebaseFirestore.collection("PRODUCTS")
-            .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
-            .whereEqualTo("in_stock_quantity",0L)
-            .orderBy("PRODUCT_UPDATE_ON",direction)
-            .get().addOnSuccessListener {
-                val allDocumentSnapshot = it.documents
-                for (item in allDocumentSnapshot){
-                    productIdsList.add(item.id)
-                }
-                productAdapter.productIdList = productIdsList
-
-                productlist = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
-                productAdapter.list = productlist
-
-                if (productlist.isEmpty()){
-                    binding.emptyContainer.visibility = View.VISIBLE
-                    binding.myProductRecycler.visibility = View.GONE
-                    loadingDialog.dismiss()
-                }else{
-                    binding.emptyContainer.visibility = View.GONE
-                    binding.myProductRecycler.visibility = View.VISIBLE
-                    productAdapter.notifyDataSetChanged()
-                    loadingDialog.dismiss()
-                }
-            }.addOnFailureListener {
-                Log.e("MyProducts","${it.message}")
-
-                loadingDialog.dismiss()
-
-            }
-
-    }
-
     private fun getLowStockProduct(direction:Query.Direction){
-        firebaseFirestore.collection("PRODUCTS")
-            .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
-            .whereLessThan("in_stock_quantity",5L)
-            .whereGreaterThan("in_stock_quantity",0L)
-            .orderBy("in_stock_quantity")
-            .orderBy("PRODUCT_UPDATE_ON",direction)
-            .get().addOnSuccessListener {
-                val allDocumentSnapshot = it.documents
+        Toast.makeText(requireContext(),"LowStock fired fired",Toast.LENGTH_SHORT).show()
+        val query:Query = if (lastResult == null){
+            firebaseFirestore.collection("PRODUCTS")
+                .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
+                .whereLessThan("in_stock_quantity",5L)
+                .whereGreaterThan("in_stock_quantity",0L)
+                .orderBy("in_stock_quantity")
+                .orderBy("PRODUCT_UPDATE_ON",direction)
+        }else{
+            firebaseFirestore.collection("PRODUCTS")
+                .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
+                .whereLessThan("in_stock_quantity",5L)
+                .whereGreaterThan("in_stock_quantity",0L)
+                .orderBy("in_stock_quantity")
+                .orderBy("PRODUCT_UPDATE_ON",direction)
+                .startAfter(inStockOrder,times)
+
+        }
+
+
+        query.limit(7L).get().addOnSuccessListener {
+            val allDocumentSnapshot = it.documents
+            if (allDocumentSnapshot.isNotEmpty()){
+
+                isReachLast = allDocumentSnapshot.size != 7 // limit is 7
+
                 for (item in allDocumentSnapshot){
                     productIdsList.add(item.id)
+
                 }
-                productAdapter.productIdList = productIdsList
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+                inStockOrder = lastR.getLong("in_stock_quantity")!!
+            }else{
+                isReachLast = true
 
-                productlist = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
-                productAdapter.list = productlist
+            }
 
-                if (productlist.isEmpty()){
-                    binding.emptyContainer.visibility = View.VISIBLE
-                    binding.myProductRecycler.visibility = View.GONE
-                    loadingDialog.dismiss()
+
+            productAdapter.productIdList = productIdsList
+
+            val resultList = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
+            productlist.addAll(resultList)
+            productAdapter.list = productlist
+
+            if (productlist.isEmpty()){
+                binding.emptyContainer.visibility = View.VISIBLE
+                binding.myProductRecycler.visibility = View.GONE
+                loadingDialog.dismiss()
+            }else{
+
+                binding.emptyContainer.visibility = View.GONE
+                binding.myProductRecycler.visibility = View.VISIBLE
+                if (lastResult == null ){
+                    productAdapter.notifyItemRangeInserted(0,resultList.size)
                 }else{
-                    binding.emptyContainer.visibility = View.GONE
-                    binding.myProductRecycler.visibility = View.VISIBLE
-                    productAdapter.notifyDataSetChanged()
-                    loadingDialog.dismiss()
+                    productAdapter.notifyItemRangeInserted(productlist.size-1,resultList.size)
                 }
-            }.addOnFailureListener {
-                Log.e("MyProducts","${it.message}")
 
                 loadingDialog.dismiss()
 
+                binding.progressBar2.visibility = View.GONE
             }
+        }.addOnFailureListener {
+            Log.e("MyProducts","${it.message}")
+
+            loadingDialog.dismiss()
+
+        }
 
     }
 
     private fun getHiddenProduct(direction:Query.Direction){
-        firebaseFirestore.collection("PRODUCTS")
-            .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
-            .whereEqualTo("hide_this_product",true)
-            .orderBy("PRODUCT_UPDATE_ON",direction)
-            .get().addOnSuccessListener {
-                val allDocumentSnapshot = it.documents
+
+        Toast.makeText(requireContext(),"my Hidden fired",Toast.LENGTH_SHORT).show()
+
+        val query:Query = if (lastResult == null){
+            firebaseFirestore.collection("PRODUCTS")
+                .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
+                .whereEqualTo("hide_this_product",true)
+                .orderBy("PRODUCT_UPDATE_ON",direction)
+        }else{
+            firebaseFirestore.collection("PRODUCTS")
+                .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
+                .whereEqualTo("hide_this_product",true)
+                .orderBy("PRODUCT_UPDATE_ON",direction)
+                .startAfter(times)
+
+        }
+
+        query.limit(7L).get().addOnSuccessListener {
+            val allDocumentSnapshot = it.documents
+
+            if (allDocumentSnapshot.isNotEmpty()){
+
+                isReachLast = allDocumentSnapshot.size != 7
+
                 for (item in allDocumentSnapshot){
                     productIdsList.add(item.id)
+
                 }
-                productAdapter.productIdList = productIdsList
+                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
+                lastResult = lastR
+                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
 
-                productlist = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
-                productAdapter.list = productlist
+            }else{
+                isReachLast = true
 
-                if (productlist.isEmpty()){
-                    binding.emptyContainer.visibility = View.VISIBLE
-                    binding.myProductRecycler.visibility = View.GONE
-                    loadingDialog.dismiss()
+            }
+
+
+            productAdapter.productIdList = productIdsList
+            val resultList = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
+            productlist.addAll(resultList)
+            productAdapter.list = productlist
+
+            if (productlist.isEmpty()){
+                binding.emptyContainer.visibility = View.VISIBLE
+                binding.myProductRecycler.visibility = View.GONE
+                loadingDialog.dismiss()
+            }else{
+                binding.emptyContainer.visibility = View.GONE
+                binding.myProductRecycler.visibility = View.VISIBLE
+                if (lastResult == null ){
+                    productAdapter.notifyItemRangeInserted(0,resultList.size)
                 }else{
-                    binding.emptyContainer.visibility = View.GONE
-                    binding.myProductRecycler.visibility = View.VISIBLE
-                    productAdapter.notifyDataSetChanged()
-                    loadingDialog.dismiss()
+                    productAdapter.notifyItemRangeInserted(productlist.size-1,resultList.size)
                 }
-            }.addOnFailureListener {
-                Log.e("MyProducts","${it.message}")
 
                 loadingDialog.dismiss()
 
+                binding.progressBar2.visibility = View.GONE
             }
+
+        }.addOnFailureListener {
+            Log.e("MyProducts","${it.message}")
+
+            loadingDialog.dismiss()
+
+        }
 
     }
 

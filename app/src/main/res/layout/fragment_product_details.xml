@@ -6,12 +6,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.product.ProductDetailsFragment">
 
+    <LinearLayout
+        android:id="@+id/deleted_product_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:src="@drawable/as_bin"
+            android:layout_marginBottom="50dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="This product is deleted"
+            android:textColor="@color/grey_900"
+            android:textSize="17sp"
+            android:gravity="center"/>
+    </LinearLayout>
+
+
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/product_detail_scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="4dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout7"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -24,9 +47,11 @@
             <include
                 android:id="@+id/lay_1"
                 layout="@layout/ar_product_detail_lay_1" />
+
             <include
                 android:id="@+id/lay_2"
                 layout="@layout/ar_product_detail_lay_2" />
+
             <include
                 android:id="@+id/lay_4"
                 layout="@layout/ar_product_detail_lay_4" />
@@ -34,8 +59,6 @@
             <include
                 android:id="@+id/lay_3"
                 layout="@layout/ar_product_detail_lay_3" />
-
-
 
 
             <include

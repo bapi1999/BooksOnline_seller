@@ -1,4 +1,4 @@
-package com.sbdevs.booksonlineseller.fragments
+package com.sbdevs.booksonlineseller.fragments.product
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -37,9 +37,11 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.sbdevs.booksonlineseller.adapters.NewUploadImageAdapter
+import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
+import java.time.Year
 
 
 class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClickListener {
@@ -85,6 +87,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     lateinit var adapterNewUpload: NewUploadImageAdapter
     private var downloadUriList: MutableList<String> = ArrayList()
     private lateinit var docname: String
+    private var currentYear:Int = 0
 
     private val loadingDialog = LoadingDialog()
 
@@ -139,6 +142,9 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         myOwnCategoryText = lay3.myOwnCategoryEditText
         tagInput = lay3.editTags
         stockQuantity = lay2.stockQuantity
+
+
+        currentYear = Year.now().value
 
 
         val productThumbnail: ImageView = binding.lay4.productThumbnail
@@ -571,8 +577,12 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             false
         } else {
             if(uriList.size <3) {
-                binding.lay4.textView44.text = "Select minimum 3 image"
-                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.purple_500)
+                val message =  binding.lay4.textView44
+                message.text = "Select minimum 3 image"
+
+                message.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.red_700))
+
+                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.red_700)
                 false
             }else{
                 selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.purple_500)
@@ -640,8 +650,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             addProductMap["price_original"] = bookPrice.editText!!.text.toString().toLong()
         }
 
-
-
+        addProductMap["number_of_item_sold"] = 0L
 
         addProductMap["book_condition"] = bookConditionRadio?.tag.toString().trim()
         addProductMap["book_type"] = bookStateRadio?.tag.toString().trim()
@@ -686,7 +695,10 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     private fun uploadThumbnail(productID: String) {
         //val mRef: StorageReference = storageReference.child("image/" + user!!.uid + "/").child(getFileName(thumbUri!!))
         val mRef: StorageReference =
-            storageReference.child("image/" + user!!.uid + "/").child(productID+"thumb")
+            storageReference.child("image/" + user!!.uid + "/")
+                .child("$currentYear/")
+                .child("$productID/")
+                .child(productID+"thumb")
 
         mRef.putFile(thumbUri!!)
             .addOnCompleteListener {
@@ -706,10 +718,13 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             }
     }
 
-    private fun uploadProductImage(productID: String) {
+    private suspend fun uploadProductImage(productID: String) {
         for (i in 0 until uriList.size) {
             val allRef: StorageReference =
-                storageReference.child("image/" + user!!.uid + "/").child(nameList[i])
+                storageReference.child("image/" + user!!.uid + "/")
+                    .child("$currentYear/")
+                    .child("$productID/")
+                    .child(nameList[i])
             allRef.putFile(uriList[i])
                 .addOnCompleteListener {
                     allRef.downloadUrl.addOnSuccessListener {

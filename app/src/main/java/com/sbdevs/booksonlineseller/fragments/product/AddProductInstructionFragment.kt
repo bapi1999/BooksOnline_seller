@@ -1,4 +1,4 @@
-package com.sbdevs.booksonlineseller.fragments
+package com.sbdevs.booksonlineseller.fragments.product
 
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +15,7 @@ import kotlin.collections.ArrayList
 import com.google.firebase.storage.ktx.storage
 import com.sbdevs.booksonlineseller.adapters.NewUploadImageAdapter
 import com.sbdevs.booksonlineseller.databinding.FragmentAddProductInstructionBinding
+import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 
 
 class AddProductInstructionFragment : Fragment() {

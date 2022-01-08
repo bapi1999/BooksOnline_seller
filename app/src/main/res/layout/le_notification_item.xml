@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/notification_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@color/grey_50"
+    android:layout_margin="3dp">
 
     <TextView
         android:id="@+id/notification_description"
         android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="10dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         android:ellipsize="end"
         android:gravity="left"
         android:maxLines="3"
         android:text="@string/lorem_ipsum"
         android:textColor="@color/grey_900"
         android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/notification_time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/notification_image"
-        app:layout_constraintTop_toBottomOf="@+id/notification_title"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/notification_image"
@@ -33,46 +34,32 @@
         android:layout_height="60dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:src="@drawable/as_square_placeholder"
+        android:layout_marginBottom="8dp"
+        android:src="@mipmap/ic_launcher_2_round"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/notification_time"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="3 days ago"
-        android:textColor="@color/grey_900"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/notification_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="TextView"
-        android:textColor="@color/grey_900"
-        android:textSize="15sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/notification_image"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:id="@+id/indicator"
-        android:layout_width="0dp"
-        android:layout_height="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/purple_500"
-        app:layout_constraintBottom_toBottomOf="@+id/notification_description"
-        app:layout_constraintEnd_toEndOf="@+id/notification_image"
-        app:layout_constraintStart_toStartOf="@+id/notification_image"
-        app:layout_constraintTop_toBottomOf="@+id/notification_image" />
+        android:layout_marginBottom="4dp"
+        android:text="3 days ago"
+        android:textColor="@color/grey_900"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!--    <View-->
+    <!--        android:id="@+id/indicator"-->
+    <!--        android:layout_width="0dp"-->
+    <!--        android:layout_height="16dp"-->
+    <!--        android:layout_marginEnd="16dp"-->
+    <!--        android:background="@drawable/s_shape_bg_1"-->
+    <!--        android:backgroundTint="@color/purple_500"-->
+    <!--        app:layout_constraintEnd_toEndOf="@+id/notification_image"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        tools:layout_editor_absoluteY="848dp" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>

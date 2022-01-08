@@ -1,5 +1,6 @@
 package com.sbdevs.booksonlineseller.fragments.product
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +19,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.EditProductActivity
 import com.sbdevs.booksonlineseller.adapters.ProductImgAdapter
@@ -37,6 +41,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
+    private val storage = Firebase.storage
 
 
     private val gone = View.GONE
@@ -55,6 +60,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
     private lateinit var enterStockQty:TextInputLayout
     private lateinit var productThumbnail:ImageView
+    private lateinit var thumbnailUrl:String
+    private lateinit var productDeleteWarningDialog : Dialog
 
 
     override fun onCreateView(
@@ -93,11 +100,52 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
         enterStockQty = binding.lay4.enterStockEditText
 
 
+
+
+        productDeleteWarningDialog = Dialog(requireContext())
+        productDeleteWarningDialog.setContentView(R.layout.le_product_delete_warning_dialog)
+        productDeleteWarningDialog.setCancelable(true)
+        productDeleteWarningDialog.window!!.setBackgroundDrawable(AppCompatResources.getDrawable(requireActivity().applicationContext, R.drawable.s_shape_bg_2))
+        productDeleteWarningDialog.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialogFunction(productDeleteWarningDialog)
+
+
+
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun dialogFunction(dialog: Dialog){
+        val cancelBtn:TextView = dialog.findViewById(R.id.no_btn)
+        val yesBtn:TextView = dialog.findViewById(R.id.yes_btn)
+
+
+        cancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        yesBtn.setOnClickListener {
+
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                deleteProduct()
+            }
+
+        }
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.lay4.updateStockBtn.setOnClickListener {
+            loadingDialog.show(childFragmentManager,"show")
+            updateStock()
+        }
+
+        binding.lay4.hideProductBtn.setOnClickListener {
+            hideOrShowProduct(true)
+        }
+        binding.lay4.unHideProductBtn.setOnClickListener {
+            hideOrShowProduct(false)
+        }
 
         binding.editProductBtn.setOnClickListener {
             val editIntent = Intent(requireContext(),EditProductActivity::class.java)
@@ -115,26 +163,18 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
             val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToChangeProductImageFragment(productId)
             findNavController().navigate(action)
         }
-        binding.lay1.changeThumbnailBtn.setOnClickListener {
 
-            val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToChangeProductImageFragment(productId)
-            findNavController().navigate(action)
-        }
-    }
+//        binding.lay1.changeThumbnailBtn.setOnClickListener {
+//
+//            val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToChangeProductImageFragment(productId)
+//            findNavController().navigate(action)
+//        }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.lay4.updateStockBtn.setOnClickListener {
-            loadingDialog.show(childFragmentManager,"show")
-            updateStock()
+
+        binding.deleteProductBtn.setOnClickListener {
+            productDeleteWarningDialog.show()
         }
 
-        binding.lay4.hideProductBtn.setOnClickListener {
-            hideOrShowProduct(true)
-        }
-        binding.lay4.unHideProductBtn.setOnClickListener {
-            hideOrShowProduct(false)
-        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -148,7 +188,10 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
         val layR = binding.layRating
         firebaseFirestore.collection("PRODUCTS").document(productId).get()
             .addOnSuccessListener {
-
+                if (it.exists()) {
+                    binding.deletedProductContainer.visibility = gone
+                    binding.productDetailScroll.visibility = visible
+                    binding.linearLayout7.visibility = visible
 
                     var categoryString = ""
                     var tagsString = ""
@@ -164,8 +207,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     val description = it.getString("book_details")!!
                     val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
                     val tagList: ArrayList<String> = it.get("tags") as ArrayList<String>
-                    val url = it.getString("product_thumbnail").toString()
-                    val hideProduct:Boolean = it.getBoolean("hide_this_product")!!
+                    thumbnailUrl = it.getString("product_thumbnail").toString()
+                    val hideProduct: Boolean = it.getBoolean("hide_this_product")!!
 
                     val bookWriter = it.getString("book_writer")
                     val bookPublisherName = it.getString("book_publisher")
@@ -177,6 +220,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     val isbnNumber = it.getString("book_ISBN")
                     val bookDimension = it.getString("book_dimension")
                     val dimensionArray: List<String> = bookDimension!!.split("x")
+                    productImgList = it.get("productImage_List") as ArrayList<String>
 
                     dbStockQty = stock.toInt()
 
@@ -191,21 +235,22 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
 
                     lay4.stockQuantity.text = stock.toString()
-                    productImgList = it.get("productImage_List") as ArrayList<String>
 
-                    val adapter = ProductImgAdapter(productImgList,this@ProductDetailsFragment)
+
+                    val adapter = ProductImgAdapter(productImgList, this@ProductDetailsFragment)
 
                     productImgViewPager.adapter = adapter
                     binding.lay1.dotsIndicator.setViewPager2(productImgViewPager)
 
                     lay2.productName.text = productName
 
-                    if (hideProduct){
+                    if (hideProduct) {
                         binding.lay4.productHideStatus.text = "Product is hidden to user"
                         lay4.unHideProductBtn.visibility = visible
                         lay4.hideProductBtn.visibility = gone
-                    }else{
-                        binding.lay4.productHideStatus.text = "this product is visible to user" // getString(R.string.product_is_visible_to_user)
+                    } else {
+                        binding.lay4.productHideStatus.text =
+                            "this product is visible to user" // getString(R.string.product_is_visible_to_user)
                         lay4.unHideProductBtn.visibility = gone
                         lay4.hideProductBtn.visibility = visible
                     }
@@ -227,9 +272,13 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     }
 
                     //Glide.with(requireContext()).load(url).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
-                    Picasso.get().load(url).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
+                    Picasso.get().load(thumbnailUrl).placeholder(R.drawable.as_square_placeholder)
+                        .into(productThumbnail)
                     productThumbnail.setOnClickListener {
-                        val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductImageZoomFragment(url)
+                        val action =
+                            ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductImageZoomFragment(
+                                thumbnailUrl
+                            )
                         findNavController().navigate(action)
                     }
 
@@ -263,9 +312,9 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     lay5.bookLanguage.text = bookLanguage
 
 
-                    if (bookPrintDate == 0L){
+                    if (bookPrintDate == 0L) {
                         lay5.printDate.text = "Not available"
-                    }else{
+                    } else {
                         lay5.printDate.text = bookPrintDate.toString()
                     }
 
@@ -288,12 +337,17 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                         ratingtxt.text = (it.get("rating_Star_" + (5 - x)).toString())
                         val progressBar: ProgressBar =
                             layR.ratingBarContainter.getChildAt(x) as ProgressBar
-                        val maxProgress: Int =  totalRating //it.getLong("rating_total")!!.toInt()
+                        val maxProgress: Int = totalRating //it.getLong("rating_total")!!.toInt()
                         progressBar.max = maxProgress
                         val perccing: String = it.get("rating_Star_" + (5 - x)).toString()
                         val progress = Integer.valueOf(perccing)
                         progressBar.progress = progress
                     }
+                }else{
+                    binding.deletedProductContainer.visibility = visible
+                    binding.productDetailScroll.visibility = gone
+                    binding.linearLayout7.visibility = gone
+                }
 
             }.addOnFailureListener {
                 Log.e("Product","${it.message}",it.cause)
@@ -376,11 +430,41 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
     }
 
+
     private fun hideOrShowProduct(condition:Boolean){
         val map:MutableMap<String,Any> = HashMap()
         map["hide_this_product"] = condition
         firebaseFirestore.collection("PRODUCTS").document(productId)
             .update(map).addOnSuccessListener {}
+
+    }
+
+    private suspend fun deleteProduct(){
+        for (item in productImgList){
+            val ref: StorageReference = storage.getReferenceFromUrl(item)
+            ref.delete().addOnSuccessListener {
+                Log.w("delete","$item deleted")
+            }.addOnFailureListener {
+                Log.w("delete","failed")
+            }.await()
+        }
+
+        val thumbRef:StorageReference = storage.getReferenceFromUrl(thumbnailUrl)
+        thumbRef.delete().await()
+
+        firebaseFirestore.collection("PRODUCTS").document(productId).delete()
+            .addOnSuccessListener {
+
+                binding.deletedProductContainer.visibility = visible
+                binding.productDetailScroll.visibility = gone
+                binding.linearLayout7.visibility = gone
+
+            }
+            .addOnFailureListener {
+                Toast.makeText(requireContext(),"Failed to delete: ${it.message}",Toast.LENGTH_LONG).show()
+            }
+            .await()
+
 
     }
 

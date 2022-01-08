@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/s_dialog_bg">
 
 
@@ -139,7 +139,7 @@
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/apply_btn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
@@ -147,6 +147,7 @@
         android:background="@drawable/s_shape_bg_1"
         android:backgroundTint="@color/blueLink"
         android:text="@string/apply"
+        android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="15sp"
         android:textStyle="bold"

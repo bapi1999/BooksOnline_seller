@@ -37,12 +37,13 @@ import com.sbdevs.booksonlineseller.databinding.FragmentChangeProductImageBindin
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
+import java.time.Year
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemClickListener
-    ,AlreadyUploadedImageAdapter.AlreadyAddedImageClickListener {
-    private var _binding:FragmentChangeProductImageBinding? =null
+class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemClickListener,
+    AlreadyUploadedImageAdapter.AlreadyAddedImageClickListener {
+    private var _binding: FragmentChangeProductImageBinding? = null
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
@@ -52,16 +53,19 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
 
     private lateinit var productThumbnail: ImageView
 
-    private var productImgList:ArrayList<String> = ArrayList()
-    private var alreadyAddedAdapter: AlreadyUploadedImageAdapter = AlreadyUploadedImageAdapter(productImgList,this)
+    private var productImgList: ArrayList<String> = ArrayList()
+    private var alreadyAddedAdapter: AlreadyUploadedImageAdapter =
+        AlreadyUploadedImageAdapter(productImgList, this)
     private lateinit var alreadyAddedImgRecyclerView: RecyclerView
 
     private lateinit var newAddedAdapter: NewUploadImageAdapter
     private lateinit var newAddedImgRecyclerView: RecyclerView
 
+    private var deleteedImageList: ArrayList<String> = ArrayList()
+
     private val loadingDialog = LoadingDialog()
 
-    private lateinit var updateMessageText:TextView
+    private lateinit var updateMessageText: TextView
 
     var thumbUri: Uri? = null
     private var fileUri: Uri? = null
@@ -71,50 +75,57 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
     private var downloadUriList: MutableList<String> = ArrayList()
 
     private lateinit var productId: String
-    private val args:ChangeProductImageFragmentArgs by navArgs()
+    private var currentYear:Int = 0
+    private val args: ChangeProductImageFragmentArgs by navArgs()
     private var changeInPosition = false
 
-    private val simpleCallback1 = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.START or ItemTouchHelper.END,0){
-        override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
-            val fromPosition = viewHolder.adapterPosition
-            val toPosition = target.adapterPosition
-            Collections.swap(productImgList,fromPosition,toPosition)
+    private val simpleCallback1 =
+        object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.START or ItemTouchHelper.END, 0) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = viewHolder.adapterPosition
+                val toPosition = target.adapterPosition
+                Collections.swap(productImgList, fromPosition, toPosition)
 
-            alreadyAddedAdapter.notifyItemMoved(fromPosition,toPosition)
+                alreadyAddedAdapter.notifyItemMoved(fromPosition, toPosition)
 
-            changeInPosition = true
+                changeInPosition = true
 
-            return false
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                //TODO("Not yet implemented")
+            }
         }
 
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            //TODO("Not yet implemented")
+    private val simpleCallback2 =
+        object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.START or ItemTouchHelper.END, 0) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = viewHolder.adapterPosition
+                val toPosition = target.adapterPosition
+                Collections.swap(uriList, fromPosition, toPosition)
+
+                newAddedAdapter.notifyItemMoved(fromPosition, toPosition)
+
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                //TODO("Not yet implemented")
+            }
         }
-    }
 
-    private val simpleCallback2 = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.START or ItemTouchHelper.END,0){
-        override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
-            val fromPosition = viewHolder.adapterPosition
-            val toPosition = target.adapterPosition
-            Collections.swap(uriList,fromPosition,toPosition)
 
-            newAddedAdapter.notifyItemMoved(fromPosition,toPosition)
 
-            return false
-        }
 
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            //TODO("Not yet implemented")
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -142,12 +153,13 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
             }
         }
 
+        currentYear = Year.now().value
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
 
         val startForThumbnail =
@@ -160,17 +172,23 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
                         //Image Uri will not be null for RESULT_OK
                         thumbUri = data?.data!!
 
-                        Glide.with(this).load(thumbUri).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
+                        Glide.with(this).load(thumbUri)
+                            .placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
 
                         loadingDialog.dismiss()
                     }
                     ImagePicker.RESULT_ERROR -> {
-                        Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            ImagePicker.getError(data),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
                         loadingDialog.dismiss()
                     }
                     else -> {
-                        Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT)
+                            .show()
                         loadingDialog.dismiss()
 
                     }
@@ -195,7 +213,11 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
 //                        Glide.with(this).load(fileUri).placeholder(R.drawable.as_square_placeholder).into(image)
                     }
                     ImagePicker.RESULT_ERROR -> {
-                        Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            ImagePicker.getError(data),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
                         loadingDialog.dismiss()
                     }
@@ -209,7 +231,7 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
             }
 
 
-        productThumbnail.setOnClickListener {
+        binding.lay4.selectThumbnail.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
                 .compress(100)
@@ -242,12 +264,12 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
 
 
         binding.lay4.updateImageBtn.setOnClickListener {
-            loadingDialog.show(childFragmentManager,"Show")
+            loadingDialog.show(childFragmentManager, "Show")
             verificationForProductImage(it)
         }
 
         binding.lay4.updatdeThumnailBtn.setOnClickListener {
-            loadingDialog.show(childFragmentManager,"Show")
+            loadingDialog.show(childFragmentManager, "Show")
             verificationForThumbnail(it)
         }
     }
@@ -297,7 +319,8 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
             false
         } else {
 
-            selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_200)
+            selectBtn.backgroundTintList =
+                AppCompatResources.getColorStateList(requireContext(), R.color.grey_200)
             true
 
         }
@@ -305,7 +328,7 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
 
     //todo - flag to check whether or not user swipd the position of items or select a new image
 
-    private fun checkThumbnail():Boolean {
+    private fun checkThumbnail(): Boolean {
         return if (thumbUri == null) {
             loadingDialog.dismiss()
             binding.lay4.errorMessageText.visibility = View.VISIBLE
@@ -321,7 +344,7 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
     }
 
     private fun verificationForThumbnail(v: View?) {
-        if ( !checkThumbnail() ) {
+        if (!checkThumbnail()) {
             loadingDialog.dismiss()
             Snackbar.make(v!!, "Thumbnail is not changed", Snackbar.LENGTH_SHORT).show()
             return
@@ -338,14 +361,15 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
 
 
     private fun verificationForProductImage(v: View?) {
-        if ( !checkProductImage()) {
+        if (!checkProductImage()) {
             loadingDialog.dismiss()
-            Log.w("clicked","nothing happened")
+            Log.w("clicked", "nothing happened")
             //Snackbar.make(v!!, "Fill all fields", Snackbar.LENGTH_SHORT).show()
             return
         } else {
             viewLifecycleOwner.lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
+                    deleteImage()
                     when {
                         changeInPosition and uriList.isNotEmpty() -> {
                             uploadProductImage(productId)
@@ -361,7 +385,7 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
                         }
                         else -> {
 //                            Snackbar.make(v!!, "nothing change", Snackbar.LENGTH_SHORT).show()
-                            Log.w("clicked","nothing happened")
+                            Log.w("clicked", "nothing happened")
                         }
                     }
                 }
@@ -371,10 +395,12 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
     }
 
 
-
-    private fun uploadThumbnail(productID: String) {
+    private suspend fun uploadThumbnail(productID: String) {
         val mRef: StorageReference =
-            storageReference.child("image/" + user!!.uid + "/").child(productID+"thumb")
+            storageReference.child("image/" + user!!.uid + "/")
+                .child("$currentYear/")
+                .child("$productID/")
+                .child(productID + "thumb")
         mRef.putFile(thumbUri!!)
             .addOnCompleteListener {
                 mRef.downloadUrl.addOnSuccessListener {
@@ -384,14 +410,14 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
                         .update(uploadThumbMap)
                         .addOnSuccessListener {
                             Log.i("Update Product Thumbnail", "Successfully updated")
-                            Toast.makeText(requireContext(),"Thumbnail updated successfully",Toast.LENGTH_LONG).show()
-                            updateMessageText.text  = getString(R.string.updated_successfully)
-                            updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(),R.color.indigo_500))
+                            Toast.makeText(requireContext(), "Thumbnail updated successfully", Toast.LENGTH_LONG).show()
+                            updateMessageText.text = getString(R.string.updated_successfully)
+                            updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.indigo_500))
                             loadingDialog.dismiss()
                         }.addOnFailureListener { e ->
                             Log.e("get Product Thumbnail url", "${e.message}")
-                            updateMessageText.text  = getString(R.string.failed_to_update)
-                            updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(),R.color.red_500))
+                            updateMessageText.text = getString(R.string.failed_to_update)
+                            updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.red_500))
                             loadingDialog.dismiss()
                         }
                 }.addOnFailureListener {
@@ -400,10 +426,13 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
             }
     }
 
-    private fun uploadProductImage(productID: String) {
+    private suspend fun uploadProductImage(productID: String) {
         for (i in 0 until uriList.size) {
             val allRef: StorageReference =
-                storageReference.child("image/" + user!!.uid + "/").child(nameList[i])
+                storageReference.child("image/" + user!!.uid + "/")
+                    .child("$currentYear/")
+                    .child("$productID/")
+                    .child(nameList[i])
             allRef.putFile(uriList[i])
                 .addOnCompleteListener {
                     allRef.downloadUrl.addOnSuccessListener {
@@ -422,67 +451,111 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
                     }
                 }.addOnFailureListener {
                     Log.e("Upload Product Image", "${it.message}")
-                }
+                }.await()
         }
 
     }
 
 
-    private fun updateProductImageLIST(productID: String, uriList: MutableList<String>) = CoroutineScope(Dispatchers.IO).launch {
+    private fun updateProductImageLIST(productID: String, urlList: MutableList<String>) =
+        CoroutineScope(Dispatchers.IO).launch {
 
-        productImgList.addAll(uriList)
 
+            productImgList.addAll(urlList)
+            changeInPosition = false
 
-        val allMap: MutableMap<String, Any> = HashMap()
-        allMap["productImage_List"] = productImgList
+            val allMap: MutableMap<String, Any> = HashMap()
+            allMap["productImage_List"] = productImgList
 
-        firebaseFirestore.collection("PRODUCTS").document(productID).update(allMap)
-            .addOnSuccessListener {
-                Log.i("Update Product Image", "Updated successfully")
-                Toast.makeText(requireContext(), "Updated successfully", Toast.LENGTH_LONG).show()
-                updateMessageText.text  = getString(R.string.updated_successfully)
-                updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(),R.color.indigo_500))
-                loadingDialog.dismiss()
-            }.addOnFailureListener {
-                Log.e("Update Product Image", "${it.message}")
-                updateMessageText.text  = getString(R.string.failed_to_update)
-                updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(),R.color.red_500))
-                loadingDialog.dismiss()
-            }.await()
-        delay(500)
-        withContext(Dispatchers.Main){
+            firebaseFirestore.collection("PRODUCTS").document(productID).update(allMap)
+                .addOnSuccessListener {
+                    Log.i("Update Product Image", "Updated successfully")
+                    Toast.makeText(requireContext(), "Updated successfully", Toast.LENGTH_LONG)
+                        .show()
+                    updateMessageText.text = getString(R.string.updated_successfully)
+                    updateMessageText.setTextColor(
+                        AppCompatResources.getColorStateList(
+                            requireContext(),
+                            R.color.indigo_500
+                        )
+                    )
 
+                    uriList.clear()
+                    newAddedAdapter.notifyDataSetChanged()
+
+                    alreadyAddedAdapter.notifyDataSetChanged()
+
+                    loadingDialog.dismiss()
+                }.addOnFailureListener {
+                    Log.e("Update Product Image", "${it.message}")
+                    updateMessageText.text = getString(R.string.failed_to_update)
+                    updateMessageText.setTextColor(
+                        AppCompatResources.getColorStateList(
+                            requireContext(),
+                            R.color.red_500
+                        )
+                    )
+                    loadingDialog.dismiss()
+                }.await()
+            delay(500)
+            withContext(Dispatchers.Main) {
+
+            }
         }
-    }
 
-    private fun updateChangeInPosition(productID:String){
+    private fun updateChangeInPosition(productID: String) {
 
         val allMap: MutableMap<String, Any> = HashMap()
         allMap["productImage_List"] = productImgList
+
+        changeInPosition = false
 
         firebaseFirestore.collection("PRODUCTS").document(productID).update(allMap)
             .addOnSuccessListener {
                 Log.i("Update Product Image", "updated successfully")
 
                 Toast.makeText(requireContext(), "Updated successfully", Toast.LENGTH_LONG).show()
-                updateMessageText.text  = getString(R.string.updated_successfully)
-                updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(),R.color.indigo_500))
+                updateMessageText.text = getString(R.string.updated_successfully)
+                updateMessageText.setTextColor(
+                    AppCompatResources.getColorStateList(
+                        requireContext(),
+                        R.color.indigo_500
+                    )
+                )
                 loadingDialog.dismiss()
+
+                deleteedImageList.clear()
 
             }.addOnFailureListener {
                 Log.e("Update Product Image", "${it.message}")
 
-                Toast.makeText(requireContext(),"Failed to update",Toast.LENGTH_LONG).show()
-                updateMessageText.text  = getString(R.string.failed_to_update)
-                updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(),R.color.red_500))
+                Toast.makeText(requireContext(), "Failed to update", Toast.LENGTH_LONG).show()
+                updateMessageText.text = getString(R.string.failed_to_update)
+                updateMessageText.setTextColor(
+                    AppCompatResources.getColorStateList(
+                        requireContext(),
+                        R.color.red_500
+                    )
+                )
                 loadingDialog.dismiss()
             }
     }
 
     override fun onImageClick(position: Int) {
+
+        deleteedImageList.add(productImgList[position])
+        updateMessageText.text = "Update images before continue"
+        updateMessageText.setTextColor(
+            AppCompatResources.getColorStateList(
+                requireContext(),
+                R.color.amber_900
+            )
+        )
         changeInPosition = true
         productImgList.removeAt(position)
         alreadyAddedAdapter.notifyItemRemoved(position)
+
+
 
     }
 
@@ -517,5 +590,29 @@ class ChangeProductImageFragment : Fragment() , NewUploadImageAdapter.MyOnItemCl
         return result as String
     }
 
+    private fun clearUri(){
+        uriList.clear()
+        newAddedAdapter.notifyDataSetChanged()
+    }
+
+
+    private suspend fun deleteImage() {
+        if (deleteedImageList.isNotEmpty()) {
+
+            for (item in deleteedImageList) {
+
+                val ref: StorageReference = storage.getReferenceFromUrl(item)
+                ref.delete().addOnSuccessListener {
+                    Log.w("delete","$item deleted")
+                }.addOnFailureListener {
+                    Log.w("delete","failed")
+                }.await()
+            }
+        }else{
+            Log.w("delete list","list is empty")
+        }
+
+
+    }
 
 }

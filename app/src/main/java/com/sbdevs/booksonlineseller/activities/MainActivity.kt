@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -67,18 +68,8 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch(Dispatchers.Main) {
 
-            withContext(Dispatchers.IO){
-                firebaseFirestore.collection("USERS")
-                    .document(user!!.uid)
-                    .collection("SELLER_DATA")
-                    .document("SELLER_DATA").
-                    get().addOnSuccessListener {
-                        timeStamp = it.getTimestamp("new_notification")!!
-                        getNotificationForOptionMenu(timeStamp,notificationBadgeText)
-                    }.addOnFailureListener {
-                        Log.e("get Notification time","${it.message}")
-                    }.await()
-            }
+            getTimeStamp()
+
             withContext(Dispatchers.IO){
                 getNewOrder()
 
@@ -180,6 +171,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateNotificationForOptionMenu() {
+        Toast.makeText(this,"time updated",Toast.LENGTH_LONG).show()
+        Log.e("click","auto clicked")
         if (user!= null){
             val ref = firebaseFirestore.collection("USERS")
                 .document(user.uid)
@@ -192,6 +185,19 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private suspend fun getTimeStamp(){
+        firebaseFirestore.collection("USERS")
+            .document(user!!.uid)
+            .collection("SELLER_DATA")
+            .document("SELLER_DATA")
+            .get().addOnSuccessListener {
+                timeStamp = it.getTimestamp("new_notification")!!
+                getNotificationForOptionMenu(timeStamp,notificationBadgeText)
+            }.addOnFailureListener {
+                Log.e("get Notification time","${it.message}")
+            }.await()
     }
 
     private fun getNewOrder(){

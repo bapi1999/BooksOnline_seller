@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:background="@color/grey_100"
-        android:text="Change product image"
+        android:text="Change product image and thumbnail"
         android:textAllCaps="false"
         android:textColor="@color/indigo_500"
 
@@ -80,10 +80,11 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="24dp"
         android:background="@color/grey_100"
-        android:text="Change Thumbnail"
+        android:text="Change product image and thumbnail"
         android:textAllCaps="false"
         android:textColor="@color/indigo_500"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/productThumbnail"
         app:layout_constraintTop_toTopOf="@+id/productThumbnail" />

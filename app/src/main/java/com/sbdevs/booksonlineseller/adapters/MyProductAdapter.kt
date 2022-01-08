@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sbdevs.booksonlineseller.R
@@ -41,7 +42,9 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
         var ratingTotalTxt: TextView = itemView.findViewById(R.id.mini_totalNumberOf_ratings)
         var miniRatingTxt: TextView = itemView.findViewById(R.id.mini_product_rating)
         var bookSateTxt: TextView = itemView.findViewById(R.id.product_state)
-        var updatedTimeText: TextView = itemView.findViewById(R.id.updated_time_text)
+        private var updatedTimeText: TextView = itemView.findViewById(R.id.updated_time_text)
+        var stockText: TextView = itemView.findViewById(R.id.product_stock)
+
 
         fun bind(productId:String,item:MyProductModel){
 
@@ -61,10 +64,29 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
             val priceSelling = item.price_selling
             miniRatingTxt.text = item.rating_avg
             ratingTotalTxt.text = "( ${item.rating_total} ratings )"
+            val stock = item.in_stock_quantity
+
+
+            when {
+                stock > 5 -> {
+                    stockText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_900))
+                }
+                stock in 1..5 -> {
+                    stockText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.amber_900))
+                }
+                stock == 0L -> {
+                    stockText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.red_700))
+                }
+                else -> {
+                    stockText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_900))
+
+                }
+            }
 
             if (priceOriginal == 0L){
                 productPrice.text = priceSelling.toString()
-                priceOff.text = "Buy Now"
+                priceOff.text = "No offer Available"
+                priceOff.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_500))
                 productRealPrice.visibility = View.GONE
 
             }else{
