@@ -165,12 +165,12 @@ class AddBusinessDetailsFragment : Fragment() {
 
         autoCompleteType = binding.businessDetails.autoCompleteType
         val addressTypeList = resources.getStringArray(R.array.business_type)
-        val typeAdapter = ArrayAdapter(context!!, R.layout.le_dropdown_item, addressTypeList)
+        val typeAdapter = ArrayAdapter(requireContext(), R.layout.le_dropdown_item, addressTypeList)
         autoCompleteType.setAdapter(typeAdapter)
 
         autoCompleteState = binding.businessDetails.autoCompleteState
         val stateList = resources.getStringArray(R.array.india_states)
-        val sateAdapter = ArrayAdapter(context!!, R.layout.le_dropdown_item, stateList)
+        val sateAdapter = ArrayAdapter(requireContext(), R.layout.le_dropdown_item, stateList)
         autoCompleteState.setAdapter(sateAdapter)
 
 

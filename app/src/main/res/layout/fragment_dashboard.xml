@@ -18,6 +18,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@color/red_700"
+                android:visibility="gone"
                 >
                 <TextView
                     android:id="@+id/verification_status_text"
@@ -30,8 +31,9 @@
                     />
             </LinearLayout>
 
-            <include android:id="@+id/layOrder"
-                layout="@layout/ar_dashboard_lay_order"/>
+            <include
+                android:id="@+id/layOrder"
+                layout="@layout/ar_dashboard_lay_order" />
 
         </LinearLayout>
     </ScrollView>

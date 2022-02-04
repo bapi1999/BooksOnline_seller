@@ -8,28 +8,48 @@
     android:background="@color/white"
     android:elevation="3dp">
 
-    <TextView
-        android:id="@+id/textView53"
+    <LinearLayout
+        android:id="@+id/stock_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Stock quantity:"
-        android:textSize="16sp"
+        android:gravity="center"
+        android:background="@drawable/s_shape_bg_2"
+        android:backgroundTint="@color/teal_700"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/textView53"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stock quantity: "
+            android:textSize="14sp"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/stock_quantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="0"
-        android:textColor="@color/grey_900"
-        android:textSize="17sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/textView53"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/stock_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           android:layout_marginEnd="10dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="0"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/textView53"
+            app:layout_constraintTop_toTopOf="parent" />
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:id="@+id/linearLayout18"
@@ -38,19 +58,17 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:gravity="top"
-        android:orientation="horizontal"
+        android:gravity="end"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView53">
+        app:layout_constraintTop_toBottomOf="@+id/stock_container">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/enter_stock_editText"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_weight="1"
             app:errorEnabled="false"
             tools:layout_editor_absoluteX="1dp">
 
@@ -64,11 +82,11 @@
         <Button
             android:id="@+id/update_stock_btn"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:backgroundTint="@color/indigo_900"
             android:text="Update stock"
-            android:textAllCaps="false"
-            android:textStyle="bold" />
+            android:textSize="12sp"
+            android:textAllCaps="false" />
     </LinearLayout>
 
     <View
@@ -102,9 +120,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:orientation="vertical"
+        android:gravity="end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,17 +131,19 @@
 
         <Button
             android:id="@+id/hide_product_btn"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Hide this product"
+            android:textSize="12sp"
             android:textAllCaps="false"
             android:visibility="visible" />
 
         <Button
             android:id="@+id/un_hide_product_btn"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Show this product"
+            android:textSize="12sp"
             android:textAllCaps="false"
             android:visibility="gone" />
     </LinearLayout>

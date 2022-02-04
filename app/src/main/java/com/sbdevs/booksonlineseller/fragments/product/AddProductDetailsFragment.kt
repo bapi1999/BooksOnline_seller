@@ -890,7 +890,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         return docBuilder.toString().replace(".", "_").replace("-", "_").replace(":", "_")
     }
 
-    override fun onItemClick(position: Int) {
+    override fun onNewImageDeleteClick(position: Int) {
         uriList.removeAt(position)
         nameList.removeAt(position)
         adapterNewUpload.notifyItemRemoved(position)

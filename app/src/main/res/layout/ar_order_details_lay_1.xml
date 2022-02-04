@@ -11,9 +11,9 @@
 
     <ImageView
         android:id="@+id/product_image"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -30,75 +30,89 @@
         android:layout_marginEnd="8dp"
 
         android:ellipsize="end"
+        android:maxLines="2"
         android:gravity="left"
         android:text="@string/product_name"
         android:textColor="@color/grey_900"
-        android:textSize="17sp"
+        android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/price_txt"
+    <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:drawablePadding="5dp"
-        android:text="000"
-        android:textColor="@color/grey_900"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:drawableStartCompat="@drawable/ic_rupee_24"
-        app:drawableTint="@color/black"
+        android:layout_marginTop="3dp"
         app:layout_constraintStart_toEndOf="@+id/product_image"
-        app:layout_constraintTop_toBottomOf="@+id/title_txt" />
+        app:layout_constraintTop_toBottomOf="@+id/title_txt" >
 
-    <TextView
-        android:id="@+id/textView59"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Quantity:"
-        android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/product_image"
-        app:layout_constraintTop_toBottomOf="@+id/price_txt" />
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_rupee_24"
+            app:drawableTint="@color/black"
+            app:tint="@color/black"/>
+        <TextView
+            android:id="@+id/price_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="000"
+            android:textColor="@color/grey_900"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/product_quantity"
+
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="3dp"
-        android:text="0"
-        android:textColor="@color/grey_900"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/textView59"
-        app:layout_constraintStart_toEndOf="@+id/textView59" />
+        android:orientation="horizontal"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="3dp"
+        android:gravity="center"
+        app:layout_constraintStart_toEndOf="@+id/product_image"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <TextView
+            android:id="@+id/textView59"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quantity:"
+            android:textSize="17sp"
+             />
+
+        <TextView
+            android:id="@+id/product_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:text="0"
+            android:textColor="@color/grey_900"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
 
 
-
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
         android:id="@+id/view_product_btn"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/purple_500"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/viewAll"
         android:text="View Product"
         android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="17sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/product_image" />
 
 

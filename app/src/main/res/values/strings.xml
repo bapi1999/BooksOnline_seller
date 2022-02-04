@@ -13,7 +13,6 @@
     <string name="lorem_ipsum">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release333 of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum</string>
     <string name="view_all">View All</string>
     <string name="seller">Seller:</string>
-    <string name="book_stall">Techno world book center</string>
     <string name="fake_address">23 bidon street, near mShop, walington, kolkata</string>
     <string name="phone">9876543210</string>
     <string name="search_hint">Search here…</string>
@@ -59,6 +58,21 @@
     <string name="i_agree_to_the_terms_of_service">I agree to the Terms of Service and Privacy Policy</string>
     <string name="updated_successfully">Updated successfully</string>
     <string name="failed_to_update">Failed to update</string>
+    <string name="order_warning_1">Unable to fetch buyer address.Please reject/cancel this order.</string>
+
+    <string name="order_cancel_reasons_1"> </string>
+    <string name="order_cancel_reasons_2"> </string>
+    <string name="order_cancel_reasons_3"> </string>
+    <string name="order_cancel_reasons_4"> </string>
+    <string name="order_cancel_reasons_5"> </string>
+
+    <string-array name="order_cancel_reasons">
+        <item>Reason 1</item>
+        <item>Reason 2</item>
+        <item>Reason 3</item>
+        <item>Reason 4</item>
+        <item>Reason 5</item>
+    </string-array>
 
     <string-array name="business_type">
         <item>Self</item>
@@ -109,6 +123,6 @@
     <!--    .backgroundTintList = ContextCompat.getColorStateList(context!!, R.color.red)      -->
     <!--    @Suppress("UNCHECKED_CAST")-->
     <!--    myText.setTextColor(AppCompatResources.getColorStateList(this, R.color.xxx))-->
-    <!--    order details is not complete as auto delivered status update is needed to verify returned method-->
+    <!--    ORDER DETAILS ACTIVITY is still incomplete. without shipping api, button and methods cant be tested-->
 
 </resources>

@@ -40,7 +40,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/my_product_recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
                     android:layout_weight="1"/>
                 <ProgressBar
                     android:id="@+id/progressBar2"
@@ -70,8 +70,8 @@
         android:src="@drawable/ic_add_24"
         app:fabSize="mini"
         app:borderWidth="2dp"
-        app:backgroundTint="@color/white"
-        android:backgroundTint="@color/indigo_500"
+
+        app:backgroundTint="@color/indigo_500"
         app:layout_constraintBottom_toBottomOf="@+id/filter_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:pressedTranslationZ="12dp" />

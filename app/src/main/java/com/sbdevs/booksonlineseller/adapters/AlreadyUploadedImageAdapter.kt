@@ -13,7 +13,7 @@ class AlreadyUploadedImageAdapter (var list:ArrayList<String>, val listener:Alre
     RecyclerView.Adapter<AlreadyUploadedImageAdapter.ViewHolder>() {
 
     interface AlreadyAddedImageClickListener{
-        fun onImageClick(position: Int)
+        fun onOldImageDeleteClick(position: Int)
     }
 
     inner class ViewHolder (itemView: View):RecyclerView.ViewHolder(itemView) {
@@ -23,7 +23,7 @@ class AlreadyUploadedImageAdapter (var list:ArrayList<String>, val listener:Alre
         fun bind(url:String){
 
             deleteImageBtn.setOnClickListener {
-                listener.onImageClick(adapterPosition)
+                listener.onOldImageDeleteClick(adapterPosition)
             }
 
             Glide.with(itemView.context).load(url)

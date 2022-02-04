@@ -165,7 +165,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical|start"
-                    android:text="something is wrong with this order. Please reject/cancel this order"
+                    android:text="@string/order_warning_1"
                     android:textColor="@color/white"
                     android:textSize="15sp"
                     android:layout_margin="10dp"
@@ -184,11 +184,10 @@
                 android:layout_marginTop="8dp"
                 android:orientation="vertical">
 
+
                 <include
                     android:id="@+id/lay_1"
                     layout="@layout/ar_order_details_lay_1" />
-
-
 
                 <LinearLayout
                     android:id="@+id/order_address_container"
@@ -204,7 +203,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/order_track_container"
+                    android:id="@+id/downloads_label_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -212,7 +211,20 @@
 
                     <include
                         android:id="@+id/lay_3"
-                        layout="@layout/ar_order_details_lay_3_1" />
+                        layout="@layout/ar_order_details_lay_3" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/order_track_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <include
+                        android:id="@+id/lay_4"
+                        layout="@layout/ar_order_details_lay_4" />
                 </LinearLayout>
 
             </LinearLayout>

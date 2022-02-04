@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.navigation.findNavController
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.ActivityProductBinding
+import com.sbdevs.booksonlineseller.fragments.order.OrdersFragment
+import com.sbdevs.booksonlineseller.fragments.product.ProductDetailsFragment
 
 class ProductActivity : AppCompatActivity() {
     private lateinit var binding:ActivityProductBinding
@@ -13,8 +15,8 @@ class ProductActivity : AppCompatActivity() {
         binding = ActivityProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navController = findNavController(R.id.product_host_fragment)
-        navController.setGraph(R.navigation.product_navigation,intent.extras)
+        val productFragment = ProductDetailsFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.product_host_fragment,productFragment).commit()
 
 
     }

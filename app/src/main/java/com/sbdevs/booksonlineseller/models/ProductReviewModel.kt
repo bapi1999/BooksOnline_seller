@@ -7,7 +7,7 @@ import java.util.*
 data class ProductReviewModel(
     val buyer_ID: String = "",
     val buyer_name: String = "",
-    val rating: Int = -1,
+    val rating: Long = -1,
     val review: String ="",
     @ServerTimestamp
     val review_Date: Date? = null

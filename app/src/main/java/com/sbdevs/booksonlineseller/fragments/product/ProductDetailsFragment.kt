@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +29,7 @@ import com.sbdevs.booksonlineseller.adapters.ProductReviewAdapter
 import com.sbdevs.booksonlineseller.models.ProductReviewModel
 import com.sbdevs.booksonlineseller.databinding.FragmentProductDetailsBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
+import com.sbdevs.booksonlineseller.fragments.order.OtherOrdersFragment
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,6 +64,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
     private lateinit var productThumbnail:ImageView
     private lateinit var thumbnailUrl:String
     private lateinit var productDeleteWarningDialog : Dialog
+    private lateinit var stockContainer:LinearLayout
 
 
     override fun onCreateView(
@@ -99,6 +102,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
         enterStockQty = binding.lay4.enterStockEditText
 
+        stockContainer = binding.lay4.stockContainer
+
 
 
 
@@ -127,6 +132,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                 deleteProduct()
+                dialog.dismiss()
+                loadingDialog.show(childFragmentManager,"shoe")
             }
 
         }
@@ -154,21 +161,38 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
         }
 
         binding.layRating.viewAllButton.setOnClickListener {
-            val action =
-                ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductReviewFragment()
-            findNavController().navigate(action)
+
+            val productReviewFragment = ProductReviewFragment()
+            val args = Bundle()
+            args.putString("productID",productId)
+            productReviewFragment.arguments = args
+
+            val fragmentManager =
+                parentFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    add(R.id.product_host_fragment,productReviewFragment)
+                    addToBackStack("review")
+                }
         }
 
         binding.lay1.changeProductImageBtn.setOnClickListener {
-            val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToChangeProductImageFragment(productId)
-            findNavController().navigate(action)
-        }
+            val changeProductImageFragment = ChangeProductImageFragment()
 
-//        binding.lay1.changeThumbnailBtn.setOnClickListener {
-//
-//            val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToChangeProductImageFragment(productId)
-//            findNavController().navigate(action)
-//        }
+
+            val args = Bundle()
+            args.putStringArrayList("image_list",productImgList)
+            args.putString("thumbUrl",thumbnailUrl)
+
+            changeProductImageFragment.arguments = args
+
+
+            val fragmentManager =
+                parentFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    add(R.id.product_host_fragment,changeProductImageFragment)
+                    addToBackStack("change_image")
+                }
+        }
 
 
         binding.deleteProductBtn.setOnClickListener {
@@ -237,7 +261,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     lay4.stockQuantity.text = stock.toString()
 
 
-                    val adapter = ProductImgAdapter(productImgList, this@ProductDetailsFragment)
+                    val adapter = ProductImgAdapter(productImgList,this@ProductDetailsFragment)
 
                     productImgViewPager.adapter = adapter
                     binding.lay1.dotsIndicator.setViewPager2(productImgViewPager)
@@ -272,15 +296,9 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     }
 
                     //Glide.with(requireContext()).load(url).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
-                    Picasso.get().load(thumbnailUrl).placeholder(R.drawable.as_square_placeholder)
+                    Picasso.get().load(thumbnailUrl)
+                        .placeholder(R.drawable.as_square_placeholder)
                         .into(productThumbnail)
-                    productThumbnail.setOnClickListener {
-                        val action =
-                            ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductImageZoomFragment(
-                                thumbnailUrl
-                            )
-                        findNavController().navigate(action)
-                    }
 
                     lay2.productState.text = bookType
                     lay2.miniProductRating.text = avgRating
@@ -288,16 +306,16 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
                     when {
                         stock > 5 -> {
-                            lay2.stockState.visibility = gone
+                            stockContainer.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.indigo_700)
                         }
                         stock in 1..5 -> {
-                            lay2.stockState.text = "low"
+                            stockContainer.backgroundTintList =AppCompatResources.getColorStateList(requireContext(),R.color.amber_900)
                         }
                         stock == 0L -> {
-                            lay2.stockState.text = "out of stock"
+                            stockContainer.backgroundTintList =AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
                         }
                         else -> {
-                            lay2.stockState.visibility = gone
+                            stockContainer.backgroundTintList =AppCompatResources.getColorStateList(requireContext(),R.color.indigo_700)
 
                         }
                     }
@@ -355,9 +373,12 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
     }
 
     private fun getReview(productID: String) = CoroutineScope(Dispatchers.IO).launch {
-        firebaseFirestore.collection("PRODUCTS").document(productID)
+        firebaseFirestore.collection("PRODUCTS")
+            .document(productID)
             .collection("PRODUCT_REVIEW")
-            .orderBy("review_Date", Query.Direction.DESCENDING).limit(7)
+            .whereEqualTo("is_review_available",true)
+            .orderBy("rating",Query.Direction.DESCENDING)
+            .orderBy("review_Date", Query.Direction.DESCENDING).limit(5)
             .get().addOnSuccessListener {
                 reviewList = it.toObjects(ProductReviewModel::class.java)
                 reviewAdapter.list = reviewList
@@ -370,10 +391,12 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
     }
 
-    override fun onItemClicked(position: Int, url: String) {
-        val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductImageZoomFragment(url)
-        findNavController().navigate(action)
-    }
+
+
+//    override fun onItemClicked(position: Int, url: String) {
+//        val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToProductImageZoomFragment(url)
+//        findNavController().navigate(action)
+//    }
 
     private fun checkEnterStockQuantity(): Boolean {
         val input: String = enterStockQty.editText?.text.toString()
@@ -397,18 +420,16 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
             when {
                 stock > 5 -> {
-                    binding.lay2.stockState.visibility = gone
+                    stockContainer.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.indigo_700)
                 }
                 stock in 1..5 -> {
-                    binding.lay2.stockState.visibility = visible
-                    binding.lay2.stockState.text = "low"
+                    stockContainer.backgroundTintList =AppCompatResources.getColorStateList(requireContext(),R.color.amber_900)
                 }
                 stock == 0L -> {
-                    binding.lay2.stockState.visibility = visible
-                    binding.lay2.stockState.text = "out of stock"
+                    stockContainer.backgroundTintList =AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
                 }
                 else -> {
-                    binding.lay2.stockState.visibility = gone
+                    stockContainer.backgroundTintList =AppCompatResources.getColorStateList(requireContext(),R.color.indigo_700)
 
                 }
             }
@@ -458,14 +479,31 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                 binding.deletedProductContainer.visibility = visible
                 binding.productDetailScroll.visibility = gone
                 binding.linearLayout7.visibility = gone
+                loadingDialog.dismiss()
 
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(),"Failed to delete: ${it.message}",Toast.LENGTH_LONG).show()
+                loadingDialog.dismiss()
             }
             .await()
 
 
+    }
+
+    override fun onItemClick(position: Int, url: String) {
+        val productImageFragment = ProductImageZoomFragment()
+        val args = Bundle()
+        args.putStringArrayList("image_list",productImgList)
+
+        productImageFragment.arguments = args
+
+        parentFragmentManager.commit {
+            setReorderingAllowed(true)
+            add(R.id.product_host_fragment,productImageFragment)
+
+            addToBackStack("imageView")
+        }
     }
 
 }

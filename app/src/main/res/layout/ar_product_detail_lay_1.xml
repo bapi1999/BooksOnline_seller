@@ -25,8 +25,8 @@
         android:layout_marginTop="8dp"
         app:dotsColor="@color/grey_300"
         app:dotsCornerRadius="8dp"
-        app:dotsSize="13dp"
-        app:dotsSpacing="4dp"
+        app:dotsSize="9dp"
+        app:dotsSpacing="3dp"
         app:dotsWidthFactor="2.5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,20 +34,20 @@
         app:progressMode="true"
         app:selectedDotColor="@color/teal_200" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
         android:id="@+id/changeProductImageBtn"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:background="@color/grey_100"
-        android:text="Change product image and thumbnail"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="Change image and thumbnail"
         android:textAllCaps="false"
-        android:textColor="@color/indigo_500"
-
-        android:textStyle="bold"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/product_Img_viewPager" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/productThumbnail" />
 
     <ImageView
         android:id="@+id/productThumbnail"
@@ -66,28 +66,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:text="Product Thumbnail"
         android:textColor="@color/grey_700"
         android:textSize="15sp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/changeProductImageBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/dots_indicator" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/changeThumbnailBtn"
-        android:layout_width="0dp"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/shareFabButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="24dp"
-        android:background="@color/grey_100"
-        android:text="Change product image and thumbnail"
-        android:textAllCaps="false"
-        android:textColor="@color/indigo_500"
-        android:textStyle="bold"
-        android:visibility="gone"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        app:backgroundTint="@color/grey_200"
+        app:fabSize="mini"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/productThumbnail"
-        app:layout_constraintTop_toTopOf="@+id/productThumbnail" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_share_24"
+        app:tint="@color/grey_600"
+        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

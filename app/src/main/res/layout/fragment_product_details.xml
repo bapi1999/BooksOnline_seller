@@ -6,6 +6,44 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.product.ProductDetailsFragment">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/Theme.BooksOnlineSeller"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_gravity="end"
+            android:background="@color/purple_500"
+            app:contentInsetStartWithNavigation="0dp"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/Theme.BooksOnlineSeller">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/books_online_seller_logo"
+                app:tint="@color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
     <LinearLayout
         android:id="@+id/deleted_product_container"
         android:layout_width="match_parent"
@@ -37,7 +75,7 @@
         app:layout_constraintBottom_toTopOf="@+id/linearLayout7"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -91,6 +129,7 @@
         android:elevation="5dp"
         android:visibility="visible"
         android:orientation="horizontal"
+        android:layout_marginTop="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -103,8 +142,7 @@
             android:background="@color/white"
             android:text="Delete"
             android:textAllCaps="false"
-            android:textSize="17sp"
-            android:textStyle="bold" />
+            android:textSize="17sp" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/edit_product_btn"
@@ -115,8 +153,7 @@
             android:text="Edit"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="17sp"
-            android:textStyle="bold" />
+            android:textSize="17sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -18,7 +18,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -54,8 +53,7 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
     private lateinit var productThumbnail: ImageView
 
     private var productImgList: ArrayList<String> = ArrayList()
-    private var alreadyAddedAdapter: AlreadyUploadedImageAdapter =
-        AlreadyUploadedImageAdapter(productImgList, this)
+    private lateinit var alreadyAddedAdapter: AlreadyUploadedImageAdapter
     private lateinit var alreadyAddedImgRecyclerView: RecyclerView
 
     private lateinit var newAddedAdapter: NewUploadImageAdapter
@@ -76,7 +74,7 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
 
     private lateinit var productId: String
     private var currentYear:Int = 0
-    private val args: ChangeProductImageFragmentArgs by navArgs()
+
     private var changeInPosition = false
 
     private val simpleCallback1 =
@@ -136,22 +134,38 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
         alreadyAddedImgRecyclerView = binding.lay4.alreadyUploadImageRecycler
         newAddedImgRecyclerView = binding.lay4.newUploadImageRecycler
 
-        productId = args.productId
         productThumbnail = binding.lay4.productThumbnail
         updateMessageText = binding.updateMessage
+
+        alreadyAddedImgRecyclerView.layoutManager = LinearLayoutManager(
+            requireContext(),
+            LinearLayoutManager.HORIZONTAL, false
+        )
 
         newAddedImgRecyclerView.layoutManager = LinearLayoutManager(
             requireContext(),
             LinearLayoutManager.HORIZONTAL, false
         )
+
         newAddedAdapter = NewUploadImageAdapter(uriList, this)
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            loadingDialog.show(childFragmentManager, "Show")
-            withContext(Dispatchers.IO) {
-                getProductData(productId)
-            }
+
+
+        productImgList = arguments?.getStringArrayList("image_list") as ArrayList<String>
+
+        alreadyAddedAdapter = AlreadyUploadedImageAdapter(productImgList,this)
+
+        alreadyAddedImgRecyclerView.adapter = alreadyAddedAdapter
+        val itemTouchHelper = ItemTouchHelper(simpleCallback1)
+        itemTouchHelper.attachToRecyclerView(alreadyAddedImgRecyclerView)
+
+
+        val url = arguments?.getString("thumbUrl")
+        url?.let {
+            Glide.with(requireContext()).load(url).into(productThumbnail)
         }
+
+
 
         currentYear = Year.now().value
 
@@ -275,40 +289,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
     }
 
 
-    @Suppress("UNCHECKED_CAST")
-    private fun getProductData(productId: String) = CoroutineScope(Dispatchers.IO).launch {
-
-        firebaseFirestore.collection("PRODUCTS")
-            .document(productId).get()
-            .addOnSuccessListener {
-
-
-                val url = it.get("product_thumbnail").toString()
-
-                Glide.with(requireContext()).load(url).into(productThumbnail)
-
-                productImgList = it.get("productImage_List") as ArrayList<String>
-
-
-                alreadyAddedAdapter.list = productImgList
-                alreadyAddedImgRecyclerView.adapter = alreadyAddedAdapter
-                alreadyAddedAdapter.notifyDataSetChanged()
-
-                val itemTouchHelper = ItemTouchHelper(simpleCallback1)
-                itemTouchHelper.attachToRecyclerView(alreadyAddedImgRecyclerView)
-
-
-                loadingDialog.dismiss()
-
-
-            }.addOnFailureListener {
-                Log.e("Product", "${it.message}", it.cause)
-
-                loadingDialog.dismiss()
-
-            }.await()
-    }
-
     private fun checkProductImage(): Boolean {
         val selectBtn = binding.lay4.selectImageBtn
         return if (uriList.isEmpty() and productImgList.isEmpty()) {
@@ -317,11 +297,21 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
 
             selectBtn.requestFocus()
             false
+
         } else {
 
-            selectBtn.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.grey_200)
-            true
+            if ((uriList.size + productImgList.size)>3){
+                selectBtn.backgroundTintList =
+                    AppCompatResources.getColorStateList(requireContext(), R.color.grey_200)
+                true
+            }else{
+                selectBtn.backgroundTintList =
+                    AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+                selectBtn.requestFocus()
+                false
+            }
+
+
 
         }
     }
@@ -376,7 +366,7 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
                             //Snackbar.make(v!!, "both happen", Snackbar.LENGTH_SHORT).show()
                         }
                         changeInPosition and uriList.isEmpty() -> {
-                            updateChangeInPosition(productId)
+                            updateImagePosition(productId)
                             //Snackbar.make(v!!, "change position", Snackbar.LENGTH_SHORT).show()
                         }
                         !changeInPosition and uriList.isNotEmpty() -> {
@@ -426,21 +416,27 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
             }
     }
 
+
+
     private suspend fun uploadProductImage(productID: String) {
+
         for (i in 0 until uriList.size) {
             val allRef: StorageReference =
                 storageReference.child("image/" + user!!.uid + "/")
                     .child("$currentYear/")
                     .child("$productID/")
                     .child(nameList[i])
+
             allRef.putFile(uriList[i])
                 .addOnCompleteListener {
                     allRef.downloadUrl.addOnSuccessListener {
                         downloadUriList.add(it.toString())
                         when (i) {
                             (uriList.size - 1) -> {
-                                //binding.lay4.textView44.text = "${uriList.size} and ${downloadUriList.size} and itaretion $i"
-                                updateProductImageLIST(productID, downloadUriList)
+                                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                                    updateProductImage(productID, downloadUriList)
+                                }
+
                             }
                             else -> {
                                 Log.i("list size", "not reached the last position")
@@ -457,9 +453,7 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
     }
 
 
-    private fun updateProductImageLIST(productID: String, urlList: MutableList<String>) =
-        CoroutineScope(Dispatchers.IO).launch {
-
+    private suspend fun updateProductImage(productID: String, urlList: MutableList<String>){
 
             productImgList.addAll(urlList)
             changeInPosition = false
@@ -482,35 +476,27 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
 
                     uriList.clear()
                     newAddedAdapter.notifyDataSetChanged()
-
                     alreadyAddedAdapter.notifyDataSetChanged()
 
                     loadingDialog.dismiss()
                 }.addOnFailureListener {
                     Log.e("Update Product Image", "${it.message}")
                     updateMessageText.text = getString(R.string.failed_to_update)
-                    updateMessageText.setTextColor(
-                        AppCompatResources.getColorStateList(
-                            requireContext(),
-                            R.color.red_500
-                        )
-                    )
+                    updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.red_500))
                     loadingDialog.dismiss()
                 }.await()
-            delay(500)
-            withContext(Dispatchers.Main) {
-
-            }
         }
 
-    private fun updateChangeInPosition(productID: String) {
+
+    private fun updateImagePosition(productID: String) {
 
         val allMap: MutableMap<String, Any> = HashMap()
         allMap["productImage_List"] = productImgList
 
         changeInPosition = false
 
-        firebaseFirestore.collection("PRODUCTS").document(productID).update(allMap)
+        firebaseFirestore.collection("PRODUCTS")
+            .document(productID).update(allMap)
             .addOnSuccessListener {
                 Log.i("Update Product Image", "updated successfully")
 
@@ -523,7 +509,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
                     )
                 )
                 loadingDialog.dismiss()
-
                 deleteedImageList.clear()
 
             }.addOnFailureListener {
@@ -541,25 +526,17 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
             }
     }
 
-    override fun onImageClick(position: Int) {
-
+    override fun onOldImageDeleteClick(position: Int) {
         deleteedImageList.add(productImgList[position])
-        updateMessageText.text = "Update images before continue"
-        updateMessageText.setTextColor(
-            AppCompatResources.getColorStateList(
-                requireContext(),
-                R.color.amber_900
-            )
-        )
+//        updateMessageText.text = "Update images before continue"
+//        updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.amber_900))
         changeInPosition = true
         productImgList.removeAt(position)
         alreadyAddedAdapter.notifyItemRemoved(position)
-
-
-
     }
 
-    override fun onItemClick(position: Int) {
+
+    override fun onNewImageDeleteClick(position: Int) {
         uriList.removeAt(position)
         nameList.removeAt(position)
         newAddedAdapter.notifyItemRemoved(position)
@@ -600,7 +577,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
         if (deleteedImageList.isNotEmpty()) {
 
             for (item in deleteedImageList) {
-
                 val ref: StorageReference = storage.getReferenceFromUrl(item)
                 ref.delete().addOnSuccessListener {
                     Log.w("delete","$item deleted")

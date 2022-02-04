@@ -1,30 +1,26 @@
 package com.sbdevs.booksonlineseller.adapters
 
 import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.view.View
-import android.widget.ImageView
+import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.Glide
-import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.request.RequestOptions
+import com.ortiz.touchview.TouchImageView
 import com.sbdevs.booksonlineseller.R
 
+class ProductZoomImageAdapter(var productImgList: ArrayList<String>) :
+    RecyclerView.Adapter<ProductZoomImageAdapter.ViewHolder>() {
 
-class ProductImgAdapter(var productImgList: ArrayList<String>,val listener: MyOnItemClickListener) :
-    RecyclerView.Adapter<ProductImgAdapter.ViewHolder>() {
-
-    interface MyOnItemClickListener{
-        fun onItemClick(position: Int,url:String)
-    }
-
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_product_image_item,parent,false)
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ):ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_image_zoom_item,parent,false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder:ViewHolder, position: Int) {
         holder.bind(productImgList[position])
     }
 
@@ -32,14 +28,11 @@ class ProductImgAdapter(var productImgList: ArrayList<String>,val listener: MyOn
         return productImgList.size
     }
 
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val productImg:ImageView = itemView.findViewById(R.id.product_image)
+        private val productImg: TouchImageView = itemView.findViewById(R.id.touch_image)
 
         fun bind(url:String) {
-
-            itemView.setOnClickListener {
-                listener.onItemClick(adapterPosition,url)
-            }
 
             Glide.with(itemView.context).load(url)
                 .apply(RequestOptions().placeholder(R.drawable.as_square_placeholder))
@@ -53,5 +46,4 @@ class ProductImgAdapter(var productImgList: ArrayList<String>,val listener: MyOn
         }
 
     }
-
 }

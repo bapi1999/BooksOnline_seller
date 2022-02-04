@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/group1">
+        <item
+            android:id="@+id/allProductsFragment"
+            android:icon="@drawable/ic_round_widgets_24"
+            android:title="All products" />
+
+        <item
+            android:id="@+id/addProducts"
+            android:icon="@drawable/ic_baseline_add_box_24"
+            android:title="Add new products" />
 
 
-    <group >
+        <item
+            android:id="@+id/earningFragment"
+            android:icon="@drawable/ic_baseline_payments_24"
+            android:title="Earnings" />
+
+    </group>
+
+    <group android:id="@+id/group2">
 
         <item
             android:id="@+id/myAccountFragment"
@@ -30,28 +47,21 @@
             android:title="Ads service" />
 
 
-
     </group>
-    <group>
 
-        <item android:id="@+id/policy"
-            android:title="Policies">
-            <menu>
-                <item
-                    android:id="@+id/termCondition"
-                    android:icon="@drawable/ic_baseline_description_24"
-                    android:title="@string/terms_condition" />
-                <item
-                    android:id="@+id/privacy_policy"
-                    android:icon="@drawable/ic_baseline_privacy_tip_24"
-                    android:title="Privacy Policy" />
-                <item
-                    android:id="@+id/help"
-                    android:icon="@drawable/ic_help_24"
-                    android:title="Help" />
-            </menu>
-        </item>
-
+    <group android:id="@+id/group3">
+        <item
+            android:id="@+id/termCondition"
+            android:icon="@drawable/ic_baseline_description_24"
+            android:title="@string/terms_condition" />
+        <item
+            android:id="@+id/privacy_policy"
+            android:icon="@drawable/ic_baseline_privacy_tip_24"
+            android:title="Privacy Policy" />
+        <item
+            android:id="@+id/help"
+            android:icon="@drawable/ic_help_24"
+            android:title="Help" />
     </group>
 
 </menu>

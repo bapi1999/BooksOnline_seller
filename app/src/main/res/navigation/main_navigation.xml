@@ -3,51 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/dashboardFragment">
-    <fragment
-        android:id="@+id/dashboardFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" >
-        <action
-            android:id="@+id/action_dashboardFragment_to_ordersFragment"
-            app:destination="@id/ordersFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/ordersFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.OrdersFragment"
-        android:label="@string/orders"
-        tools:layout="@layout/fragment_orders" >
-        <argument
-            android:name="orderStatus"
-            app:argType="string"
-            app:nullable="true"
-            android:defaultValue="new" />
-    </fragment>
+    app:startDestination="@id/tab_orders">
 
-    <fragment
-        android:id="@+id/notificationsFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+<!--    <fragment-->
+<!--        android:id="@+id/myProductFragment"-->
+<!--        android:name="com.sbdevs.booksonlineseller.fragments.MyProductFragment"-->
+<!--        android:label="My Products"-->
+<!--        tools:layout="@layout/fragment_my_product" />-->
+<!--    <fragment-->
+<!--        android:id="@+id/myEarningFragment"-->
+<!--        android:name="com.sbdevs.booksonlineseller.fragments.MyEarningFragment"-->
+<!--        android:label="Earning"-->
+<!--        tools:layout="@layout/fragment_my_earning" >-->
+<!--        <action-->
+<!--            android:id="@+id/action_myEarningFragment_to_withdrawalFragment"-->
+<!--            app:destination="@id/withdrawalFragment" />-->
+<!--    </fragment>-->
+<!--    <fragment-->
+<!--        android:id="@+id/withdrawalFragment"-->
+<!--        android:name="com.sbdevs.booksonlineseller.fragments.WithdrawalFragment"-->
+<!--        android:label="fragment_withdrawal"-->
+<!--        tools:layout="@layout/fragment_withdrawal" />-->
 
-    <fragment
-        android:id="@+id/myProductFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.MyProductFragment"
-        android:label="My Products"
-        tools:layout="@layout/fragment_my_product" />
-    <fragment
-        android:id="@+id/myEarningFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.MyEarningFragment"
-        android:label="Earning"
-        tools:layout="@layout/fragment_my_earning" >
-        <action
-            android:id="@+id/action_myEarningFragment_to_withdrawalFragment"
-            app:destination="@id/withdrawalFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/withdrawalFragment"
-        android:name="com.sbdevs.booksonlineseller.fragments.WithdrawalFragment"
-        android:label="fragment_withdrawal"
-        tools:layout="@layout/fragment_withdrawal" />
+<!--    <include app:graph="@navigation/tab_orders" />-->
 </navigation>

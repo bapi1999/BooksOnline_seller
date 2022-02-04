@@ -66,6 +66,14 @@
                 android:text="Biography" />
 
             <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip3_1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="biology"
+                android:text="Biology" />
+
+            <com.google.android.material.chip.Chip
                 android:id="@+id/categoryChip4"
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
@@ -80,6 +88,18 @@
                 android:layout_height="wrap_content"
                 android:tag="career"
                 android:text="Career" />
+
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip4_2"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="chemistry"
+                android:text="Chemistry" />
+
+
+
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/categoryChip5"
@@ -96,6 +116,15 @@
                 android:layout_height="wrap_content"
                 android:tag="comics"
                 android:text="Comics" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip6_1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="competitive"
+                android:text="Competitive" />
+
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/categoryChip7"
@@ -177,6 +206,18 @@
                 android:tag="general knowledge"
                 android:text="General knowledge" />
 
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip16_1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="geography"
+                android:text="Geography" />
+
+
+
+
             <com.google.android.material.chip.Chip
                 android:id="@+id/categoryChip17"
                 style="@style/CustomChipStyle"
@@ -192,6 +233,18 @@
                 android:layout_height="wrap_content"
                 android:tag="history"
                 android:text="History" />
+
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip18_1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="jee"
+                android:text="JEE" />
+
+
+
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/categoryChip19"
@@ -246,8 +299,18 @@
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:tag="medicine"
-                android:text="Medicine" />
+                android:tag="Medical"
+                android:text="medical" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip25_1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="neet"
+                android:text="NEET" />
+
+
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/categoryChip26"
@@ -264,6 +327,24 @@
                 android:layout_height="wrap_content"
                 android:tag="personality"
                 android:text="Personality" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip27_1"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="pharmacy"
+                android:text="Pharmacy" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/categoryChip27_2"
+                style="@style/CustomChipStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tag="physics"
+                android:text="Physics" />
+
+
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/categoryChip28"

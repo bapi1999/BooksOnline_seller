@@ -12,9 +12,11 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
@@ -28,6 +30,8 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
+import com.sbdevs.booksonlineseller.fragments.NotificationsFragment
+import com.sbdevs.booksonlineseller.fragments.order.OrdersFragment
 import com.sbdevs.booksonlineseller.models.DashboardCountModel
 import com.sbdevs.booksonlineseller.models.MyProductModel
 import com.sbdevs.booksonlineseller.models.NotificationModel
@@ -50,7 +54,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationBadgeText: TextView
     var productlist: ArrayList<MyProductModel> = ArrayList()
     private lateinit var newOrder :String
-    private lateinit var orderBadge: BadgeDrawable
     private val fragmentViewModel:MainViewModel by viewModels()
     private lateinit var timeStamp: Timestamp
     private var notificationList:List<NotificationModel> = ArrayList()
@@ -58,7 +61,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -66,76 +68,71 @@ class MainActivity : AppCompatActivity() {
 
         loadingDialog.show(supportFragmentManager,"show")
 
+
         lifecycleScope.launch(Dispatchers.Main) {
-
             getTimeStamp()
-
-            withContext(Dispatchers.IO){
-                getNewOrder()
-
-            }
+            delay(1000)
 
             withContext(Dispatchers.Main){
-                delay(1000)
+
                 loadingDialog.dismiss()
             }
         }
+        val orderFragment = OrdersFragment()
 
-        val navView: BottomNavigationView = binding.navView
-
-        navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.dashboardFragment, R.id.ordersFragment,R.id.myProductFragment,R.id.myEarningFragment
-            )
-        )
-        setSupportActionBar(binding.toolbar)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        navView.setupWithNavController(navController)
+        supportFragmentManager.beginTransaction().replace(R.id.main_frame_layout,orderFragment).commit()
 
 
-        orderBadge = navView.getOrCreateBadge(R.id.ordersFragment)
-        orderBadge.backgroundColor = Color.BLUE
-        orderBadge.badgeTextColor = Color.WHITE
-        orderBadge.maxCharacterCount = 3
-//        orderBadge.isVisible = true
+        //val navView: BottomNavigationView = binding.navView
+//        val navHostFragment = supportFragmentManager.findFragmentById(
+//            R.id.nav_host_fragment_activity_main
+//        ) as NavHostFragment
+//
+//        navController = navHostFragment.navController // findNavController(R.id.nav_host_fragment_activity_main)
+//
+//        val appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                 R.id.ordersFragment2,R.id.myProductFragment2,R.id.myEarningFragment
+//            )
+//        )
+//        setSupportActionBar(binding.toolbar)
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+
+        //navView.setupWithNavController(navController)
+
 
     }
+
+
+
+
+
 
     override fun onStart() {
         super.onStart()
        //getNotificationForOptionMenu()
 
         binding.layNotify.notificationContainer.setOnClickListener {
+
             updateNotificationForOptionMenu()
             notificationBadgeText.visibility = View.GONE
-            //navController.navigateUp() // to clear previous navigation history
-            navController.navigate(R.id.notificationsFragment)
+
+            val notificationsFragment = NotificationsFragment()
+            val fragmentManager = supportFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    add(R.id.main_frame_layout,notificationsFragment)
+                    addToBackStack("imageView")
+                }
+
         }
-    }
 
-
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_option_menu, menu)
-
-        return true
-    }
-
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.profileMenuFragment) {
+        binding.menuBtn.setOnClickListener {
             val menuIntent = Intent(this,MenuActivity::class.java)
-            //menuIntent.putExtra("newOrder",)
             startActivity(menuIntent)
+            overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right)
         }
-
-        return super.onOptionsItemSelected(item)
-
     }
+
 
     private fun getNotificationForOptionMenu(timeStamp1:Timestamp,textView: TextView) {
 
@@ -199,71 +196,5 @@ class MainActivity : AppCompatActivity() {
                 Log.e("get Notification time","${it.message}")
             }.await()
     }
-
-    private fun getNewOrder(){
-        firebaseFirestore.collection("USERS")
-            .document(user!!.uid)
-            .collection("SELLER_DATA")
-            .document("SELLER_DATA")
-            .collection("ORDERS")
-            .whereEqualTo("status","new")
-            .orderBy("Time_ordered")
-            .get()
-            .addOnSuccessListener{
-
-                productlist = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
-                newOrder = productlist.size.toString()
-
-                if (productlist.size == 0){
-                    orderBadge.isVisible = false
-                }else{
-                    orderBadge.number = productlist.size
-                    orderBadge.isVisible = true
-                }
-                fragmentViewModel.setNewOrder(newOrder)
-
-            }.addOnFailureListener {
-                Log.e("New order snapshot","${it.message}")
-                fragmentViewModel.setNewOrder("0")
-                orderBadge.isVisible = false
-            }
-
-    }
-
-
-//    private fun getNewOrder(){
-//        firebaseFirestore.collection("USERS")
-//            .document(user!!.uid)
-//            .collection("SELLER_DATA")
-//            .document("SELLER_DATA")
-//            .collection("ORDERS")
-//            .whereEqualTo("status","new")
-//            .orderBy("Time_ordered")
-//            .addSnapshotListener { value, error ->
-//            error?.let {
-//                Log.e("New order snapshot","${it.message}")
-//                fragmentViewModel.setData("0")
-//                orderBadge.isVisible = false
-//                return@addSnapshotListener
-//            }
-//            value?.let {
-//
-//
-//                productlist = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
-//                newOrder = productlist.size.toString()
-//
-//                if (productlist.size == 0){
-//                    orderBadge.isVisible = false
-//                }else{
-//                    orderBadge.number = productlist.size
-//                    orderBadge.isVisible = true
-//                }
-//                fragmentViewModel.setData(newOrder)
-//
-//            }
-//        }
-//
-//    }
-
 
 }

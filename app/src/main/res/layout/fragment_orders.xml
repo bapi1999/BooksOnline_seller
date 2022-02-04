@@ -5,17 +5,95 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.OrdersFragment">
+    tools:context=".fragments.order.OrdersFragment">
+
+
+    <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/white"
+            app:layout_scrollFlags="scroll|enterAlways"
+            android:layout_gravity="end"
+            app:contentInsetStart="8dp"
+            android:elevation="4dp"
+            app:popupTheme="@style/Theme.BooksOnlineSeller"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+
+                <RadioGroup
+                    android:id="@+id/order_type_radio_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radioButton1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:checked="true"
+                        android:layout_marginEnd="8dp"
+                        android:button="@android:color/transparent"
+                        android:background="@drawable/radio_btn_selector"
+                        android:textColor="@color/radio_text_color"
+                        android:text="New(0)" />
+
+                    <RadioButton
+                        android:id="@+id/radioButton2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:layout_marginEnd="8dp"
+                        android:button="@android:color/transparent"
+                        android:background="@drawable/radio_btn_selector"
+                        android:textColor="@color/radio_text_color"
+                        android:text="Accepted(0)" />
+
+                    <RadioButton
+                        android:id="@+id/radioButton3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:layout_marginEnd="8dp"
+                        android:button="@android:color/transparent"
+                        android:background="@drawable/radio_btn_selector"
+                        android:textColor="@color/radio_text_color"
+                        android:text="Packed(0)" />
+                </RadioGroup>
+
+                <ImageButton
+                    android:id="@+id/other_order_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:src="@drawable/ic_baseline_drag_indicator_24"/>
+            </LinearLayout>
+
+
+        </androidx.appcompat.widget.Toolbar>
 
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="3dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,101 +109,47 @@
                 <include layout="@layout/le_empty_layout" />
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/order_recycler"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/order_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    tools:listitem="@layout/le_order_item" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar2"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:indeterminateTint="@color/splash"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+
         </LinearLayout>
 
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-
-    <HorizontalScrollView
-        android:id="@+id/horizontalScrollView"
+    <TextView
+        android:id="@+id/textView90"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:elevation="4dp"
         android:background="@color/white"
+        android:text="TextView"
+        android:textSize="14sp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-
-            android:orientation="vertical">
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/type_chipGroup"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView61"
-                app:checkedChip="@+id/type_chip1"
-                app:singleSelection="true">
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/type_chip1"
-                    style="@style/CustomChipStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="new"
-
-                    android:text="New" />
-
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/type_chip2"
-                    style="@style/CustomChipStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="accepted"
-                    android:text="Accepted" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/type_chip3"
-                    style="@style/CustomChipStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="packed"
-                    android:text="Packed" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/type_chip4"
-                    style="@style/CustomChipStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="shipped"
-                    android:text="Shipped" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/type_chip5"
-                    style="@style/CustomChipStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="delivered"
-                    android:text="Delivered" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/type_chip6"
-                    style="@style/CustomChipStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="returned"
-                    android:text="Returned" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/type_chip7"
-                    style="@style/CustomChipStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:tag="canceled"
-                    android:text="Canceled" />
-
-            </com.google.android.material.chip.ChipGroup>
-        </LinearLayout>
-    </HorizontalScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
@@ -35,15 +36,16 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
     class ViewHolder (itemView: View):RecyclerView.ViewHolder(itemView) {
 
         private val productImage : ImageView = itemView.findViewById(R.id.product_image)
+        private val outOFStockImage : ImageView = itemView.findViewById(R.id.out_of_stock_image)
         private val productName: TextView = itemView.findViewById(R.id.product_name)
         private val productPrice:TextView = itemView.findViewById(R.id.product_price)
         private val productRealPrice:TextView = itemView.findViewById(R.id.product_real_price)
         private val priceOff:TextView = itemView.findViewById(R.id.percent_off)
         var ratingTotalTxt: TextView = itemView.findViewById(R.id.mini_totalNumberOf_ratings)
         var miniRatingTxt: TextView = itemView.findViewById(R.id.mini_product_rating)
-        var bookSateTxt: TextView = itemView.findViewById(R.id.product_state)
         private var updatedTimeText: TextView = itemView.findViewById(R.id.updated_time_text)
         var stockText: TextView = itemView.findViewById(R.id.product_stock)
+        private val stockContainer:LinearLayout = itemView.findViewById(R.id.stock_container)
 
 
         fun bind(productId:String,item:MyProductModel){
@@ -66,19 +68,23 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
             ratingTotalTxt.text = "( ${item.rating_total} ratings )"
             val stock = item.in_stock_quantity
 
+            stockText.text = stock.toString()
 
             when {
                 stock > 5 -> {
-                    stockText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_900))
+                    stockContainer.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.indigo_700)
+                    outOFStockImage.visibility = View.GONE
                 }
                 stock in 1..5 -> {
-                    stockText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.amber_900))
+                    stockContainer.backgroundTintList =AppCompatResources.getColorStateList(itemView.context,R.color.amber_900)
+                    outOFStockImage.visibility = View.GONE
                 }
                 stock == 0L -> {
-                    stockText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.red_700))
+                    stockContainer.backgroundTintList =AppCompatResources.getColorStateList(itemView.context,R.color.red_700)
+                    outOFStockImage.visibility = View.VISIBLE
                 }
                 else -> {
-                    stockText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_900))
+                    stockContainer.backgroundTintList =AppCompatResources.getColorStateList(itemView.context,R.color.indigo_700)
 
                 }
             }
@@ -94,7 +100,7 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
 
                 productPrice.text = priceSelling.toString()
                 productRealPrice.text = priceOriginal.toString()
-                priceOff.text = "${percent}% off"
+                priceOff.text = "${percent}% Off"
 
             }
 

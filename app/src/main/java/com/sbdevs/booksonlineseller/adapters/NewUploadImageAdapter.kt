@@ -13,7 +13,7 @@ import com.sbdevs.booksonlineseller.R
 class NewUploadImageAdapter(var list:ArrayList<Uri>, val listener: MyOnItemClickListener):RecyclerView.Adapter<NewUploadImageAdapter.ViewHolder>() {
 
     interface MyOnItemClickListener{
-        fun onItemClick(position: Int)
+        fun onNewImageDeleteClick(position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewUploadImageAdapter.ViewHolder {
@@ -36,7 +36,7 @@ class NewUploadImageAdapter(var list:ArrayList<Uri>, val listener: MyOnItemClick
 
         fun bind(url:Uri){
             deleteImageBtn.setOnClickListener {
-                listener.onItemClick(adapterPosition)
+                listener.onNewImageDeleteClick(adapterPosition)
             }
 
             Glide.with(itemView.context).load(url)

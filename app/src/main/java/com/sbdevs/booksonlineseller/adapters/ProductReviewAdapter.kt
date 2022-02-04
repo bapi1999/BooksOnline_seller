@@ -45,7 +45,7 @@ class ProductReviewAdapter(var list: List<ProductReviewModel>) :
 
             val buyerId: String = reviewModel.buyer_ID
             val buyerName: String = reviewModel.buyer_name
-            val rating: Int = reviewModel.rating
+            val rating: Long = reviewModel.rating
             val review: String = reviewModel.review
             val reviewDate = reviewModel.review_Date!!
             val daysAgo = FireStoreData().msToTimeAgo(itemView.context,reviewDate)

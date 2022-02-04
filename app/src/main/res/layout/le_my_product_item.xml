@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:elevation="2dp">
 
     <ImageView
         android:id="@+id/product_image"
@@ -13,11 +14,25 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        android:scaleType="centerCrop"
         android:background="@color/grey_400"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/as_square_placeholder" />
+
+    <ImageView
+        android:id="@+id/out_of_stock_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitCenter"
+        android:background="#BAE8E6E6"
+        android:padding="15dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/product_image"
+        app:layout_constraintStart_toStartOf="@+id/product_image"
+        app:layout_constraintTop_toTopOf="@+id/product_image"
+        app:srcCompat="@drawable/as_out_of_stock" />
 
     <TextView
         android:id="@+id/product_name"
@@ -30,7 +45,7 @@
         android:maxLines="2"
         android:text="@string/lorem_ipsum"
         android:textColor="@color/grey_900"
-        android:textSize="16sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/product_image"
         app:layout_constraintTop_toTopOf="parent" />
@@ -50,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="2dp"
+
             android:background="@drawable/s_shape_bg_2"
             android:backgroundTint="@color/successGreen"
             android:paddingStart="5dp"
@@ -73,23 +88,25 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/stock_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="8dp"
         android:gravity="center"
-        app:layout_constraintStart_toEndOf="@+id/linearLayout3"
-        app:layout_constraintTop_toBottomOf="@+id/product_name">
+        android:background="@drawable/s_shape_bg_2"
+        android:backgroundTint="@color/red_600"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toEndOf="@+id/product_image"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout27">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginStart="10dp"
             android:text="Stock Qty:"
-            android:layout_marginEnd="4dp"
-            android:textColor="@color/grey_900"
-            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
             app:layout_constraintStart_toEndOf="@+id/linearLayout3"
             app:layout_constraintTop_toBottomOf="@+id/product_name" />
 
@@ -98,20 +115,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginEnd="10dp"
             android:text="0"
-            android:textColor="@color/amber_900"
-            android:textSize="15sp"
+            android:textColor="@color/white"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/linearLayout3"
             app:layout_constraintTop_toBottomOf="@+id/product_name" />
 
 
-
     </LinearLayout>
 
 
-
     <LinearLayout
+        android:id="@+id/linearLayout27"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -121,11 +138,9 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
         <ImageView
-            android:layout_width="15sp"
+            android:layout_width="13dp"
             android:layout_height="match_parent"
             android:src="@drawable/ic_rupee_24"
-            android:scaleY="1.1"
-            android:scaleX="1.2"
             app:tint="@color/grey_900" />
 
         <TextView
@@ -135,7 +150,7 @@
             android:maxLength="9"
             android:text="0"
             android:textColor="@color/grey_900"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold" />
 
         <TextView
@@ -146,17 +161,16 @@
             android:background="@drawable/s_strick_through"
             android:maxLength="8"
             android:text="000000"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
 
         <TextView
             android:id="@+id/percent_off"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="19dp"
             android:layout_marginStart="8dp"
-            android:maxLength="13"
             android:text="00% off"
-            android:textColor="@color/ratingGreen"
-            android:textSize="13sp" />
+            android:textColor="#00838F"
+            android:textSize="11sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -164,7 +178,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginEnd="6dp"
-        android:layout_marginBottom="3dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         >
@@ -172,7 +186,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Last updated"
+            android:text="Updated"
             android:textSize="11sp"
             android:layout_marginEnd="5dp"
             android:textColor="@color/grey_600"
