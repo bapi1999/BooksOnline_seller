@@ -60,6 +60,30 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         loadingDialog.show(childFragmentManager,"SHow")
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             getOrdersByTags(statusString,orderByString)
+
+//            firebaseFirestore
+//                .collection("ORDERS")
+//                .whereEqualTo("ID_Of_SELLER",user!!.uid)
+//                .whereEqualTo("status","shipped")
+//                .orderBy("Time_shipped", Query.Direction.DESCENDING).get().addOnSuccessListener {
+//                }
+//            firebaseFirestore
+//                .collection("ORDERS")
+//                .whereEqualTo("ID_Of_SELLER",user!!.uid)
+//                .whereEqualTo("status","delivered")
+//                .orderBy("Time_delivered", Query.Direction.DESCENDING).get().addOnSuccessListener {
+//                }
+//            firebaseFirestore
+//                .collection("ORDERS")
+//                .whereEqualTo("ID_Of_SELLER",user!!.uid)
+//                .whereEqualTo("status","returned")
+//                .orderBy("Time_returned", Query.Direction.DESCENDING).get().addOnSuccessListener {
+//                }
+//            firebaseFirestore
+//                .collection("ORDERS")
+//                .whereEqualTo("ID_Of_SELLER",user!!.uid)
+//                .whereEqualTo("is_order_canceled",true)
+//                .orderBy("Time_canceled", Query.Direction.DESCENDING).get().addOnSuccessListener {  }
         }
 
         recyclerView = binding.orderRecycler
@@ -104,62 +128,47 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         binding.orderTypeRadioGroup.setOnCheckedChangeListener { group, checkedId ->
             when(checkedId){
                 R.id.radioButton1->{
-
-
-                    orderList.clear()
-                    orderAdapter.notifyDataSetChanged()
-                    lastResult = null
-
                     statusString = "shipped"
                     orderByString = "Time_shipped"
-                    loadingDialog.show(childFragmentManager,"Show")
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        getOrdersByTags(statusString,orderByString)
-                    }
-
+                    changeOrderMethod(statusString,orderByString)
                 }
                 R.id.radioButton2->{
-                    orderList.clear()
-                    orderAdapter.notifyDataSetChanged()
-                    lastResult = null
-
                     statusString = "delivered"
                     orderByString = "Time_delivered"
-                    loadingDialog.show(childFragmentManager,"Show")
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        getOrdersByTags(statusString,orderByString)
-                    }
-
+                    changeOrderMethod(statusString,orderByString)
                 }
                 R.id.radioButton3->{
-
-                    orderList.clear()
-                    orderAdapter.notifyDataSetChanged()
-                    lastResult = null
-
                     statusString = "returned"
                     orderByString = "Time_returned"
-                    loadingDialog.show(childFragmentManager,"Show")
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        getOrdersByTags(statusString,orderByString)
-                    }
+                    changeOrderMethod(statusString,orderByString)
                 }
                 R.id.radioButton4->{
 
                     orderList.clear()
                     orderAdapter.notifyDataSetChanged()
                     lastResult = null
-
+                    isReachLast = true
                     statusString = "canceled"
                     orderByString = "Time_canceled"
                     loadingDialog.show(childFragmentManager,"Show")
                     viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        getOrdersByTags(statusString,orderByString)
+                        getCanceledOrders()
                     }
-
-
                 }
             }
+        }
+    }
+
+    private fun changeOrderMethod(status:String, orderTimeType:String){
+
+        orderList.clear()
+        orderAdapter.notifyDataSetChanged()
+        lastResult = null
+        isReachLast = false
+
+        loadingDialog.show(childFragmentManager,"Show")
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            getOrdersByTags(status,orderTimeType)
         }
     }
 
@@ -175,12 +184,12 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
             firebaseFirestore
                 .collection("ORDERS")
-                .whereEqualTo("seller_id",user!!.uid)
+                .whereEqualTo("ID_Of_SELLER",user!!.uid)
                 .whereEqualTo("status",status)
                 .orderBy(orderTimeType, Query.Direction.DESCENDING)
         }else{
             firebaseFirestore.collection("ORDERS")
-                .whereEqualTo("seller_id",user!!.uid)
+                .whereEqualTo("ID_Of_SELLER",user!!.uid)
                 .whereEqualTo("status",status)
                 .orderBy(orderTimeType,Query.Direction.DESCENDING)
                 .startAfter(times)
@@ -199,8 +208,8 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                     val productName =  item.getString("productTitle").toString()
                     val statusString =  item.getString("status").toString()
                     val orderedQty =  item.getLong("ordered_Qty")!!
-                    val price =  item.getLong("price")!!
-                    val buyerId =  item.getString("buyerId").toString()
+                    val price =  item.getLong("PRICE_TOTAL")!!
+                    val buyerId =  item.getString("ID_Of_BUYER").toString()
                     val already_paid:Boolean = item.getBoolean("already_paid")!!
                     val orderTime: Date = item.getTimestamp("Time_ordered")!!.toDate()
                     val acceptedTime= item.getTimestamp("Time_accepted")?.toDate()
@@ -257,19 +266,87 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         }.await()
     }
 
-    override fun acctepClickListner(position: Int) {
+
+    private suspend fun getCanceledOrders(){
+
+        val resultList :ArrayList<OrderModel> = ArrayList()
+        resultList.clear()
+
+        val query: Query = firebaseFirestore
+                .collection("ORDERS")
+                .whereEqualTo("ID_Of_SELLER",user!!.uid)
+                .whereEqualTo("is_order_canceled",true)
+                .orderBy("Time_canceled", Query.Direction.DESCENDING)
+
+
+
+        query.limit(15L).get().addOnSuccessListener {
+            val allDocumentSnapshot = it.documents
+
+            if (allDocumentSnapshot.isNotEmpty()){
+                for (item in allDocumentSnapshot){
+
+                    val orderId = item.id
+                    val imageUrl =  item.getString("productThumbnail").toString()
+                    val productName =  item.getString("productTitle").toString()
+                    val statusString =  item.getString("status").toString()
+                    val orderedQty =  item.getLong("ordered_Qty")!!
+                    val price =  item.getLong("PRICE_TOTAL")!!
+                    val buyerId =  item.getString("ID_Of_BUYER").toString()
+                    val already_paid:Boolean = item.getBoolean("already_paid")!!
+                    val orderTime: Date = item.getTimestamp("Time_ordered")!!.toDate()
+                    val acceptedTime= item.getTimestamp("Time_accepted")?.toDate()
+                    val packedTime= item.getTimestamp("Time_packed")?.toDate()
+                    val shippedTime= item.getTimestamp("Time_shipped")?.toDate()
+                    val deliveredTime= item.getTimestamp("Time_delivered")?.toDate()
+                    val returnedTime= item.getTimestamp("Time_returned")?.toDate()
+                    val canceledTime= item.getTimestamp("Time_canceled")?.toDate()
+                    val address:MutableMap<String,Any> = item.get("address") as MutableMap<String,Any>
+
+                    resultList.add(OrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
+                        price,already_paid,address,orderTime,acceptedTime,packedTime,
+                        shippedTime,deliveredTime,returnedTime,canceledTime))
+                }
+
+            }else{
+                isReachLast = true
+
+            }
+            orderList.addAll(resultList)
+
+            if (orderList.isEmpty()){
+                binding.emptyContainer.visibility = visible
+                binding.orderRecycler.visibility = gone
+            }else{
+                binding.emptyContainer.visibility = gone
+                binding.orderRecycler.visibility = visible
+
+                orderAdapter.list = orderList
+                orderAdapter.notifyDataSetChanged()
+            }
+            binding.progressBar2.visibility = gone
+
+            loadingDialog.dismiss()
+        }.addOnFailureListener {
+            Log.e("Load orders","${it.message}")
+            loadingDialog.dismiss()
+            binding.progressBar2.visibility = gone
+        }.await()
+    }
+
+    override fun acceptClickListener(position: Int) {
 //        TODO("Not yet implemented")
     }
 
-    override fun rejectlClickLisner(position: Int) {
+    override fun rejectClickListener(position: Int) {
 //        TODO("Not yet implemented")
     }
 
-    override fun shipClickListner(position: Int) {
+    override fun shipClickListener(position: Int) {
 //        TODO("Not yet implemented")
     }
 
-    override fun cancelClickLisner(position: Int) {
+    override fun cancelClickListener(position: Int) {
 //        TODO("Not yet implemented")
     }
 

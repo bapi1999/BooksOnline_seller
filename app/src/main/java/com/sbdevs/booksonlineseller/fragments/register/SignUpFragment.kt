@@ -213,8 +213,8 @@ class SignUpFragment : Fragment() {
         val sellerDataMap: MutableMap<String, Any> = HashMap()
         sellerDataMap["new_notification"] = timstamp1
 
-        val listSizeMap: MutableMap<String, Any> = HashMap()
-        listSizeMap["listSize"] = 0L
+        val paymentMap: MutableMap<String, Any> = HashMap()
+        paymentMap["current_amount"] = 0L
 
         val businessDetailsMap: MutableMap<String, Any> = HashMap()
         businessDetailsMap["Business_name"] = ""
@@ -249,7 +249,7 @@ class SignUpFragment : Fragment() {
 
                 docRef.document("BANK_DETAILS").set(bankDetailsMap).await()
                 docRef.document("BUSINESS_DETAILS").set(businessDetailsMap).await()
-                docRef.document("PAYMENT_REQUESTS").set(listSizeMap).await()
+                docRef.document("PAYMENT_REQUESTS").set(paymentMap).await()
 
                 val sellerRef = docRef.document("SELLER_DATA")
                 sellerRef.set(sellerDataMap).await()

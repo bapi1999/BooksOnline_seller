@@ -21,7 +21,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginBottom="4dp"
             android:orientation="horizontal">
 
@@ -111,30 +110,42 @@
 
     </LinearLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/no_account_add_new"
+    <LinearLayout
+        android:id="@+id/no_account_container"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:layout_weight="1"
-        android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/purple_500"
-        android:text="@string/add_bank_account"
-        android:textColor="@color/white"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:gravity="end"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/details_container"/>
+        app:layout_constraintTop_toBottomOf="@+id/details_container">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/s_shape_bg_3"
+            android:backgroundTint="@color/red_500"
+            android:padding="10dp"
+            android:text="@string/no_bank_account_linked"
+            android:textSize="13sp"
+            android:textColor="@color/white"
+            android:drawableStart="@drawable/ic_error_outline_24"
+            android:drawableTint="@color/white"/>
 
-    <View
-        android:id="@+id/divider15"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/no_account_add_new" />
+        <Button
+            android:id="@+id/no_account_add_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/teal_700"
+            android:text="@string/add_bank_account"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/details_container" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

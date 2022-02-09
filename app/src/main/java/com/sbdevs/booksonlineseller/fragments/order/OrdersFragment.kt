@@ -98,7 +98,6 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         reasons =resources.getStringArray(R.array.order_cancel_reasons)
 
 
-
         return binding.root
     }
 
@@ -224,9 +223,15 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         val resultList :ArrayList<OrderModel> = ArrayList()
         resultList.clear()
 
+        val newDate = Date();
+        val cancellation= Date(newDate.time - (1000 * 60 * 60 * 24))
+
+
+
         val query:Query =  firebaseFirestore.collection("ORDERS")
-            .whereEqualTo("seller_id",user!!.uid)
+            .whereEqualTo("ID_Of_SELLER",user!!.uid)
             .whereEqualTo("status","new")
+            //.whereGreaterThan("Time_ordered","")
             .orderBy("Time_ordered",Query.Direction.ASCENDING)
 
         query.addSnapshotListener { value, error ->
@@ -248,8 +253,8 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                         val productName =  item.getString("productTitle").toString()
                         val statusString =  item.getString("status").toString()
                         val orderedQty =  item.getLong("ordered_Qty")!!
-                        val price =  item.getLong("price")!!
-                        val buyerId =  item.getString("buyerId").toString()
+                        val price =  item.getLong("PRICE_TOTAL")!!
+                        val buyerId =  item.getString("ID_Of_BUYER").toString()
                         val already_paid:Boolean = item.getBoolean("already_paid")!!
                         val orderTime: Date = item.getTimestamp("Time_ordered")!!.toDate()
                         val acceptedTime= item.getTimestamp("Time_accepted")?.toDate()
@@ -321,7 +326,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         resultList.clear()
 
         var query:Query =  firebaseFirestore.collection("ORDERS")
-            .whereEqualTo("seller_id",user!!.uid)
+            .whereEqualTo("ID_Of_SELLER",user!!.uid)
             .whereEqualTo("status","accepted")
             .orderBy("Time_accepted",Query.Direction.ASCENDING)
 
@@ -335,8 +340,8 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                     val productName =  item.getString("productTitle").toString()
                     val statusString =  item.getString("status").toString()
                     val orderedQty =  item.getLong("ordered_Qty")!!
-                    val price =  item.getLong("price")!!
-                    val buyerId =  item.getString("buyerId").toString()
+                    val price =  item.getLong("PRICE_TOTAL")!!
+                    val buyerId =  item.getString("ID_Of_BUYER").toString()
                     val already_paid:Boolean = item.getBoolean("already_paid")!!
                     val orderTime: Date = item.getTimestamp("Time_ordered")!!.toDate()
                     val acceptedTime= item.getTimestamp("Time_accepted")?.toDate()
@@ -375,7 +380,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         resultList.clear()
 
         var query:Query =  firebaseFirestore.collection("ORDERS")
-            .whereEqualTo("seller_id",user!!.uid)
+            .whereEqualTo("ID_Of_SELLER",user!!.uid)
             .whereEqualTo("status","packed")
             .orderBy("Time_packed",Query.Direction.ASCENDING)
 
@@ -389,8 +394,8 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                     val productName =  item.getString("productTitle").toString()
                     val statusString =  item.getString("status").toString()
                     val orderedQty =  item.getLong("ordered_Qty")!!
-                    val price =  item.getLong("price")!!
-                    val buyerId =  item.getString("buyerId").toString()
+                    val price =  item.getLong("PRICE_TOTAL")!!
+                    val buyerId =  item.getString("ID_Of_BUYER").toString()
                     val already_paid:Boolean = item.getBoolean("already_paid")!!
                     val orderTime: Date = item.getTimestamp("Time_ordered")!!.toDate()
                     val acceptedTime= item.getTimestamp("Time_accepted")?.toDate()
@@ -460,7 +465,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         }
 
         binding.progressBar2.visibility = gone
-        binding.textView90.text = st
+        //binding.textView90.text = st
 
 
     }
@@ -553,7 +558,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
     }
 
 
-    override fun acctepClickListner(position: Int) {
+    override fun acceptClickListener(position: Int) {
 
         loadingDialog.show(childFragmentManager,"show")
         val orderId = paginateOrderList[position].orderId
@@ -564,20 +569,20 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
     }
 
-    override fun rejectlClickLisner(position: Int) {
+    override fun rejectClickListener(position: Int) {
         val orderId = paginateOrderList[position].orderId
         dialogOption(orderId)
         Toast.makeText(requireContext(),"size${paginateOrderList.size} / $orderId",Toast.LENGTH_LONG).show()
     }
 
-    override fun shipClickListner(position: Int) {
+    override fun shipClickListener(position: Int) {
         loadingDialog.show(childFragmentManager,"show")
         val orderId = paginateOrderList[position].orderId
         updateOrder(orderId,"shipped")
         orderAdapter.notifyItemRemoved(position)
     }
 
-    override fun cancelClickLisner(position: Int) {
+    override fun cancelClickListener(position: Int) {
         val orderId = paginateOrderList[position].orderId
         dialogOption(orderId)
     }

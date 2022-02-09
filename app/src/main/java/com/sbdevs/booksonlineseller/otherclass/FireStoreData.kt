@@ -1,47 +1,22 @@
 package com.sbdevs.booksonlineseller.otherclass
 
 import android.content.Context
-import android.util.Log
-import android.view.View
-import android.widget.TextView
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Timestamp
 import com.sbdevs.booksonlineseller.R
-import com.sbdevs.booksonlineseller.adapters.MyProductAdapter
-import com.sbdevs.booksonlineseller.models.MyProductModel
-
 import java.util.*
-import kotlin.properties.Delegates
-
 
 class FireStoreData {
 
-    public val firebaseFirestore = Firebase.firestore
-    val firebaseAuth = Firebase.auth
 
 
+    // IMPORTANT METHOD
+    private fun dateToTimeStamp():Timestamp{
+        val newDate = Date();
+        val cancellationData= Date(newDate.time - (1000 * 60 * 60 * 24))
+        val cancellationTimestamp: Timestamp = Timestamp(cancellationData)
+        return cancellationTimestamp
+    }
 
-//    fun durationFromNow(startDate: Date): String {
-//        var different: Long = System.currentTimeMillis() - startDate.time
-//        val secondsInMilli: Long = 1000
-//        val minutesInMilli = secondsInMilli * 60
-//        val hoursInMilli = minutesInMilli * 60
-//        val daysInMilli = hoursInMilli * 24
-//        val elapsedDays = different / daysInMilli
-//        different %= daysInMilli
-//        val elapsedHours = different / hoursInMilli
-//        different %= hoursInMilli
-//        val elapsedMinutes = different / minutesInMilli
-//        different %= minutesInMilli
-//        val elapsedSeconds = different / secondsInMilli
-//        var output = ""
-//        if (elapsedDays > 0) output += elapsedDays.toString() + "days "
-//        if (elapsedDays > 0 || elapsedHours > 0) output += "$elapsedHours hours "
-//        if (elapsedHours > 0 || elapsedMinutes > 0) output += "$elapsedMinutes minutes "
-//        if (elapsedMinutes > 0 || elapsedSeconds > 0) output += "$elapsedSeconds seconds"
-//        return output
-//    }
 
     fun msToTimeAgo(context: Context,startDate:Date): String {
         val seconds = (System.currentTimeMillis() - startDate.time) / 1000f

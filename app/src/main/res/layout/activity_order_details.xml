@@ -184,6 +184,18 @@
                 android:layout_marginTop="8dp"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:id="@+id/cancel_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <include
+                        android:id="@+id/lay0"
+                        layout="@layout/ar_order_details_lay_0" />
+
+                </LinearLayout>
 
                 <include
                     android:id="@+id/lay_1"
@@ -207,7 +219,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <include
                         android:id="@+id/lay_3"

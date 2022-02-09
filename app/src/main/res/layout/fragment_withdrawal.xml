@@ -12,9 +12,21 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="vertical">
-          <include layout="@layout/ar_withdrawal_lay_1"/>
-          <include layout="@layout/ar_withdrawal_lay_2"/>
-          <include layout="@layout/ar_withdrawal_lay_3"/>
+          <include android:id="@+id/lay1"
+              layout="@layout/ar_withdrawal_lay_1"/>
+
+          <View
+              android:id="@+id/divider16"
+              android:layout_width="match_parent"
+              android:layout_height="1dp"
+              android:layout_marginTop="8dp"
+              android:background="?android:attr/listDivider" />
+
+          <include android:id="@+id/lay2"
+              layout="@layout/ar_withdrawal_lay_2"/>
+
+          <include android:id="@+id/lay3"
+              layout="@layout/ar_withdrawal_lay_3"/>
       </LinearLayout>
   </ScrollView>
 </FrameLayout>

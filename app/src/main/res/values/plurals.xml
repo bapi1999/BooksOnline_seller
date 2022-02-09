@@ -37,4 +37,32 @@
     </plurals>
 
 
+
+
+    <plurals name="seconds_to_go">
+        <item quantity="one">%d second to go</item>
+        <item quantity="other">%d seconds to go</item>
+    </plurals>
+
+    <plurals name="minutes_to_go">
+        <item quantity="one">%d minute to go</item>
+        <item quantity="other">%d minutes to go</item>
+    </plurals>
+
+    <plurals name="hours_to_go">
+        <item quantity="one">%d hour to go</item>
+        <item quantity="other">%d hours to go</item>
+    </plurals>
+
+    <plurals name="days_to_go">
+        <item quantity="one">%d day to go</item>
+        <item quantity="other">%d days to go</item>
+    </plurals>
+
+    <plurals name="weeks_to_go">
+        <item quantity="one">%d week to go</item>
+        <item quantity="other">%d weeks to go</item>
+    </plurals>
+
+
 </resources>

@@ -3,7 +3,6 @@ package com.sbdevs.booksonlineseller.adapters
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
-import android.icu.util.TimeUnit
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +12,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.firebase.Timestamp
 import com.google.firebase.appindexing.builders.TimerBuilder
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FieldValue
@@ -27,16 +24,15 @@ import com.sbdevs.booksonlineseller.activities.OrderDetailsActivity
 import com.sbdevs.booksonlineseller.models.OrderModel
 import com.sbdevs.booksonlineseller.otherclass.FireStoreData
 import java.util.*
-import kotlin.collections.ArrayList
 
 class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListener) :RecyclerView.Adapter<OrderAdapter.ViewHolder> (){
 
 
     interface OrderItemClickListener{
-        fun acctepClickListner(position: Int)
-        fun rejectlClickLisner(position: Int)
-        fun shipClickListner(position: Int)
-        fun cancelClickLisner(position: Int)
+        fun acceptClickListener(position: Int)
+        fun rejectClickListener(position: Int)
+        fun shipClickListener(position: Int)
+        fun cancelClickListener(position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderAdapter.ViewHolder {
@@ -101,19 +97,19 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
             }
 
             acceptBtn.setOnClickListener {
-                listener.acctepClickListner(adapterPosition)
+                listener.acceptClickListener(adapterPosition)
             }
 
             rejectBtn.setOnClickListener {
-                listener.rejectlClickLisner(adapterPosition)
+                listener.rejectClickListener(adapterPosition)
             }
 
             shipBtn.setOnClickListener {
-                listener.shipClickListner(adapterPosition)
+                listener.shipClickListener(adapterPosition)
             }
 
             cancelBtn.setOnClickListener {
-                listener.cancelClickLisner(adapterPosition)
+                listener.cancelClickListener(adapterPosition)
             }
 
 
@@ -170,15 +166,8 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
 
             }
 
-            val expireDate = getTimeExpire(item.Time_ordered)
-            if (isTimeExpire(item.Time_ordered)) {
-                autoCancelText.text = "Auto cancel on $expireDate"
-                autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_800))
-            }else{
-                autoCancelText.text = "Already canceled on $expireDate"
-                autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.red_900))
 
-            }
+
 
 
 
@@ -189,26 +178,42 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
                     val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_ordered)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Ordered"
-                    newButtonContainer.visibility = visible
+
                     acceptButtonContainer.visibility = gone
                     packedButtonContainer.visibility = gone
 
                     orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.amber_600)
                     orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.grey_900))
 
-                }
-                "accepted" ->{
+//                    val expireDate = getTimeExpire(item.Time_ordered)
+//                    if (isTimeExpire(item.Time_ordered)) {
+//                        newButtonContainer.visibility = visible
+//                        autoCancelText.text = "Auto cancel on $expireDate"
+//                        autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_800))
+//                    }else{
+//                        newButtonContainer.visibility = gone
+//                        autoCancelText.text = "Already canceled on $expireDate"
+//                        autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.red_900))
+//                    }
+                    showCancellationText(item.Time_ordered,newButtonContainer)
 
+                }
+
+                "accepted" ->{
                     val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_accepted!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Accepted"
                     newButtonContainer.visibility = gone
-                    acceptButtonContainer.visibility = visible
+                    //acceptButtonContainer.visibility = visible
                     packedButtonContainer.visibility = gone
 
                     orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.amber_600)
                     orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.black))
+
+                    showCancellationText(item.Time_accepted,acceptButtonContainer)
+
                 }
+
                 "packed" ->{
 
                     val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_packed!!)
@@ -216,12 +221,12 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
                     orderTimeType.text = "Packed"
                     newButtonContainer.visibility = gone
                     acceptButtonContainer.visibility = gone
-                    packedButtonContainer.visibility = visible
+                    //packedButtonContainer.visibility = visible
 
                     orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.teal_700)
                     orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.white))
 
-
+                    showCancellationText(item.Time_accepted!!,packedButtonContainer)
                 }
 
                 "shipped"->{
@@ -234,6 +239,8 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
 
                     orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.indigo_700)
                     orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.white))
+
+                    autoCancelText.visibility = gone
                 }
                 "delivered"->{
                     newButtonContainer.visibility = gone
@@ -247,6 +254,8 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
                         R.color.red_a700
                     )
                     orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.white))
+
+                    autoCancelText.visibility = gone
                 }
                 "returned"->{
                     newButtonContainer.visibility = gone
@@ -255,6 +264,7 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
                     val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_returned!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Returned"
+                    autoCancelText.visibility = gone
                 }
                 "canceled"->{
                     newButtonContainer.visibility = gone
@@ -263,6 +273,7 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
                     val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_canceled!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Canceled"
+                    autoCancelText.visibility = gone
 
                 }
                 else ->{
@@ -351,11 +362,10 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
             return try {
 
                 val expireDate = Date(date.time + (1000 * 60 * 60 * 24))
-//                val currentTime = Date()
                 val sdf = SimpleDateFormat("dd MMMM yyyy , hh:mm a")
+
+//                val currentTime = Date()
 //                val diffDate:Long = expireDate.time - currentTime.time
-//
-//
 //                val seconds = diffDate / 1000
 //                val minutes = seconds / 60
 //                val hours = minutes / 60
@@ -367,6 +377,20 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
             }
 
 
+        }
+
+        private fun showCancellationText(date: Date,container:LinearLayout){
+
+            val expireDate = getTimeExpire(date)
+            if (isTimeExpire(date)) {
+                container.visibility = visible
+                autoCancelText.text = "Auto cancel on $expireDate"
+                autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_800))
+            }else{
+                container.visibility = gone
+                autoCancelText.text = "Already canceled on $expireDate"
+                autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.red_900))
+            }
         }
 
 

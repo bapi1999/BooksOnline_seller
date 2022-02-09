@@ -12,10 +12,11 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
-        android:background="@drawable/s_border_2"
-        android:backgroundTint="@color/grey_400"
+        android:background="@drawable/s_shape_bg_1"
+        android:backgroundTint="@color/grey_300"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:padding="8dp"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -28,14 +29,19 @@
             android:textSize="17sp"
             android:textStyle="bold" />
 
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_rupee_24"
+            app:tint="@color/grey_900" />
+
         <TextView
             android:id="@+id/account_balance_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Rs. 1100 /-"
+            android:text="1100 /-"
             android:textColor="@color/grey_900"
-            android:textSize="23sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -59,7 +65,7 @@
             android:inputType="number"
             android:hint="Enter amount"
             android:textColor="@color/black"
-            android:textSize="20sp" />
+            android:textSize="17sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
@@ -67,7 +73,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="24dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -80,11 +86,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:padding="10dp"
+            android:insetTop="0dp"
             android:text="Withdraw all"
             android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/withdraw_btn"
@@ -92,11 +97,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:padding="10dp"
+            android:insetTop="0dp"
             android:text="Withdraw"
             android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textColor="@color/white" />
     </LinearLayout>
 
 
@@ -110,6 +114,7 @@
         android:gravity="right"
         android:text="Last withdrawal on 20/07/2021"
         app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="12sp"
         app:layout_constraintTop_toBottomOf="@+id/button_container" />
 
     <LinearLayout
@@ -117,8 +122,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="3dp"
         android:layout_marginEnd="1dp"
+        android:padding="8dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -144,7 +150,6 @@
         android:id="@+id/divider16"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

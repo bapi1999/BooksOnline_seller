@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.icu.text.SimpleDateFormat
-import android.os.Build
-import android.os.Build.VERSION_CODES.M
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
@@ -43,8 +40,6 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
-import java.io.OutputStream
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -195,27 +190,37 @@ class OrderDetailsActivity : AppCompatActivity() {
                 productName =  it.getString("productTitle").toString()
                 val status =  it.getString("status").toString()
                 val orderedQty =  it.getLong("ordered_Qty")
-                val price =  it.getLong("price")
 
-                buyerId =  it.getString("buyerId").toString()
+                val unitSellingPrice =  it.getLong("PRICE_SELLING_UNIT")
+                val totalSellingPrice =  it.getLong("PRICE_SELLING_TOTAL")
+                val deliveryCharge =  it.getLong("PRICE_SHIPPING_CHARGE")
+                val totalPrice =  it.getLong("PRICE_TOTAL")
+
+                buyerId =  it.getString("ID_Of_BUYER").toString()
+                val tracKingId =  it.getString("ID_Of_Tracking")
+                val orderId =  it.getString("ID_Of_ORDER")
+                val sellerId =  it.getString("ID_Of_SELLER")
                 val productId =  it.getString("productId")
-                val tracKingId =  it.getString("tracKingId")
+
                 val already_paid:Boolean = it.getBoolean("already_paid")!!
+                val isOrderCanceled = it.getBoolean("is_order_canceled")!!
+                val orderCanceledBy = it.get("order_canceled_by").toString()
+                val cancelletionReason = it.get("cancellation_reason").toString()
 
                 val acceptedTime= it.getTimestamp("Time_accepted")
                 val packedTime= it.getTimestamp("Time_packed")
                 val shippedTime= it.getTimestamp("Time_shipped")
                 val deliveredTime= it.getTimestamp("Time_delivered")
                 val returnedTime= it.getTimestamp("Time_returned")
+                val canceledTime= it.getTimestamp("Time_canceled")
                 //val acceptTime: Date = it.getTimestamp("Time_accepted")!!.toDate()
 
-                binding.statusTxt.text = status
                 binding.orderIdTxt.text = orderId
                 binding.trackingIdTxt.text = tracKingId
 
 
                 binding.lay1.titleTxt.text = productName
-                binding.lay1.priceTxt.text = price.toString()
+                binding.lay1.priceTxt.text = totalPrice.toString()
                 binding.lay1.productQuantity.text = orderedQty.toString()
                 Glide.with(this@OrderDetailsActivity)
                     .load(imageUrl)
@@ -257,6 +262,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                         binding.buttonContainer2.visibility = visible
                         binding.packedBtn.visibility = visible
                         binding.shippedBtn.visibility =gone
+                        binding.downloadsLabelContainer.visibility = visible
                         //
                         val acceptedT= acceptedTime!!.toDate()
                         orderNew(orderTime)
@@ -317,18 +323,36 @@ class OrderDetailsActivity : AppCompatActivity() {
                         binding.acceptButtonContainer.visibility = gone
                         binding.buttonContainer2.visibility = gone
                     }
-                    "canceled"->{
-                        val returnTime: Date = it.getTimestamp("Time_canceled")!!.toDate()
-                        binding.acceptButtonContainer.visibility = gone
-                        binding.buttonContainer2.visibility = gone
-                        binding.orderCancelText.visibility = visible
-
-                    }
+//                    "canceled"->{
+//                        val returnTime: Date = it.getTimestamp("Time_canceled")!!.toDate()
+//                        binding.acceptButtonContainer.visibility = gone
+//                        binding.buttonContainer2.visibility = gone
+//                        binding.orderCancelText.visibility = visible
+//
+//                    }
                     else ->{
                         binding.acceptButtonContainer.visibility = gone
                         binding.buttonContainer2.visibility = gone
                     }
                 }
+
+                if (isOrderCanceled){
+                    val cancelT= canceledTime!!.toDate()
+
+                    binding.cancelOrderBtn.visibility = gone
+
+                    binding.orderTrackContainer.visibility = gone
+                    binding.cancelContainer.visibility = visible
+                    orderCanceled(cancelT,orderCanceledBy,cancelletionReason)
+
+                    binding.statusTxt.text = "Canceled"
+
+                }else{
+                    binding.statusTxt.text = status
+                }
+
+
+
 
                 binding.lay1.viewProductBtn.setOnClickListener {
                     val productIntent = Intent(this@OrderDetailsActivity,ProductActivity::class.java)
@@ -384,6 +408,14 @@ class OrderDetailsActivity : AppCompatActivity() {
 
     }
 
+    private fun orderCanceled(deliveredTime:Date,orderCanceledBy:String,reason:String){
+
+        binding.lay0.cancellationTime.text = getDateTime(deliveredTime)
+        binding.lay0.cancellationText.text = "Order is canceled by $orderCanceledBy"
+        binding.lay0.cancellationReason.text = "Reason: $reason"
+    }
+
+
 
     private fun updateOrder(orderId: String, status:String){
 
@@ -424,6 +456,16 @@ class OrderDetailsActivity : AppCompatActivity() {
                 loadingDialog.dismiss()
                 Log.e("canceled order","${it.message}")
             }
+
+
+        val cancelT= Date()
+        binding.cancelOrderBtn.visibility = gone
+        binding.orderTrackContainer.visibility = gone
+        binding.statusTxt.text = "Canceled"
+
+        binding.lay0.cancellationTime.text = FireStoreData().msToTimeAgo(this,cancelT)
+        binding.lay0.cancellationText.text = "Order is canceled by seller"
+
 
     }
 

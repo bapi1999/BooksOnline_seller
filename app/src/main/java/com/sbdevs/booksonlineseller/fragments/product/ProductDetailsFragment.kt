@@ -417,6 +417,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
             return
         }else{
             val stock = enterStockQty.editText?.text.toString().toLong()
+            binding.lay4.stockQuantity.text = stock.toString()
 
             when {
                 stock > 5 -> {
