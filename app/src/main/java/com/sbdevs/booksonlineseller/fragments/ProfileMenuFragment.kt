@@ -11,6 +11,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.AddProductActivity
+import com.sbdevs.booksonlineseller.activities.SellerFeesAndPriceActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentProfileMenuBinding
 
 
@@ -55,6 +56,13 @@ class ProfileMenuFragment : Fragment() {
                     findNavController().navigate(fragmentAction)
                     true
                 }
+
+                R.id.profit_calculator ->{
+                    val intent = Intent(context, SellerFeesAndPriceActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
 
 
                 else->{

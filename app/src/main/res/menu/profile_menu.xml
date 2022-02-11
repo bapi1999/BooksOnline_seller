@@ -30,7 +30,7 @@
         <item
             android:id="@+id/profit_calculator"
             android:icon="@drawable/ic_baseline_calculate_24"
-            android:title="Profit calculator" />
+            android:title="Calculate Profit" />
         <item
             android:id="@+id/sales_report"
             android:icon="@drawable/ic_trending_down_24"

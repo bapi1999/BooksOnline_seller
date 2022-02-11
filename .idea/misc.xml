@@ -49,6 +49,7 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_order_details.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_product.xml" value="0.14965277777777777" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_register.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_seller_fees_and_price.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_splash.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_add_product_lay_1.xml" value="0.2" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_add_product_lay_2.xml" value="0.25" />
@@ -62,7 +63,7 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_date_filter_bottom_sheet.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_edit_product_lay_3.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_edit_product_lay_4.xml" value="0.25" />
-        <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_fees_profit_lay.xml" value="0.22447916666666667" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_fees_profit_lay.xml" value="0.25" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_filter_bottom_sheet.xml" value="0.1" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_my_earning_lay_1.xml" value="0.25" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_my_earning_lay_2.xml" value="0.22447916666666667" />
@@ -82,6 +83,7 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_payment_lay_1.xml" value="0.18" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_payment_lay_2.xml" value="0.18" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_payment_lay_3.xml" value="0.1" />
+        <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_price_calculator.xml" value="0.1841880341880342" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_product_detail_lay_1.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_product_detail_lay_2.xml" value="0.22447916666666667" />
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_product_detail_lay_3.xml" value="0.22" />

@@ -28,6 +28,7 @@ import com.squareup.okhttp.Dispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
@@ -46,10 +47,13 @@ class MyEarningFragment : Fragment() {
     private val earningAdapter = EarningAdapter(orderList)
     private lateinit var accountBalanceText: TextView
     private lateinit var upcomingPaymentText: TextView
-    private var accountBalance = 0L
+
     private lateinit var withdrawalBtn:Button
     private val gone = View.GONE
     private val visible = View.VISIBLE
+    var st = ""
+    private var accountBalance = 0L
+    var newBalance = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,6 +66,12 @@ class MyEarningFragment : Fragment() {
 
 
         loadingDialog.show(childFragmentManager, "show")
+
+        lifecycleScope.launch(Dispatchers.IO) {
+
+            calculateAccountBalance()
+        }
+
         getAccountBalance()
 
         getDeliveredProduct()
@@ -147,33 +157,78 @@ class MyEarningFragment : Fragment() {
             }
     }
 
-    private fun compairQuery() {
-        //THIS IS FOR BACKEND
-        val query1 = firebaseFirestore.collection("ORDERS")
-            .whereEqualTo("ID_Of_SELLER", user!!.uid)
-            .whereEqualTo("status", "delivered")
-            .whereEqualTo("eligible_for_credit", true)
-            .whereEqualTo("already_credited", false)
-            .orderBy("Time_delivered", Query.Direction.ASCENDING)
-            .limit(10L)
+    private suspend fun calculateAccountBalance(){
+        firebaseFirestore
+            .collection("USERS")
+            .document(user!!.uid)
+            .collection("SELLER_DATA")
+            .document("MY_EARNING")
+            .collection("EARNINGS")
+            .whereEqualTo("is_added",false)
+            .get().addOnSuccessListener {
 
-        //FOR FRONT END
-        val query2 = firebaseFirestore.collection("ORDERS")
-            .whereEqualTo("ID_Of_SELLER", user!!.uid)
-            .whereEqualTo("status", "delivered")
-            //.whereEqualTo("eligible_for_credit",false)
-            .whereEqualTo("already_credited", false)
-            .orderBy("Time_delivered", Query.Direction.ASCENDING)
-            .limit(10L)
+                val allDocument = it.documents
 
+                if (allDocument.isNotEmpty()){
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        withContext(Dispatchers.IO){
+                            for (doc in allDocument){
+                                val docId = doc.id
+                                val isAdded:Boolean = doc["is_added"] as Boolean
+                                val amount1:Long = doc["AMOUNT"].toString().toLong()
+
+                                newBalance +=amount1
+                                updateEarningCollection(docId)
+
+                            }
+                        }
+                        withContext(Dispatchers.IO){
+                            updateAccountBalance(newBalance)
+                            //account balance autometicaly change with snapshot listener
+                        }
+                    }
+
+                }else{
+                    Log.i("calculateAccountBalance","empty list")
+                }
+
+            }.addOnFailureListener {
+                Log.e("ERROR calculateAccountBalance:" ,"${it.message}")
+            }.await()
+    }
+
+    private suspend fun updateEarningCollection(docId:String){
+        val newmap:MutableMap<String,Any> = HashMap()
+        newmap["is_added"] = true
+
+        firebaseFirestore
+            .collection("USERS")
+            .document(user!!.uid)
+            .collection("SELLER_DATA")
+            .document("MY_EARNING")
+            .collection("EARNINGS")
+            .document(docId).update(newmap)
+            .addOnSuccessListener {  }
+    }
+
+    private fun updateAccountBalance(balance:Long){
+        val newmap:MutableMap<String,Any> = HashMap()
+        newmap["current_amount"] = (balance + accountBalance)
+
+        firebaseFirestore.collection("USERS")
+            .document(user!!.uid).collection("SELLER_DATA")
+            .document("PAYMENT_REQUESTS")
+            .update(newmap)
 
     }
+
+
 
     private fun durationFromNow(timeDelivered: Date, timePeriod: Long): String {
 
 //            val days7lay = Date(timeDelivered!!.time +(1000 * 60 * 60 * 24*timePeriod))
 
-        val days7lay = Date(timeDelivered!!.time + (1000 * 60 * 60 * 24))
+        val days7lay = Date(timeDelivered.time + (1000 * 60 * 60 * 24*2))
         val cal = Calendar.getInstance()
         cal.time = days7lay
         cal[Calendar.HOUR_OF_DAY] = 23

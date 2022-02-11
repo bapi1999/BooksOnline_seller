@@ -14,7 +14,9 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Fees &amp; Profit details "
+        android:text="Fees &amp; Profit"
+        android:textColor="@color/grey_900"
+        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -35,26 +37,42 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Selling price: "
+        android:text="Selling price"
         android:textColor="@color/black"
         android:textSize="17sp"
-
-
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider4" />
 
 
-    <TextView
-        android:id="@+id/selling_price"
+    <LinearLayout
+        android:id="@+id/selling_price_lay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Rs. 874"
-        android:textColor="@color/black"
-        android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider4" />
+        app:layout_constraintTop_toBottomOf="@+id/divider4" >
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_rupee_24"
+            app:tint="@color/grey_900"/>
+
+        <TextView
+            android:id="@+id/selling_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
+
+
+
 
     <TextView
         android:id="@+id/textView29"
@@ -62,23 +80,45 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Commission fee:"
+        android:text="Commission fee"
         android:textColor="@color/black"
-        android:textSize="17sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView26" />
 
-    <TextView
-        android:id="@+id/commission_fee"
+
+    <LinearLayout
+        android:id="@+id/commission_fee_lay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/selling_price_lay"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Rs. 43.7"
-        android:textColor="@color/black"
-        android:textSize="17sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selling_price" />
+        >
+        <ImageView
+            android:layout_width="13dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_horizontal_rule_24"
+            app:tint="@color/grey_900"/>
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_rupee_24"
+            app:tint="@color/grey_900"/>
+
+        <TextView
+            android:id="@+id/commission_fee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            />
+    </LinearLayout>
+
+
 
     <TextView
         android:id="@+id/textView32"
@@ -86,23 +126,43 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Shipping fee: "
+        android:text="Pickup charge "
         android:textColor="@color/black"
-        android:textSize="17sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView29" />
 
-    <TextView
-        android:id="@+id/delivery_fee"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Rs. 60"
-        android:textColor="@color/black"
-        android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView29" />
+        app:layout_constraintTop_toBottomOf="@+id/textView29"
+        >
+        <ImageView
+            android:layout_width="13dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_horizontal_rule_24"
+            app:tint="@color/grey_900"/>
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_rupee_24"
+            app:tint="@color/grey_900"/>
+
+        <TextView
+            android:id="@+id/delivery_fee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            />
+    </LinearLayout>
+
+
 
     <View
         android:id="@+id/divider6"
@@ -129,20 +189,34 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider6" />
 
-    <TextView
-        android:id="@+id/total_profit"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Rs. 770.3"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider6" />
+        app:layout_constraintTop_toBottomOf="@+id/divider6" >
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_rupee_24"
+            app:tint="@color/grey_900"/>
+
+        <TextView
+            android:id="@+id/total_profit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
