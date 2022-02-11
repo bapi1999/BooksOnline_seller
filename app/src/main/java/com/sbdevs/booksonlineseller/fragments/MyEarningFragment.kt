@@ -189,7 +189,7 @@ class MyEarningFragment : Fragment() {
                     }
 
                 }else{
-                    Log.i("calculateAccountBalance","empty list")
+                    Log.i("calculateAccountBalance","empty :list")
                 }
 
             }.addOnFailureListener {
