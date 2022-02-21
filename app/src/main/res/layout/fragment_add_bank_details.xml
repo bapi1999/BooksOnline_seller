@@ -18,13 +18,26 @@
                 layout="@layout/le_books_onlikne_header_lay"/>
 
             <include android:id="@+id/bank_details"
-                layout="@layout/ar_register_layout_2_2"/>
+                layout="@layout/sl_ar_register_layout_2_2"/>
 
             <Button
                 android:id="@+id/proceed_btn"
                 android:layout_width="wrap_content"
+                android:layout_marginTop="8dp"
                 android:layout_height="wrap_content"
-                android:text="Finish" />
+                android:text="Submit" />
+            <TextView
+                android:id="@+id/error_message_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:textStyle="bold"
+                android:textSize="15sp"
+                android:visibility="gone"
+                android:textColor="@color/indigo_700"
+                android:text="UPI added successfully"/>
 
         </LinearLayout>
     </ScrollView>

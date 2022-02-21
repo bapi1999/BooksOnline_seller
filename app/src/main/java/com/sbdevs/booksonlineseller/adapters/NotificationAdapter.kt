@@ -88,9 +88,7 @@ class NotificationAdapter(var list:List<NotificationModel>, var docNameList:Arra
             val updateMap:MutableMap<String,Any> = HashMap()
             updateMap["seen"] = true
             firebaseFirestore.collection("USERS").document(user!!.uid)
-                .collection("SELLER_DATA")
-                .document("SELLER_DATA")
-                .collection("NOTIFICATION")
+                .collection("NOTIFICATIONS")
                 .document(notificationID.trim())
                 .update(updateMap).addOnSuccessListener {
                     Log.i("update status","successful")

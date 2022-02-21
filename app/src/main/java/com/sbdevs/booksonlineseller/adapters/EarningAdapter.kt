@@ -38,9 +38,8 @@ class EarningAdapter(var list: List<EarningModel>): RecyclerView.Adapter<Earning
 
             amountTextView.text = amount.toString()
 
-//            val days7lay = Date(timeDelivered!!.time +(1000 * 60 * 60 * 24*timePeriod))
-
-            val days7lay = Date(timeDelivered!!.time +(1000 * 60 * 60 * 24*2))
+            val days7lay = Date(timeDelivered!!.time +(1000 * 60 * 60 * 24*timePeriod))
+           // val days7lay = Date(timeDelivered!!.time +(1000 * 60 * 60 * 24*2))
             val cal = Calendar.getInstance()
             cal.time = days7lay
             cal[Calendar.HOUR_OF_DAY] = 23
@@ -51,13 +50,7 @@ class EarningAdapter(var list: List<EarningModel>): RecyclerView.Adapter<Earning
 
             val difDate = Date( dd.time - Date().time)
 
-
             timeTextView.text = msToTimeAgo(itemView.context,difDate.time)
-
-
-
-
-
 
         }
 

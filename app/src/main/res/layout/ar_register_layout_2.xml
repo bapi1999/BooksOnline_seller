@@ -36,6 +36,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearLayout112">
+        <TextView
+            android:id="@+id/error_message_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textColor="@color/red_700"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"
+            android:drawableStart="@drawable/ic_error_outline_24"
+            android:drawableTint="@color/red_700"
+            android:text="message"/>
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -192,6 +204,13 @@
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:text="@string/i_agree_to_the_terms_of_service" />
+        <CheckBox
+            android:id="@+id/checkBox8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="I agree to the Return Policy" />
+
 
 
     </LinearLayout>

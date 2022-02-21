@@ -6,62 +6,8 @@
     android:layout_height="wrap_content"
     android:background="@color/white">
 
-    <TextView
-        android:id="@+id/textView68"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:drawablePadding="4dp"
-        android:text="Set product thumbnail*: "
-        android:textSize="17sp"
-        android:textColor="@color/grey_900"
-        app:drawableEndCompat="@drawable/ic_info_24"
-        app:drawableTint="@color/light_black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/product_thumbnail"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/s_border_2"
-        android:backgroundTint="@color/white"
-        android:padding="4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView68"
-        app:srcCompat="@drawable/as_add_image_squre" />
 
-    <TextView
-        android:id="@+id/errorMessageText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:text="thumbnail"
-        android:textColor="@color/brikeRed"
-        android:textSize="16sp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/product_thumbnail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/product_thumbnail" />
-
-    <TextView
-        android:id="@+id/textView71"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Add new thumbnail"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:drawableLeftCompat="@drawable/ic_add_24"
-        app:drawableTint="@color/viewAll"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/product_thumbnail"
-        app:layout_constraintTop_toTopOf="@+id/product_thumbnail" />
 
     <TextView
         android:id="@+id/textView72"
@@ -76,7 +22,7 @@
         app:drawableEndCompat="@drawable/ic_info_24"
         app:drawableTint="@color/grey_700"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/product_thumbnail" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/upload_image_recycler"
@@ -90,7 +36,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView72"
-        tools:listitem="@layout/le_upload_new_image_item" />
+        tools:listitem="@layout/le_upload_already_image_item" />
 
     <com.rbrooks.indefinitepagerindicator.IndefinitePagerIndicator
         android:id="@+id/recyclerview_pager_indicator"

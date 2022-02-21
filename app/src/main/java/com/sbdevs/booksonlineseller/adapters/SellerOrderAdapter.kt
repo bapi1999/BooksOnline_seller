@@ -21,11 +21,11 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.OrderDetailsActivity
-import com.sbdevs.booksonlineseller.models.OrderModel
+import com.sbdevs.booksonlineseller.models.SellerOrderModel
 import com.sbdevs.booksonlineseller.otherclass.FireStoreData
 import java.util.*
 
-class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListener) :RecyclerView.Adapter<OrderAdapter.ViewHolder> (){
+class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItemClickListener) :RecyclerView.Adapter<SellerOrderAdapter.ViewHolder> (){
 
 
     interface OrderItemClickListener{
@@ -35,12 +35,12 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
         fun cancelClickListener(position: Int)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_order_item,parent,false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SellerOrderAdapter.ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.sl_le_order_item,parent,false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: OrderAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SellerOrderAdapter.ViewHolder, position: Int) {
         holder.bind(list[position])
     }
 
@@ -82,7 +82,7 @@ class OrderAdapter(var list:List<OrderModel>, val listener:OrderItemClickListene
         val visible = View.VISIBLE
 
 
-        fun bind(item:OrderModel){
+        fun bind(item:SellerOrderModel){
             val orderId = item.orderId
             itemView.setOnClickListener {
                 val orderIntent = Intent(itemView.context,OrderDetailsActivity::class.java)

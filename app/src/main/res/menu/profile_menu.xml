@@ -31,20 +31,11 @@
             android:id="@+id/profit_calculator"
             android:icon="@drawable/ic_baseline_calculate_24"
             android:title="Calculate Profit" />
-        <item
-            android:id="@+id/sales_report"
-            android:icon="@drawable/ic_trending_down_24"
-            android:title="Sales Report" />
 
-        <item
-            android:id="@+id/help_center"
-            android:icon="@drawable/ic_help_24"
-            android:title="Help Center" />
-
-        <item
-            android:id="@+id/ads_service"
-            android:icon="@drawable/ic_baseline_picture_in_picture_24"
-            android:title="Ads service" />
+<!--        <item-->
+<!--            android:id="@+id/ads_service"-->
+<!--            android:icon="@drawable/ic_baseline_picture_in_picture_24"-->
+<!--            android:title="Ads service" />-->
 
 
     </group>
@@ -59,9 +50,14 @@
             android:icon="@drawable/ic_baseline_privacy_tip_24"
             android:title="Privacy Policy" />
         <item
-            android:id="@+id/help"
+            android:id="@+id/return_policy"
+            android:icon="@drawable/as_return"
+            android:title="Return Policy" />
+
+        <item
+            android:id="@+id/help_center"
             android:icon="@drawable/ic_help_24"
-            android:title="Help" />
+            android:title="Help Center" />
     </group>
 
 </menu>

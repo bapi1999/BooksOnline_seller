@@ -20,7 +20,7 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_my_product_item, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.sl_le_my_product_item, parent, false)
         return ViewHolder(view)
     }
 
@@ -57,9 +57,10 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
             }
 
             productName.text = item.book_title
+            val imageList:MutableList<String> = item.productImage_List
 
 
-            val url:String = item.product_thumbnail
+            val url:String =imageList[0] //item.product_thumbnail
             ratingTotalTxt.text = item.rating_total.toString()
 
             val priceOriginal = item.price_original

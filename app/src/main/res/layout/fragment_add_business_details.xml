@@ -34,7 +34,7 @@
                 android:layout_marginEnd="16dp"/>
 
             <include android:id="@+id/business_details"
-                layout="@layout/ar_register_layout_2_1"/>
+                layout="@layout/sl_ar_register_layout_2_1"/>
 
             <Button
                 android:id="@+id/proceed_btn"

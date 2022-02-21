@@ -7,66 +7,7 @@
     android:background="@color/white">
 
 
-    <TextView
-        android:id="@+id/textView68"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:drawablePadding="4dp"
-        android:text="Product thumbnail"
-        android:textColor="@color/grey_900"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/product_thumbnail"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/s_border_2"
-        android:backgroundTint="@color/white"
-        android:padding="4dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView68"
-        app:srcCompat="@drawable/as_add_image_squre" />
-
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/select_thumbnail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/grey_50"
-        android:drawableStart="@drawable/ic_add_24"
-        android:drawableTint="@color/grey_900"
-        android:text="Add new thumbnail"
-        android:textAllCaps="false"
-        android:textColor="@color/grey_900"
-        android:textSize="17sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/product_thumbnail"
-        app:layout_constraintTop_toTopOf="@+id/product_thumbnail" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/updatde_thumnail_btn"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/indigo_900"
-        android:text="Update Thumbnail"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/product_thumbnail" />
 
     <TextView
         android:id="@+id/textView72"
@@ -79,7 +20,7 @@
         android:textColor="@color/grey_900"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider32" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView73"
@@ -177,46 +118,38 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recyclerview_pager_indicator2" />
 
-    <View
-        android:id="@+id/divider32"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/updatde_thumnail_btn" />
 
-    <TextView
-        android:id="@+id/errorMessageText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:text="TextView"
-        android:textColor="@color/red_700"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/product_thumbnail"
-        app:layout_constraintTop_toBottomOf="@+id/textView71" />
-
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
         android:id="@+id/update_image_btn"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="32dp"
-        android:background="@drawable/s_shape_bg_1"
         android:backgroundTint="@color/indigo_900"
+        android:insetTop="0dp"
         android:text="Update Images"
         android:textAllCaps="false"
         android:textColor="@color/white"
+        app:cornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/select_image_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/error_message_text" />
+
+    <TextView
+        android:id="@+id/error_message_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textColor="@color/red_700"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/select_image_btn"
+        app:drawableStartCompat="@drawable/ic_error_outline_24"
+        app:drawableTint="@color/red_700" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

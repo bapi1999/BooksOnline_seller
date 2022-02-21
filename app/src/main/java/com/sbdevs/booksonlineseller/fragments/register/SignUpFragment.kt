@@ -38,6 +38,7 @@ class SignUpFragment : Fragment() {
     lateinit var pass: TextInputLayout
     lateinit var confirmPass:TextInputLayout
     private lateinit var termAndPolicyBox:CheckBox
+    private lateinit var returnPolicyBox:CheckBox
     lateinit var errorTxt: TextView
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
 
@@ -55,6 +56,7 @@ class SignUpFragment : Fragment() {
         pass = binding.signupLay.passwordInput
         confirmPass = binding.signupLay.confirmPassInput
         termAndPolicyBox = binding.signupLay.checkBox6
+        returnPolicyBox = binding.signupLay.checkBox8
 
         binding.signupLay.loginText.setOnClickListener {
             val action = SignUpFragmentDirections.actionSignUpFragmentToLoginFragment()
@@ -65,6 +67,14 @@ class SignUpFragment : Fragment() {
             loadingDialog.show(childFragmentManager,"show")
             checkAllDetails()
 
+        }
+
+        termAndPolicyBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            termAndPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.teal_200)
+        }
+
+        returnPolicyBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            returnPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.teal_200)
         }
 
         return binding.root
@@ -155,48 +165,53 @@ class SignUpFragment : Fragment() {
     }
 
     private fun checkTermsAndPolicyBox(): Boolean {
-
-        val container = binding.signupLay.linearLayout11
-
         return if (termAndPolicyBox.isChecked) {
-            container.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.white)
+            termAndPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.teal_200)
             true
         } else {
-            container.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_500)
+            termAndPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
+            false
+        }
+    }
+
+    private fun checkReturnPolicyBox(): Boolean {
+        return if (returnPolicyBox.isChecked) {
+            returnPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.teal_200)
+            true
+        } else {
+            returnPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
             false
         }
     }
 
     private fun checkAllDetails() {
-        if (!checkMail() or !checkPhone() or !checkPassword() or !checkConfirmPassword() or !checkTermsAndPolicyBox()) {
+        if (!checkMail() or !checkPhone() or !checkPassword() or !checkConfirmPassword()
+            or !checkTermsAndPolicyBox() or !checkReturnPolicyBox()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
             loadingDialog.dismiss()
             return
         } else {
-            lifecycleScope.launch(Dispatchers.IO){
-                try {
-                    firebaseAuth.createUserWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString()).await()
-
-                    delay(1000L)
-
-                    withContext(Dispatchers.IO){
+            firebaseAuth.createUserWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString())
+                .addOnSuccessListener {
+                    Log.i("Creat User","user created successfully")
+                    lifecycleScope.launch(Dispatchers.IO){
                         createPaths()
                     }
 
-
-                }catch (e:Exception){
-                    withContext(Dispatchers.Main){
-                        errorTxt.visibility = View.VISIBLE
-                        Toast.makeText(context,e.message, Toast.LENGTH_LONG).show()
-                        loadingDialog.dismiss()
-                    }
                 }
-            }
+                .addOnFailureListener {
+                    Log.e("Create User","${it.message}")
+                    binding.signupLay.errorMessageText.visibility = View.VISIBLE
+                    binding.signupLay.errorMessageText.text = "${it.message}"
+                    loadingDialog.dismiss()
+                }
+
 
         }
     }
-    private suspend  fun createPaths(){
 
+
+    private suspend  fun createPaths(){
 
         val timstamp1 = FieldValue.serverTimestamp()
 
@@ -206,12 +221,11 @@ class SignUpFragment : Fragment() {
         userMap["Is_user"] = true
         userMap["Is_seller"] = true
         userMap["signup_date"] = timstamp1
+        userMap["seller_register_date"] = timstamp1
         userMap["mobile_No"] = phone.editText?.text.toString().trim()
         userMap["profile"] = ""
+        userMap["new_notification"] = timstamp1
 
-
-        val sellerDataMap: MutableMap<String, Any> = HashMap()
-        sellerDataMap["new_notification"] = timstamp1
 
         val paymentMap: MutableMap<String, Any> = HashMap()
         paymentMap["current_amount"] = 0L
@@ -220,62 +234,52 @@ class SignUpFragment : Fragment() {
         businessDetailsMap["Business_name"] = ""
         businessDetailsMap["Business_type"] = ""
         businessDetailsMap["Is_BusinessDetail_Added"] = false
-
+        businessDetailsMap["is_address_verified"] = false
 
         val bankDetailsMap: MutableMap<String, Any> = HashMap()
-        bankDetailsMap["Bank_account_number"] = ""
-        bankDetailsMap["Bank_ifsc_code"] = ""
-        bankDetailsMap["UPI_Type"] = ""
         bankDetailsMap["UPI_id"] =""
         bankDetailsMap["Is_BankDetail_Added"] = false
-
 
         val welcomeNoti: String = getString(R.string.welcome_notification_for_seller)
 
 
 
 
+        val notificationMap: MutableMap<String, Any> = HashMap()
+        notificationMap["date"] = FieldValue.serverTimestamp()
+        notificationMap["description"] = welcomeNoti
+        notificationMap["image"] = ""
+        notificationMap["NOTIFICATION_CODE"]=0L
+        notificationMap["order_id"] = ""
+        notificationMap["seen"] = false
+        //0 = non clickable
 
+        val listSizeMap: MutableMap<String, Any> = HashMap()
+        listSizeMap["listSize"] = 0L
 
+        val addressMap: MutableMap<String, Any> = HashMap()
+        addressMap["select_No"] = 0L
 
             if (firebaseAuth.currentUser!=null){
+
                 val currentUser = firebaseAuth.currentUser!!.uid
+                val docRef = firebaseFirestore.collection("USERS").document(currentUser)
 
-                firebaseFirestore.collection("USERS").document(currentUser).set(userMap).await()
+                docRef.set(userMap).await()
+                docRef.collection("NOTIFICATIONS").add(notificationMap).await()
 
+                val sellerRef = docRef.collection("SELLER_DATA")
+                sellerRef.document("BANK_DETAILS").set(bankDetailsMap).await()
+                sellerRef.document("BUSINESS_DETAILS").set(businessDetailsMap).await()
+                sellerRef.document("MY_EARNING").set(paymentMap).await()
 
-                val docRef = firebaseFirestore.collection("USERS")
-                    .document(currentUser).collection("SELLER_DATA")
-
-                docRef.document("BANK_DETAILS").set(bankDetailsMap).await()
-                docRef.document("BUSINESS_DETAILS").set(businessDetailsMap).await()
-                docRef.document("PAYMENT_REQUESTS").set(paymentMap).await()
-
-                val sellerRef = docRef.document("SELLER_DATA")
-                sellerRef.set(sellerDataMap).await()
-
-                val notificationMap: MutableMap<String, Any> = HashMap()
-                notificationMap["date"] = FieldValue.serverTimestamp()
-                notificationMap["description"] = welcomeNoti
-                notificationMap["image"] = ""
-                notificationMap["order_id"] = ""
-                notificationMap["seen"] = false
+                val userRef =  docRef.collection("USER_DATA")
+                userRef.document("MY_ADDRESSES").set(addressMap).await()
+                userRef.document("MY_CART").set(listSizeMap).await()
+                userRef.document("MY_ORDERS").set(listSizeMap).await()
+                userRef.document("MY_WISHLIST").set(listSizeMap).await()
 
 
-                sellerRef.collection("NOTIFICATION").add(notificationMap)
-                    .addOnSuccessListener { Log.i("Notification","Successfully added") }
-                    .addOnFailureListener { Log.e("Notification","${it.message}") }.await()
-
-
-//                SELLER_DATA ->document
-
-//todo                sub collections
-//                    1)ORDERS
-//                    2)NOTIFICATION
-//                    3)SALES_REPORT
-//                    4)TRANSACTION_HISTORY
-
-//                sub collections will be created automatically when a document added
 
                 withContext(Dispatchers.Main){
                     Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
@@ -285,10 +289,6 @@ class SignUpFragment : Fragment() {
                     loadingDialog.dismiss()
                 }
             }
-
-
-
-
 
     }
 

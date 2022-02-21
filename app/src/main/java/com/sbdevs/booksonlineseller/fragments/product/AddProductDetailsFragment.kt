@@ -75,6 +75,10 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     private var bookConditionRadio: RadioButton? = null
     private lateinit var stockQuantity: EditText
 
+    private lateinit var productReturnRadioTogole: RadioGroup
+    private var productReturnRadio: RadioButton? = null
+    private var returnAvalilable = true
+
 
     private var printDateMandatory: Boolean = false
     private val categoryList: MutableList<String> = ArrayList()
@@ -142,12 +146,13 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         myOwnCategoryText = lay3.myOwnCategoryEditText
         tagInput = lay3.editTags
         stockQuantity = lay2.stockQuantity
+        productReturnRadioTogole = binding.lay2.productReturnToggole
 
 
         currentYear = Year.now().value
 
 
-        val productThumbnail: ImageView = binding.lay4.productThumbnail
+        //val productThumbnail: ImageView = binding.lay4.productThumbnail
 
         val recyclerView = binding.lay4.uploadImageRecycler
         recyclerView.layoutManager = LinearLayoutManager(
@@ -156,34 +161,34 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         )
         adapterNewUpload = NewUploadImageAdapter(uriList, this)
 
-        val startForThumbnail =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-                val resultCode = result.resultCode
-                val data = result.data
-
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        //Image Uri will not be null for RESULT_OK
-                        thumbUri = data?.data!!
-
-//                        val namefile = getFileName(thumbUri!!)
-//                        binding.lay4.errorMessageText.text = namefile
-                        Glide.with(this).load(thumbUri).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
-
-                        loadingDialog.dismiss()
-                    }
-                    ImagePicker.RESULT_ERROR -> {
-                        Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-                        Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
-                        loadingDialog.dismiss()
-                    }
-                    else -> {
-                        Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
-                        loadingDialog.dismiss()
-
-                    }
-                }
-            }
+//        val startForThumbnail =
+//            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+//                val resultCode = result.resultCode
+//                val data = result.data
+//
+//                when (resultCode) {
+//                    Activity.RESULT_OK -> {
+//                        //Image Uri will not be null for RESULT_OK
+//                        thumbUri = data?.data!!
+//
+////                        val namefile = getFileName(thumbUri!!)
+////                        binding.lay4.errorMessageText.text = namefile
+//                        Glide.with(this).load(thumbUri).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
+//
+//                        loadingDialog.dismiss()
+//                    }
+//                    ImagePicker.RESULT_ERROR -> {
+//                        Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+//                        Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
+//                        loadingDialog.dismiss()
+//                    }
+//                    else -> {
+//                        Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
+//                        loadingDialog.dismiss()
+//
+//                    }
+//                }
+//            }
 
         val startForProductImages =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -219,20 +224,21 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             }
 
 
-        productThumbnail.setOnClickListener {
-            ImagePicker.with(this)
-                .crop()
-                .compress(100)
-                .maxResultSize(500, 500) //Final image resolution will be less than 1080 x 1080
-                .createIntent { intent ->
-                    startForThumbnail.launch(intent)
-                    loadingDialog.show(childFragmentManager, "Show")
-                }
-        }
+//        productThumbnail.setOnClickListener {
+//            ImagePicker.with(this)
+//                .crop()
+//                .compress(100)
+//                .maxResultSize(500, 500) //Final image resolution will be less than 1080 x 1080
+//                .createIntent { intent ->
+//                    startForThumbnail.launch(intent)
+//                    loadingDialog.show(childFragmentManager, "Show")
+//                }
+//        }
+
         binding.lay4.selectImageBtn.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
-                .compress(600)
+                .compress(700)
                 .maxResultSize(900, 900) //Final image resolution will be less than 1080 x 1080
                 .createIntent { intent ->
                     loadingDialog.show(childFragmentManager, "Show")
@@ -280,6 +286,20 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
         lay2.bookConditionToggle.setOnCheckedChangeListener { group, checkedId ->
             bookConditionRadio = group.findViewById(checkedId)
+
+        }
+
+        productReturnRadioTogole.setOnCheckedChangeListener { group, checkedId ->
+            productReturnRadio = group.findViewById(checkedId)
+
+            when (checkedId) {
+                R.id.return_radio1 -> {
+                    returnAvalilable = true
+                }
+                R.id.return_radio2 -> {
+                    returnAvalilable = false
+                }
+            }
 
         }
 
@@ -555,17 +575,29 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         }
     }
 
-    private fun checkThumbnail(): Boolean {
-        return if (thumbUri == null) {
-            binding.lay4.errorMessageText.text = "Select image"
-            binding.lay4.errorMessageText.visibility = View.VISIBLE
+    private fun checkProductReturnState():Boolean{
+        return if (productReturnRadio == null) {
+            binding.lay2.returnContainer.backgroundTintList =
+                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
             false
         } else {
-            binding.lay4.errorMessageText.text = ""
-            binding.lay4.errorMessageText.visibility = View.GONE
+            binding.lay2.returnContainer.backgroundTintList =
+                AppCompatResources.getColorStateList(requireContext(), R.color.white)
             true
         }
     }
+
+//    private fun checkThumbnail(): Boolean {
+//        return if (thumbUri == null) {
+//            binding.lay4.errorMessageText.text = "Select image"
+//            binding.lay4.errorMessageText.visibility = View.VISIBLE
+//            false
+//        } else {
+//            binding.lay4.errorMessageText.text = ""
+//            binding.lay4.errorMessageText.visibility = View.GONE
+//            true
+//        }
+//    }
 
     private fun checkProductImage(): Boolean {
         val selectBtn = binding.lay4.selectImageBtn
@@ -576,9 +608,9 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             selectBtn.requestFocus()
             false
         } else {
-            if(uriList.size <3) {
+            if(uriList.size >3) {
                 val message =  binding.lay4.textView44
-                message.text = "Select minimum 3 image"
+                message.text = "Select maximum 3 images only"
 
                 message.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.red_700))
 
@@ -595,9 +627,9 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     private fun checkAllDetails(v: View?) {
         val documentName: String =  generateDocName()
         if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage() or !checkPageCount()
-            or !checkDimensionWidth() or !checkDimensionLength() or !checkDimensionHeight()
+            or !checkDimensionWidth() or !checkDimensionLength() or !checkDimensionHeight() or !checkProductReturnState()
             or !checkDescription() or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()
-            or !checkTags() or !checkStock() or !checkPrintDate() or !checkThumbnail() or !checkProductImage()
+            or !checkTags() or !checkStock() or !checkPrintDate()  or !checkProductImage()
         ) {
             loadingDialog.dismiss()
             Snackbar.make(v!!, "Fill all fields", Snackbar.LENGTH_SHORT).show()
@@ -608,12 +640,11 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                     addNewProduct(v, documentName)
                     delay(1000)
                 }
-                withContext(Dispatchers.IO) {
-                    uploadThumbnail(documentName)
-                }
+//                withContext(Dispatchers.IO) {
+//                    uploadThumbnail(documentName)
+//                }
                 withContext(Dispatchers.IO) {
                     uploadProductImage(documentName)
-                    delay(1000)
                 }
             }
 
@@ -644,14 +675,12 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         if (discountPrice.editText!!.text.toString().isEmpty()) {
             addProductMap["price_selling"] = bookPrice.editText!!.text.toString().toLong()
             addProductMap["price_original"] = 0L
-
         } else {
             addProductMap["price_selling"] = discountPrice.editText!!.text.toString().toLong()
             addProductMap["price_original"] = bookPrice.editText!!.text.toString().toLong()
         }
 
         addProductMap["number_of_item_sold"] = 0L
-
         addProductMap["book_condition"] = bookConditionRadio?.tag.toString().trim()
         addProductMap["book_type"] = bookStateRadio?.tag.toString().trim()
         addProductMap["product_thumbnail"] = ""
@@ -666,7 +695,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                 addProductMap["book_printed_ON"] = 0L
             }
         }
-
         addProductMap["hide_this_product"] = false
         addProductMap["in_stock_quantity"] = stockQuantity.text.toString().toLong()
         addProductMap["categories"] = categoryList
@@ -680,6 +708,10 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         addProductMap["rating_Star_1"] = 0L
         addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
         addProductMap["PRODUCT_SELLER_ID"] = user!!.uid
+        addProductMap["product_return_available"] = returnAvalilable
+
+
+
         //loadingDialog.show()
         firebaseFirestore.collection("PRODUCTS").document(documentName).set(addProductMap)
             .addOnSuccessListener {
@@ -691,6 +723,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                 Snackbar.make(v!!, "Failed to add product", Snackbar.LENGTH_SHORT).show()
             }
     }
+
 
     private fun uploadThumbnail(productID: String) {
         //val mRef: StorageReference = storageReference.child("image/" + user!!.uid + "/").child(getFileName(thumbUri!!))
@@ -725,15 +758,18 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                     .child("$currentYear/")
                     .child("$productID/")
                     .child(nameList[i])
+
             allRef.putFile(uriList[i])
-                .addOnCompleteListener {
+                .addOnSuccessListener {
                     allRef.downloadUrl.addOnSuccessListener {
                         downloadUriList.add(it.toString())
                         when (i) {
                             (uriList.size - 1) -> {
-                                binding.lay4.textView44.text =
-                                    "${uriList.size} and ${downloadUriList.size} and itaretion $i"
-                                updateProductImageLIST(productID, downloadUriList)
+//                                binding.lay4.textView44.text = "${uriList.size} and ${downloadUriList.size} and itaretion $i"
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    updateProductImageLIST(productID, downloadUriList)
+                                }
+
                             }
                             else -> {
                                 Log.i("list size", "not reached the last position")
@@ -744,12 +780,12 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                     }
                 }.addOnFailureListener {
                     Log.e("Upload Product Image", "${it.message}")
-                }
+                }.await()
         }
 
     }
 
-    private fun updateProductImageLIST(productID: String, uriList: MutableList<String>) = CoroutineScope(Dispatchers.IO).launch {
+    private suspend fun updateProductImageLIST(productID: String, uriList: MutableList<String>) {
         val allMap: MutableMap<String, Any> = HashMap()
         allMap["productImage_List"] = uriList
 
@@ -765,7 +801,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         delay(500)
         withContext(Dispatchers.Main){
             loadingDialog.dismiss()
-            activity!!.finish()
+            requireActivity().finish()
         }
     }
 

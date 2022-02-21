@@ -4,7 +4,7 @@ import com.google.firebase.Timestamp
 import java.util.*
 import kotlin.collections.HashMap
 
-data class OrderModel (
+data class SellerOrderModel (
     //val orderTime:Date = Date(),
     val orderId:String  = "",
     val productThumbnail:String = "",

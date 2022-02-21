@@ -50,9 +50,6 @@
         android:name="com.sbdevs.booksonlineseller.fragments.register.AddBankDetailsFragment"
         android:label="fragment_add_bank_details"
         tools:layout="@layout/fragment_add_bank_details" >
-        <action
-            android:id="@+id/action_addBankDetailsFragment_to_myAccountFragment"
-            app:destination="@id/myAccountFragment" />
     </fragment>
 
         <fragment
@@ -73,5 +70,13 @@
             android:id="@+id/withdrawalFragment"
             android:name="com.sbdevs.booksonlineseller.fragments.WithdrawalFragment"
             android:label="fragment_withdrawal"
-            tools:layout="@layout/fragment_withdrawal" />
+            tools:layout="@layout/fragment_withdrawal" >
+            <action
+                android:id="@+id/action_withdrawalFragment_to_addBankDetailsFragment"
+                app:destination="@id/addBankDetailsFragment" />
+            <argument
+                android:name="account_balance"
+                app:argType="integer"
+                android:defaultValue="0" />
+        </fragment>
 </navigation>

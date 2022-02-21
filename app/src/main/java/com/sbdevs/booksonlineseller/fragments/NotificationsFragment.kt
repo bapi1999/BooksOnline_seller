@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -123,15 +124,11 @@ class NotificationsFragment : Fragment() {
 
         val query:Query = if (lastResult == null){
             firebaseFirestore.collection("USERS").document(user!!.uid)
-                .collection("SELLER_DATA")
-                .document("SELLER_DATA")
-                .collection("NOTIFICATION")
+                .collection("NOTIFICATIONS")
                 .orderBy("date", Query.Direction.DESCENDING)
         }else{
             firebaseFirestore.collection("USERS").document(user!!.uid)
-                .collection("SELLER_DATA")
-                .document("SELLER_DATA")
-                .collection("NOTIFICATION")
+                .collection("NOTIFICATIONS")
                 .orderBy("date", Query.Direction.DESCENDING)
                 .startAfter(times)
 
@@ -139,7 +136,7 @@ class NotificationsFragment : Fragment() {
 
         query.limit(10).get().addOnSuccessListener {
             val allDocumentSnapshot = it.documents
-
+            Toast.makeText(requireContext(),"${allDocumentSnapshot.size}",Toast.LENGTH_SHORT).show()
             if (allDocumentSnapshot.isNotEmpty()){
                 isReachLast = allDocumentSnapshot.size != 10
                 for (item in allDocumentSnapshot){
@@ -176,11 +173,11 @@ class NotificationsFragment : Fragment() {
                     notificationAdapter.notifyItemRangeInserted(notificationList.size-1,resultList.size)
                 }
 
-                loadingDialog.dismiss()
 
-                binding.progressBar2.visibility = View.GONE
             }
+            loadingDialog.dismiss()
 
+            binding.progressBar2.visibility = View.GONE
 
         }.addOnFailureListener{
             Log.e("NotificationFragment","${it.message}")

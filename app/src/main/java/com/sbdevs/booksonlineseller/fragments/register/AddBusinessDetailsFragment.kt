@@ -50,6 +50,7 @@ class AddBusinessDetailsFragment : Fragment() {
 
     private lateinit var businessType: TextInputLayout
     private lateinit var businessNameInput: TextInputLayout
+    private lateinit var businessPhoneInput: TextInputLayout
     private lateinit var addressLine1Input: TextInputLayout
     private lateinit var townOrVillInput: TextInputLayout
     private lateinit var pincodeInput: TextInputLayout
@@ -58,7 +59,7 @@ class AddBusinessDetailsFragment : Fragment() {
     lateinit var autoCompleteState: AutoCompleteTextView
     private lateinit var image: ImageView
 
-    private val args: AddBusinessDetailsFragmentArgs by navArgs()
+    private val args:AddBusinessDetailsFragmentArgs by navArgs()
 
 
 
@@ -105,6 +106,7 @@ class AddBusinessDetailsFragment : Fragment() {
 
         businessType = businessLay.businessType
         businessNameInput = businessLay.businessName
+        businessPhoneInput = businessLay.businessPhoneNo
         addressLine1Input = businessLay.businessAddressLine1
         townOrVillInput = businessLay.cityOrVill
         pincodeInput = businessLay.pincode
@@ -112,7 +114,7 @@ class AddBusinessDetailsFragment : Fragment() {
         autoCompleteType = businessLay.autoCompleteType
         autoCompleteState = businessLay.autoCompleteState
 
-        cameFrom = args.cameFrom
+        cameFrom = null// args.cameFrom
 
         if (cameFrom == null) {
             binding.skipBtn.visibility = View.VISIBLE
@@ -187,6 +189,19 @@ class AddBusinessDetailsFragment : Fragment() {
             false
         } else {
             businessNameInput.error = null
+            true
+
+        }
+    }
+
+    private fun checkPhone(): Boolean {
+        val businessPhoneString: String = businessPhoneInput.editText?.text.toString()
+        return if (businessPhoneString.isEmpty()) {
+            businessPhoneInput.isErrorEnabled = true
+            businessPhoneInput.error = "Field can't be empty"
+            false
+        } else {
+            businessPhoneInput.error = null
             true
 
         }
@@ -277,7 +292,7 @@ class AddBusinessDetailsFragment : Fragment() {
     }
 
     private fun checkAllDetails() {
-        if (!checkType() or !checkName() or !checkAddress() or !checkTownVill()
+        if (!checkType() or !checkName() or !checkPhone() or !checkAddress() or !checkTownVill()
             or !checkPincode() or !checkState() or !checkImageUri()
         ) {
 
@@ -310,6 +325,7 @@ class AddBusinessDetailsFragment : Fragment() {
 
         val businessDetailsMap: MutableMap<String, Any> = HashMap()
         businessDetailsMap["Business_name"] = businessNameInput.editText?.text.toString()
+        businessDetailsMap["Business_phone"] = businessPhoneInput.editText?.text.toString()
         businessDetailsMap["is_address_verified"] = false
         businessDetailsMap["Business_type"] = autoCompleteType.text.toString()
         businessDetailsMap["Is_BusinessDetail_Added"] = true

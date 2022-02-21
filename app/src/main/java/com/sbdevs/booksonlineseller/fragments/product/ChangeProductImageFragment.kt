@@ -50,8 +50,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
     private val storage = Firebase.storage
     private val storageReference = storage.reference
 
-    private lateinit var productThumbnail: ImageView
-
     private var productImgList: ArrayList<String> = ArrayList()
     private lateinit var alreadyAddedAdapter: AlreadyUploadedImageAdapter
     private lateinit var alreadyAddedImgRecyclerView: RecyclerView
@@ -65,7 +63,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
 
     private lateinit var updateMessageText: TextView
 
-    var thumbUri: Uri? = null
     private var fileUri: Uri? = null
     private var uriList: ArrayList<Uri> = ArrayList()
     var nameList: ArrayList<String> = ArrayList()
@@ -134,7 +131,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
         alreadyAddedImgRecyclerView = binding.lay4.alreadyUploadImageRecycler
         newAddedImgRecyclerView = binding.lay4.newUploadImageRecycler
 
-        productThumbnail = binding.lay4.productThumbnail
         updateMessageText = binding.updateMessage
 
         alreadyAddedImgRecyclerView.layoutManager = LinearLayoutManager(
@@ -159,14 +155,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
         val itemTouchHelper = ItemTouchHelper(simpleCallback1)
         itemTouchHelper.attachToRecyclerView(alreadyAddedImgRecyclerView)
 
-
-        val url = arguments?.getString("thumbUrl")
-        url?.let {
-            Glide.with(requireContext()).load(url).into(productThumbnail)
-        }
-
-
-
         currentYear = Year.now().value
 
         return binding.root
@@ -174,40 +162,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-        val startForThumbnail =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-                val resultCode = result.resultCode
-                val data = result.data
-
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        //Image Uri will not be null for RESULT_OK
-                        thumbUri = data?.data!!
-
-                        Glide.with(this).load(thumbUri)
-                            .placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
-
-                        loadingDialog.dismiss()
-                    }
-                    ImagePicker.RESULT_ERROR -> {
-                        Toast.makeText(
-                            requireContext(),
-                            ImagePicker.getError(data),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
-                        loadingDialog.dismiss()
-                    }
-                    else -> {
-                        Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT)
-                            .show()
-                        loadingDialog.dismiss()
-
-                    }
-                }
-            }
 
         val startForProductImages =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -245,16 +199,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
             }
 
 
-        binding.lay4.selectThumbnail.setOnClickListener {
-            ImagePicker.with(this)
-                .crop()
-                .compress(100)
-                .maxResultSize(500, 500) //Final image resolution will be less than 1080 x 1080
-                .createIntent { intent ->
-                    startForThumbnail.launch(intent)
-                    loadingDialog.show(childFragmentManager, "Show")
-                }
-        }
         binding.lay4.selectImageBtn.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
@@ -282,10 +226,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
             verificationForProductImage(it)
         }
 
-        binding.lay4.updatdeThumnailBtn.setOnClickListener {
-            loadingDialog.show(childFragmentManager, "Show")
-            verificationForThumbnail(it)
-        }
     }
 
 
@@ -294,7 +234,7 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
         return if (uriList.isEmpty() and productImgList.isEmpty()) {
             selectBtn.backgroundTintList =
                 AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
-
+            binding.lay4.errorMessageText.text  = "No image found"
             selectBtn.requestFocus()
             false
 
@@ -302,49 +242,17 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
 
             if ((uriList.size + productImgList.size)>3){
                 selectBtn.backgroundTintList =
-                    AppCompatResources.getColorStateList(requireContext(), R.color.grey_200)
+                    AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+                binding.lay4.errorMessageText.text = "Maximum 3 images only"
+                selectBtn.requestFocus()
                 true
             }else{
-                selectBtn.backgroundTintList =
-                    AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
-                selectBtn.requestFocus()
-                false
+                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_200)
+
+                true
             }
 
 
-
-        }
-    }
-
-    //todo - flag to check whether or not user swipd the position of items or select a new image
-
-    private fun checkThumbnail(): Boolean {
-        return if (thumbUri == null) {
-            loadingDialog.dismiss()
-            binding.lay4.errorMessageText.visibility = View.VISIBLE
-            binding.lay4.errorMessageText.text = "Select new thumbnail"
-            false
-        } else {
-
-            binding.lay4.errorMessageText.visibility = View.GONE
-            binding.lay4.errorMessageText.text = ""
-
-            true
-        }
-    }
-
-    private fun verificationForThumbnail(v: View?) {
-        if (!checkThumbnail()) {
-            loadingDialog.dismiss()
-            Snackbar.make(v!!, "Thumbnail is not changed", Snackbar.LENGTH_SHORT).show()
-            return
-        } else {
-            viewLifecycleOwner.lifecycleScope.launch {
-                withContext(Dispatchers.IO) {
-                    uploadThumbnail(productId)
-
-                }
-            }
 
         }
     }
@@ -376,6 +284,7 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
                         else -> {
 //                            Snackbar.make(v!!, "nothing change", Snackbar.LENGTH_SHORT).show()
                             Log.w("clicked", "nothing happened")
+                            loadingDialog.dismiss()
                         }
                     }
                 }
@@ -383,39 +292,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
 
         }
     }
-
-
-    private suspend fun uploadThumbnail(productID: String) {
-        val mRef: StorageReference =
-            storageReference.child("image/" + user!!.uid + "/")
-                .child("$currentYear/")
-                .child("$productID/")
-                .child(productID + "thumb")
-        mRef.putFile(thumbUri!!)
-            .addOnCompleteListener {
-                mRef.downloadUrl.addOnSuccessListener {
-                    val uploadThumbMap: MutableMap<String, Any> = HashMap()
-                    uploadThumbMap["product_thumbnail"] = it.toString()
-                    firebaseFirestore.collection("PRODUCTS").document(productID)
-                        .update(uploadThumbMap)
-                        .addOnSuccessListener {
-                            Log.i("Update Product Thumbnail", "Successfully updated")
-                            Toast.makeText(requireContext(), "Thumbnail updated successfully", Toast.LENGTH_LONG).show()
-                            updateMessageText.text = getString(R.string.updated_successfully)
-                            updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.indigo_500))
-                            loadingDialog.dismiss()
-                        }.addOnFailureListener { e ->
-                            Log.e("get Product Thumbnail url", "${e.message}")
-                            updateMessageText.text = getString(R.string.failed_to_update)
-                            updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.red_500))
-                            loadingDialog.dismiss()
-                        }
-                }.addOnFailureListener {
-                    Log.e("uploadThumbnail", "${it.message}")
-                }
-            }
-    }
-
 
 
     private suspend fun uploadProductImage(productID: String) {
@@ -528,8 +404,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
 
     override fun onOldImageDeleteClick(position: Int) {
         deleteedImageList.add(productImgList[position])
-//        updateMessageText.text = "Update images before continue"
-//        updateMessageText.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.amber_900))
         changeInPosition = true
         productImgList.removeAt(position)
         alreadyAddedAdapter.notifyItemRemoved(position)
@@ -566,12 +440,6 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
         }
         return result as String
     }
-
-    private fun clearUri(){
-        uriList.clear()
-        newAddedAdapter.notifyDataSetChanged()
-    }
-
 
     private suspend fun deleteImage() {
         if (deleteedImageList.isNotEmpty()) {

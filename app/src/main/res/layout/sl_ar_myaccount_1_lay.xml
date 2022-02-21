@@ -40,28 +40,28 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:layout_marginEnd="32dp"
         android:ellipsize="end"
+        android:layout_marginStart="16dp"
         android:maxLines="1"
         android:text="+91 8976543210"
         android:textColor="@color/grey_900"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/user_name"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_name" />
 
     <TextView
         android:id="@+id/user_mail"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:ellipsize="end"
-        android:gravity="center"
-        android:maxLines="1"
+        android:layout_marginStart="16dp"
         android:text="namenumber@gmail.com"
         android:textColor="@color/grey_900"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/user_phone"
+        android:maxLines="1"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_phone" />
 
     <ImageView
@@ -119,8 +119,11 @@
             android:text="Loading..."
             android:textAllCaps="true"
             android:textColor="@color/white"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:paddingEnd= "10dp"/>
     </LinearLayout>
 
 

@@ -16,10 +16,10 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
-import com.sbdevs.booksonlineseller.adapters.OrderAdapter
+import com.sbdevs.booksonlineseller.adapters.SellerOrderAdapter
 import com.sbdevs.booksonlineseller.databinding.FragmentOtherOrdersBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
-import com.sbdevs.booksonlineseller.models.OrderModel
+import com.sbdevs.booksonlineseller.models.SellerOrderModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -27,15 +27,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
+class OtherOrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener {
     private var _binding:FragmentOtherOrdersBinding? = null
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
 
-    private var orderList:MutableList<OrderModel> = ArrayList()
-    private lateinit var orderAdapter: OrderAdapter
+    private var sellerOrderList:MutableList<SellerOrderModel> = ArrayList()
+    private lateinit var sellerOrderAdapter: SellerOrderAdapter
     private lateinit var recyclerView: RecyclerView
 
     private var statusString = "shipped"
@@ -89,8 +89,8 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         recyclerView = binding.orderRecycler
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        orderAdapter = OrderAdapter(orderList,this)
-        recyclerView.adapter = orderAdapter
+        sellerOrderAdapter = SellerOrderAdapter(sellerOrderList,this)
+        recyclerView.adapter = sellerOrderAdapter
 
 
         return binding.root
@@ -144,8 +144,8 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                 }
                 R.id.radioButton4->{
 
-                    orderList.clear()
-                    orderAdapter.notifyDataSetChanged()
+                    sellerOrderList.clear()
+                    sellerOrderAdapter.notifyDataSetChanged()
                     lastResult = null
                     isReachLast = true
                     statusString = "canceled"
@@ -161,8 +161,8 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
     private fun changeOrderMethod(status:String, orderTimeType:String){
 
-        orderList.clear()
-        orderAdapter.notifyDataSetChanged()
+        sellerOrderList.clear()
+        sellerOrderAdapter.notifyDataSetChanged()
         lastResult = null
         isReachLast = false
 
@@ -177,7 +177,7 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
     private suspend fun getOrdersByTags(status:String, orderTimeType:String){
 
-        val resultList :ArrayList<OrderModel> = ArrayList()
+        val resultList :ArrayList<SellerOrderModel> = ArrayList()
         resultList.clear()
 
         var query: Query = if (lastResult == null){
@@ -220,7 +220,7 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                     val canceledTime= item.getTimestamp("Time_canceled")?.toDate()
                     val address:MutableMap<String,Any> = item.get("address") as MutableMap<String,Any>
 
-                    resultList.add(OrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
+                    resultList.add(SellerOrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
                         price,already_paid,address,orderTime,acceptedTime,packedTime,
                         shippedTime,deliveredTime,returnedTime,canceledTime))
 
@@ -233,22 +233,22 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
             }
 
-            orderList.addAll(resultList)
+            sellerOrderList.addAll(resultList)
 
 
-            if (orderList.isEmpty()){
+            if (sellerOrderList.isEmpty()){
                 binding.emptyContainer.visibility = visible
                 binding.orderRecycler.visibility = gone
             }else{
                 binding.emptyContainer.visibility = gone
                 binding.orderRecycler.visibility = visible
 
-                orderAdapter.list = orderList
+                sellerOrderAdapter.list = sellerOrderList
 
                 if (lastResult == null ){
-                    orderAdapter.notifyItemRangeInserted(0,resultList.size)
+                    sellerOrderAdapter.notifyItemRangeInserted(0,resultList.size)
                 }else{
-                    orderAdapter.notifyItemRangeInserted(orderList.size-1,resultList.size)
+                    sellerOrderAdapter.notifyItemRangeInserted(sellerOrderList.size-1,resultList.size)
                 }
 
                 val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
@@ -269,7 +269,7 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
     private suspend fun getCanceledOrders(){
 
-        val resultList :ArrayList<OrderModel> = ArrayList()
+        val resultList :ArrayList<SellerOrderModel> = ArrayList()
         resultList.clear()
 
         val query: Query = firebaseFirestore
@@ -303,7 +303,7 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                     val canceledTime= item.getTimestamp("Time_canceled")?.toDate()
                     val address:MutableMap<String,Any> = item.get("address") as MutableMap<String,Any>
 
-                    resultList.add(OrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
+                    resultList.add(SellerOrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
                         price,already_paid,address,orderTime,acceptedTime,packedTime,
                         shippedTime,deliveredTime,returnedTime,canceledTime))
                 }
@@ -312,17 +312,17 @@ class OtherOrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                 isReachLast = true
 
             }
-            orderList.addAll(resultList)
+            sellerOrderList.addAll(resultList)
 
-            if (orderList.isEmpty()){
+            if (sellerOrderList.isEmpty()){
                 binding.emptyContainer.visibility = visible
                 binding.orderRecycler.visibility = gone
             }else{
                 binding.emptyContainer.visibility = gone
                 binding.orderRecycler.visibility = visible
 
-                orderAdapter.list = orderList
-                orderAdapter.notifyDataSetChanged()
+                sellerOrderAdapter.list = sellerOrderList
+                sellerOrderAdapter.notifyDataSetChanged()
             }
             binding.progressBar2.visibility = gone
 

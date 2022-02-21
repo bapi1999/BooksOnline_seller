@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BooksOnlineSeller">
         <activity
+            android:name=".activities.SellerRegisterActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SellerFeesAndPriceActivity"
             android:exported="false" />
         <activity

@@ -1,6 +1,6 @@
 package com.sbdevs.booksonlineseller.fragments
 
-import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -15,21 +15,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FieldValue
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.adapters.EarningAdapter
 import com.sbdevs.booksonlineseller.databinding.FragmentMyEarningBinding
 import com.sbdevs.booksonlineseller.models.EarningModel
-import com.sbdevs.booksonlineseller.models.OrderModel
-import com.squareup.okhttp.Dispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -70,6 +66,7 @@ class MyEarningFragment : Fragment() {
         lifecycleScope.launch(Dispatchers.IO) {
 
             calculateAccountBalance()
+
         }
 
         getAccountBalance()
@@ -91,12 +88,14 @@ class MyEarningFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         withdrawalBtn.setOnClickListener {
-            if (accountBalance>=500){
-                val action = MyEarningFragmentDirections.actionMyEarningFragmentToWithdrawalFragment()
+            if (accountBalance>=200){
+                val action = MyEarningFragmentDirections.actionMyEarningFragmentToWithdrawalFragment(accountBalance.toInt())
                 findNavController().navigate(action)
+
+
             }else{
                 binding.lay1.errorMessageText.visibility = visible
-                binding.lay1.errorMessageText.text = "Minimum balance to withdraw is rs.500"
+                binding.lay1.errorMessageText.text = "Minimum balance to withdraw is rs.200"
             }
 
         }
@@ -143,8 +142,9 @@ class MyEarningFragment : Fragment() {
 
     private fun getAccountBalance() {
         firebaseFirestore.collection("USERS")
-            .document(user!!.uid).collection("SELLER_DATA")
-            .document("PAYMENT_REQUESTS")
+            .document(user!!.uid)
+            .collection("SELLER_DATA")
+            .document("MY_EARNING")
             .addSnapshotListener { value, error ->
                 error?.let {
                     Log.e("Get Account balanceError", "${it.message}")
@@ -217,7 +217,7 @@ class MyEarningFragment : Fragment() {
 
         firebaseFirestore.collection("USERS")
             .document(user!!.uid).collection("SELLER_DATA")
-            .document("PAYMENT_REQUESTS")
+            .document("MY_EARNING")
             .update(newmap)
 
     }
@@ -261,6 +261,9 @@ class MyEarningFragment : Fragment() {
 //        if (elapsedMinutes > 0 || elapsedSeconds > 0) output += "$elapsedSeconds seconds"
         return output
     }
+
+
+
 
 
 }

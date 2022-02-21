@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+
     <LinearLayout
         android:id="@+id/linearLayout7"
         android:layout_width="0dp"
@@ -47,7 +49,7 @@
     </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
+        android:id="@+id/amountInputLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -64,6 +66,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:hint="Enter amount"
+            android:textStyle="bold"
             android:textColor="@color/black"
             android:textSize="17sp" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -75,47 +78,60 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="24dp"
-        android:orientation="horizontal"
+        android:gravity="end"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+        app:layout_constraintTop_toBottomOf="@+id/amountInputLayout">
 
-        <Button
-            android:id="@+id/withdraw_all_btn"
-            android:layout_width="match_parent"
+
+        <TextView
+            android:id="@+id/error_message_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:insetTop="0dp"
-            android:text="Withdraw all"
-            android:textAllCaps="false"
-            android:textColor="@color/white" />
+            android:text="Problem in fetching account balance"
+            android:textColor="@color/red_700"
+            android:layout_marginBottom="8dp"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/withdraw_btn"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:layout_weight="1"
             android:insetTop="0dp"
             android:text="Withdraw"
             android:textAllCaps="false"
             android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/last_wdl_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="right"
+            android:text="Last withdrawal on 20/07/2021"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/request_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="Failed to send payment request"
+            android:textColor="@color/red_700"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 
 
-    <TextView
-        android:id="@+id/last_wdl_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:gravity="right"
-        android:text="Last withdrawal on 20/07/2021"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="12sp"
-        app:layout_constraintTop_toBottomOf="@+id/button_container" />
+
 
     <LinearLayout
         android:id="@+id/linearLayout8"
@@ -128,7 +144,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/last_wdl_date">
+        app:layout_constraintTop_toBottomOf="@+id/button_container">
 
         <TextView
             android:id="@+id/textView57"

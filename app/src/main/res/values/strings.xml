@@ -42,7 +42,7 @@
     <string name="remove">Remove</string>
     <string name="apply">Apply</string>
     <string name="tags">Tags</string>
-    <string name="add_bank_account">Add bank account</string>
+    <string name="add_bank_account">Add UPI Id</string>
     <string name="books_online">BOOKS ONLINE</string>
     <string name="e_g_tags">e.g. school,geography</string>
 
@@ -51,8 +51,9 @@
     <string name="account_balance">Account Balance:</string>
     <string name="minimum_account_balance_to_withdraw">minimum account balance</string>
     <string name="sales_report">Sales Report</string>
-    <string name="you_are_not_a_verified_seller">you are not a verified, seller. Add the business address to get verified</string>
-    <string name="no_bank_account_linked">no bank account is linked to this account. Add bank account to receive payment</string>
+    <string name="you_are_not_a_verified_seller">You are not a verified, seller. Add the business details for verification.</string>
+    <string name="seller_address_not_verified">Your address is not verified yet. Please wait patiently.</string>
+    <string name="no_bank_account_linked">Upi id is not added</string>
     <string name="product_is_visible_to_user">this product is visible to user</string>
     <string name="read_instruction">Read instruction</string>
     <string name="i_agree_to_the_terms_of_service">I agree to the Terms of Service and Privacy Policy</string>

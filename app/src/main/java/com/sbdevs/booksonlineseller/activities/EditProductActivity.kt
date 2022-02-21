@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -52,6 +53,10 @@ class EditProductActivity : AppCompatActivity() {
     private var bookConditionRadio: RadioButton? = null
     private lateinit var stockQuantity: EditText
 
+    private lateinit var productReturnRadioTogole: RadioGroup
+    private var productReturnRadio: RadioButton? = null
+    private var returnAvalilable = true
+
 
 
     private var printDateMandatory: Boolean = false
@@ -94,7 +99,7 @@ class EditProductActivity : AppCompatActivity() {
         categoryInput = lay3.categoryInput
         tagInput = lay3.editTags
         stockQuantity = lay2.stockQuantity
-
+        productReturnRadioTogole = lay2.productReturnToggole
         updateMessageText = binding.updateMessage
 
 
@@ -137,8 +142,20 @@ class EditProductActivity : AppCompatActivity() {
 
         lay2.bookConditionToggle.setOnCheckedChangeListener { group, checkedId ->
             bookConditionRadio = group.findViewById(checkedId)
-
         }
+
+        productReturnRadioTogole.setOnCheckedChangeListener { group, checkedId ->
+            productReturnRadio = group.findViewById(checkedId)
+            when (checkedId) {
+                R.id.return_radio1 -> {
+                    returnAvalilable = true
+                }
+                R.id.return_radio2 -> {
+                    returnAvalilable = false
+                }
+            }
+        }
+
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -172,7 +189,7 @@ class EditProductActivity : AppCompatActivity() {
                 val isbnNumber = it.getString("book_ISBN")
                 val bookDimension = it.getString("book_dimension")
                 val dimensionArray: List<String> = bookDimension!!.split("x")
-
+                returnAvalilable = it.getBoolean("product_return_available")!!
 
                 stockQuantity.setText(stock.toString())
 
@@ -222,6 +239,17 @@ class EditProductActivity : AppCompatActivity() {
                     "refurbished"->{
                         binding.lay2.bookStateToggle.check(R.id.refurb_radioButton)
                         bookStateRadio = binding.lay2.refurbRadioButton
+                    }
+                }
+
+                when{
+                    returnAvalilable ->{
+                        binding.lay2.productReturnToggole.check(R.id.return_radio1)
+                        productReturnRadio = binding.lay2.returnRadio1
+                    }
+                    !returnAvalilable ->{
+                        binding.lay2.productReturnToggole.check(R.id.return_radio2)
+                        productReturnRadio = binding.lay2.returnRadio1
                     }
                 }
 
@@ -504,6 +532,18 @@ class EditProductActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkProductReturnState():Boolean{
+        return if (productReturnRadio == null) {
+            binding.lay2.returnContainer.backgroundTintList =
+                AppCompatResources.getColorStateList(this, R.color.red_a700)
+            false
+        } else {
+            binding.lay2.returnContainer.backgroundTintList =
+                AppCompatResources.getColorStateList(this, R.color.white)
+            true
+        }
+    }
+
 
 
 
@@ -513,7 +553,7 @@ class EditProductActivity : AppCompatActivity() {
         if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage() or !checkPageCount()
             or !checkDimensionWidth() or !checkDimensionLength() or !checkDimensionHeight()
             or !checkDescription() or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()
-            or !checkTags() or !checkStock() or !checkPrintDate()
+            or !checkTags() or !checkStock() or !checkPrintDate() or !checkProductReturnState()
         ) {
             loadingDialog.dismiss()
             Snackbar.make(v!!, "Fill all fields", Snackbar.LENGTH_SHORT).show()
@@ -581,6 +621,7 @@ class EditProductActivity : AppCompatActivity() {
         addProductMap["tags"] = tagList
 
         addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
+        addProductMap["product_return_available"] = returnAvalilable
 
         firebaseFirestore.collection("PRODUCTS").document(documentName).update(addProductMap)
             .addOnSuccessListener {

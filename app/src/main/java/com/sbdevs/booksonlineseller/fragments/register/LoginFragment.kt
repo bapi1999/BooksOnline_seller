@@ -3,6 +3,7 @@ package com.sbdevs.booksonlineseller.fragments.register
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.activities.MainActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentLoginBinding
@@ -28,7 +30,9 @@ class LoginFragment : Fragment() {
     private var _binding: FragmentLoginBinding? =null
     private val binding get() = _binding!!
 
-    val firebaseAuth = Firebase.auth
+    private val firebaseFirestore = Firebase.firestore
+    private val firebaseAuth = Firebase.auth
+
     lateinit var email: TextInputLayout
     lateinit var pass: TextInputLayout
     lateinit var errorTxt: TextView
@@ -117,36 +121,47 @@ class LoginFragment : Fragment() {
     private fun checkAllDetails() {
         if (!checkMail() or !checkPassword()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            loadingDialog.dismiss()
             return
         } else {
-            lifecycleScope.launch(Dispatchers.IO){
-                try {
-                    firebaseAuth.signInWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString())
-                        .addOnSuccessListener {
-                            loadingDialog.dismiss()
 
-                            Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
-                            val intent = Intent(context, MainActivity::class.java)
-                            startActivity(intent)
+            firebaseAuth.signInWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString())
+                .addOnSuccessListener {
+                    checkIsSeller()
 
-                            activity?.finish()
-                        }
-                        .addOnFailureListener {
-                            loadingDialog.dismiss()
-                            Toast.makeText(context,it.message, Toast.LENGTH_LONG).show()
-                        }
-                        .await()
-
-                }catch (e:Exception){
-                    withContext(Dispatchers.Main){
-                        errorTxt.visibility = View.VISIBLE
-                        loadingDialog.dismiss()
-
-                    }
                 }
-            }
+                .addOnFailureListener {
+                    loadingDialog.dismiss()
+                    Log.e("Login user","error: ${it.message}")
+                    errorTxt.visibility = View.VISIBLE
+                }
 
         }
+    }
+
+    private fun checkIsSeller(){
+        firebaseFirestore.collection("USERS")
+            .document(firebaseAuth.currentUser!!.uid).get()
+            .addOnSuccessListener {
+                val isSeller:Boolean = it.getBoolean("Is_seller")!!
+                if (isSeller){
+
+                    loadingDialog.dismiss()
+                    Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(context, MainActivity::class.java)
+                    startActivity(intent)
+                    activity?.finish()
+
+                }else{
+                    val action = LoginFragmentDirections.actionLoginFragmentToNewSellerRegisterFragment()
+                    findNavController().navigate(action)
+                    loadingDialog.dismiss()
+                }
+            }.addOnFailureListener {
+                loadingDialog.dismiss()
+                errorTxt.visibility = View.VISIBLE
+                errorTxt.text = "Error: Can not fetch user details"
+            }
     }
 
 }

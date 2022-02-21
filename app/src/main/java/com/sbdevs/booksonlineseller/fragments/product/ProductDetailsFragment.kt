@@ -61,7 +61,6 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
     private val loadingDialog = LoadingDialog()
 
     private lateinit var enterStockQty:TextInputLayout
-    private lateinit var productThumbnail:ImageView
     private lateinit var thumbnailUrl:String
     private lateinit var productDeleteWarningDialog : Dialog
     private lateinit var stockContainer:LinearLayout
@@ -75,8 +74,6 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
         loadingDialog.show(childFragmentManager,"show")
 
         productImgViewPager = binding.lay1.productImgViewPager
-        productThumbnail = binding.lay1.productThumbnail
-
         val intent = requireActivity().intent
         productId = intent.getStringExtra("productId").toString().trim()
 
@@ -243,8 +240,10 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     val bookPageCount = it.getString("book_pageCount")
                     val isbnNumber = it.getString("book_ISBN")
                     val bookDimension = it.getString("book_dimension")
-                    val dimensionArray: List<String> = bookDimension!!.split("x")
+                    //val dimensionArray: List<String> = bookDimension!!.split("x")
                     productImgList = it.get("productImage_List") as ArrayList<String>
+
+                    val returnAvalilable = it.getBoolean("product_return_available")!!
 
                     dbStockQty = stock.toInt()
 
@@ -256,9 +255,21 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                         tagsString += "#$tag  "
                     }
 
+                    calculateProfit(priceSelling)
 
 
                     lay4.stockQuantity.text = stock.toString()
+
+                    when{
+                        returnAvalilable ->{
+                            binding.lay31.textView55.text = "7 Days Return Policy"
+                        }
+                        !returnAvalilable ->{
+                            binding.lay31.textView55.text = "No Return Policy"
+                        }
+                    }
+
+
 
 
                     val adapter = ProductImgAdapter(productImgList,this@ProductDetailsFragment)
@@ -296,9 +307,9 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     }
 
                     //Glide.with(requireContext()).load(url).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
-                    Picasso.get().load(thumbnailUrl)
-                        .placeholder(R.drawable.as_square_placeholder)
-                        .into(productThumbnail)
+//                    Picasso.get().load(thumbnailUrl)
+//                        .placeholder(R.drawable.as_square_placeholder)
+//                        .into(productThumbnail)
 
                     lay2.productState.text = bookType
                     lay2.miniProductRating.text = avgRating
@@ -339,6 +350,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     lay5.bookCondition.text = bookCondition
                     lay5.pageCount.text = bookPageCount
                     lay5.isbnNumber.text = isbnNumber
+
                     lay5.bookDimension.text = bookDimension
 
                     //todo layout 4
@@ -505,6 +517,19 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
             addToBackStack("imageView")
         }
+    }
+
+    private fun calculateProfit(sellingPrice:Long){
+        val layProfit = binding.layProfit
+        val platformCharge = sellingPrice/10F
+        val pickupCharge = 30F
+        val profit:Float = sellingPrice - platformCharge-pickupCharge
+
+        layProfit.sellingPrice.text = sellingPrice.toString()
+        layProfit.commissionFee.text = platformCharge.toString()
+        layProfit.deliveryFee.text = pickupCharge.toString()
+        layProfit.totalProfit.text = profit.toString()
+
     }
 
 }

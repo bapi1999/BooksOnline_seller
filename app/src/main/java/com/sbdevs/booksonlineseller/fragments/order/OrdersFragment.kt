@@ -23,30 +23,29 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
-import com.sbdevs.booksonlineseller.adapters.OrderAdapter
+import com.sbdevs.booksonlineseller.adapters.SellerOrderAdapter
 import com.sbdevs.booksonlineseller.databinding.FragmentOrdersBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
-import com.sbdevs.booksonlineseller.models.OrderModel
+import com.sbdevs.booksonlineseller.models.SellerOrderModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.util.*
 import kotlin.collections.ArrayList
 
-class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
+class OrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener {
     private var _binding:FragmentOrdersBinding? = null
     private val binding get () = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
 
-    private var paginateOrderList:MutableList<OrderModel> = ArrayList()
-    private lateinit var orderAdapter:OrderAdapter
+    private var paginateSellerOrderList:MutableList<SellerOrderModel> = ArrayList()
+    private lateinit var sellerOrderAdapter:SellerOrderAdapter
     private lateinit var recyclerView:RecyclerView
 
-    private var newOrderList:MutableList<OrderModel> = ArrayList()
-    private var acceptOrderList:MutableList<OrderModel> = ArrayList()
-    private var packOrderList:MutableList<OrderModel> = ArrayList()
+    private var newSellerOrderList:MutableList<SellerOrderModel> = ArrayList()
+    private var acceptSellerOrderList:MutableList<SellerOrderModel> = ArrayList()
+    private var packSellerOrderList:MutableList<SellerOrderModel> = ArrayList()
 
 
     private var statusString: String = "new"
@@ -92,8 +91,8 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         recyclerView = binding.orderRecycler
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        orderAdapter = OrderAdapter(paginateOrderList,this)
-        recyclerView.adapter = orderAdapter
+        sellerOrderAdapter = SellerOrderAdapter(paginateSellerOrderList,this)
+        recyclerView.adapter = sellerOrderAdapter
 
         reasons =resources.getStringArray(R.array.order_cancel_reasons)
 
@@ -122,7 +121,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                         when(statusString){
 
                             "new"->{
-                                if (newOrderList.size == paginateOrderList.size){
+                                if (newSellerOrderList.size == paginateSellerOrderList.size){
                                     Log.e("last query", "reached last")
                                     isReachLast = true
                                     binding.progressBar2.visibility = View.GONE
@@ -130,12 +129,12 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                                 }
                                 else{
                                     binding.progressBar2.visibility = View.VISIBLE
-                                    paginateData(newOrderList,divident,extra)
+                                    paginateData(newSellerOrderList,divident,extra)
                                 }
                             }
 
                             "accepted"->{
-                                if (acceptOrderList.size == paginateOrderList.size){
+                                if (acceptSellerOrderList.size == paginateSellerOrderList.size){
                                     Log.e("last query", "reached last")
                                     isReachLast = true
                                     binding.progressBar2.visibility = View.GONE
@@ -143,12 +142,12 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                                 }
                                 else{
                                     binding.progressBar2.visibility = View.VISIBLE
-                                    paginateData(acceptOrderList,divident,extra)
+                                    paginateData(acceptSellerOrderList,divident,extra)
                                 }
                             }
 
                             "packed"->{
-                                if (packOrderList.size == paginateOrderList.size){
+                                if (packSellerOrderList.size == paginateSellerOrderList.size){
                                     Log.e("last query", "reached last")
                                     isReachLast = true
                                     binding.progressBar2.visibility = View.GONE
@@ -156,7 +155,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                                 }
                                 else{
                                     binding.progressBar2.visibility = View.VISIBLE
-                                    paginateData(packOrderList,divident,extra)
+                                    paginateData(packSellerOrderList,divident,extra)
                                 }
                             }
 
@@ -173,15 +172,15 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
             when(checkedId){
                 R.id.radioButton1->{
                     statusString = "new"
-                    orderTypeChangingMethod(newOrderList)
+                    orderTypeChangingMethod(newSellerOrderList)
                 }
                 R.id.radioButton2->{
                     statusString = "accepted"
-                    orderTypeChangingMethod(acceptOrderList)
+                    orderTypeChangingMethod(acceptSellerOrderList)
                 }
                 R.id.radioButton3->{
                     statusString = "packed"
-                    orderTypeChangingMethod(packOrderList)
+                    orderTypeChangingMethod(packSellerOrderList)
                 }
 
             }
@@ -220,7 +219,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
     private fun getNewOrders(){
 
-        val resultList :ArrayList<OrderModel> = ArrayList()
+        val resultList :ArrayList<SellerOrderModel> = ArrayList()
         resultList.clear()
 
         val newDate = Date();
@@ -265,7 +264,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                         val canceledTime= item.getTimestamp("Time_canceled")?.toDate()
                         val address:MutableMap<String,Any> = item.get("address") as MutableMap<String,Any>
 
-                        resultList.add(OrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
+                        resultList.add(SellerOrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
                             price,already_paid,address,orderTime,acceptedTime,packedTime,
                             shippedTime,deliveredTime,returnedTime,canceledTime))
                     }
@@ -277,11 +276,11 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
 
 
-                newOrderList.addAll(resultList)
+                newSellerOrderList.addAll(resultList)
 
-                binding.radioButton1.text = "New(${newOrderList.size})"
+                binding.radioButton1.text = "New(${newSellerOrderList.size})"
 
-                if (newOrderList.isEmpty()){
+                if (newSellerOrderList.isEmpty()){
                     binding.emptyContainer.visibility = visible
                     binding.orderRecycler.visibility = gone
                 }else{
@@ -289,19 +288,19 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                     binding.orderRecycler.visibility = visible
 
 
-                    val totalItem = newOrderList.size
+                    val totalItem = newSellerOrderList.size
                     divident = totalItem/10
                     extra = totalItem%10
 
                     st += "$totalItem => div= $divident / mod= $extra \n"
 
                     if (totalItem <= 10){
-                        paginateOrderList.addAll(newOrderList)
-                        orderAdapter.list = paginateOrderList
-                        orderAdapter.notifyDataSetChanged()
+                        paginateSellerOrderList.addAll(newSellerOrderList)
+                        sellerOrderAdapter.list = paginateSellerOrderList
+                        sellerOrderAdapter.notifyDataSetChanged()
                         isReachLast = true
                     }else{
-                        paginateData(newOrderList,divident,extra)
+                        paginateData(newSellerOrderList,divident,extra)
                     }
 
 
@@ -322,7 +321,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
     private fun getAcceptedOrders(){
 
-        val resultList :ArrayList<OrderModel> = ArrayList()
+        val resultList :ArrayList<SellerOrderModel> = ArrayList()
         resultList.clear()
 
         var query:Query =  firebaseFirestore.collection("ORDERS")
@@ -352,7 +351,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                     val canceledTime= item.getTimestamp("Time_canceled")?.toDate()
                     val address:MutableMap<String,Any> = item.get("address") as MutableMap<String,Any>
 
-                    resultList.add(OrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
+                    resultList.add(SellerOrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
                         price,already_paid,address,orderTime,acceptedTime,packedTime,
                         shippedTime,deliveredTime,returnedTime,canceledTime))
                 }
@@ -360,8 +359,8 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                 isReachLast = true
             }
 
-            acceptOrderList.addAll(resultList)
-            binding.radioButton2.text = "Accepted(${acceptOrderList.size})"
+            acceptSellerOrderList.addAll(resultList)
+            binding.radioButton2.text = "Accepted(${acceptSellerOrderList.size})"
 
             binding.progressBar2.visibility = gone
 
@@ -376,7 +375,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
     private fun getPackedOrders(){
 
-        val resultList :ArrayList<OrderModel> = ArrayList()
+        val resultList :ArrayList<SellerOrderModel> = ArrayList()
         resultList.clear()
 
         var query:Query =  firebaseFirestore.collection("ORDERS")
@@ -406,7 +405,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                     val canceledTime= item.getTimestamp("Time_canceled")?.toDate()
                     val address:MutableMap<String,Any> = item.get("address") as MutableMap<String,Any>
 
-                    resultList.add(OrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
+                    resultList.add(SellerOrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
                         price,already_paid,address,orderTime,acceptedTime,packedTime,
                         shippedTime,deliveredTime,returnedTime,canceledTime))
                 }
@@ -414,8 +413,8 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
                 isReachLast = true
             }
 
-            acceptOrderList.addAll(resultList)
-            binding.radioButton2.text = "Accepted(${acceptOrderList.size})"
+            acceptSellerOrderList.addAll(resultList)
+            binding.radioButton2.text = "Accepted(${acceptSellerOrderList.size})"
 
             binding.progressBar2.visibility = gone
 
@@ -427,37 +426,37 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         }
     }
 
-    private fun paginateData( orderList:MutableList<OrderModel>,divCount:Int,extra:Int){
+    private fun paginateData(sellerOrderList:MutableList<SellerOrderModel>, divCount:Int, extra:Int){
 
-        val kh: MutableList<OrderModel> = ArrayList()
+        val kh: MutableList<SellerOrderModel> = ArrayList()
 
         if (divCount == 0 && extra > 0){
             for (i in lowerPoint until (lowerPoint+extra)){
-                kh.add(orderList[i])
+                kh.add(sellerOrderList[i])
             }
 
-            paginateOrderList.addAll(kh)
-            orderAdapter.list = paginateOrderList
-            orderAdapter.notifyItemRangeInserted(lowerPoint,extra)
+            paginateSellerOrderList.addAll(kh)
+            sellerOrderAdapter.list = paginateSellerOrderList
+            sellerOrderAdapter.notifyItemRangeInserted(lowerPoint,extra)
 
 
-            st += "method 1 ${orderList.size} => div= $divCount / mod= $extra / listsize = ${kh.size} \n"
+            st += "method 1 ${sellerOrderList.size} => div= $divCount / mod= $extra / listsize = ${kh.size} \n"
 
         }else if (divCount>0){
 
             for (i in lowerPoint .. upperPoint){
-                kh.add(orderList[i])
+                kh.add(sellerOrderList[i])
             }
-            paginateOrderList.addAll(kh)
-            orderAdapter.list = paginateOrderList
-            orderAdapter.notifyItemRangeInserted(lowerPoint,10)
+            paginateSellerOrderList.addAll(kh)
+            sellerOrderAdapter.list = paginateSellerOrderList
+            sellerOrderAdapter.notifyItemRangeInserted(lowerPoint,10)
 
             lowerPoint+=10
             upperPoint+=10
 
             divident-=1
 
-            st += "method 2 ${orderList.size} => div= $divCount / mod= $extra / listsize = ${kh.size} \n"
+            st += "method 2 ${sellerOrderList.size} => div= $divCount / mod= $extra / listsize = ${kh.size} \n"
 
         }else{
             //Toast.makeText(requireContext()," divident gone -ve",Toast.LENGTH_SHORT).show()
@@ -472,14 +471,14 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
 
 
 
-    private fun orderTypeChangingMethod(list: MutableList<OrderModel>){
+    private fun orderTypeChangingMethod(list: MutableList<SellerOrderModel>){
         //orderList.clear()
-        paginateOrderList.clear()
+        paginateSellerOrderList.clear()
         lowerPoint = 0
         upperPoint = 9
         divident =0
         extra = 0
-        orderAdapter.notifyDataSetChanged()
+        sellerOrderAdapter.notifyDataSetChanged()
         lastResult = null
         isReachLast = false
 
@@ -495,9 +494,9 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
             extra = totalItem%10
 
             if (totalItem <= 10){
-                paginateOrderList.addAll(list)
-                orderAdapter.list = paginateOrderList
-                orderAdapter.notifyDataSetChanged()
+                paginateSellerOrderList.addAll(list)
+                sellerOrderAdapter.list = paginateSellerOrderList
+                sellerOrderAdapter.notifyDataSetChanged()
                 isReachLast = true
 
             }else{
@@ -561,29 +560,29 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
     override fun acceptClickListener(position: Int) {
 
         loadingDialog.show(childFragmentManager,"show")
-        val orderId = paginateOrderList[position].orderId
-        Toast.makeText(requireContext(),"size${paginateOrderList.size} / $orderId",Toast.LENGTH_LONG).show()
+        val orderId = paginateSellerOrderList[position].orderId
+        Toast.makeText(requireContext(),"size${paginateSellerOrderList.size} / $orderId",Toast.LENGTH_LONG).show()
         updateOrder(orderId,"accepted")
-        orderAdapter.notifyItemRemoved(position)
+        sellerOrderAdapter.notifyItemRemoved(position)
 
 
     }
 
     override fun rejectClickListener(position: Int) {
-        val orderId = paginateOrderList[position].orderId
+        val orderId = paginateSellerOrderList[position].orderId
         dialogOption(orderId)
-        Toast.makeText(requireContext(),"size${paginateOrderList.size} / $orderId",Toast.LENGTH_LONG).show()
+        Toast.makeText(requireContext(),"size${paginateSellerOrderList.size} / $orderId",Toast.LENGTH_LONG).show()
     }
 
     override fun shipClickListener(position: Int) {
         loadingDialog.show(childFragmentManager,"show")
-        val orderId = paginateOrderList[position].orderId
+        val orderId = paginateSellerOrderList[position].orderId
         updateOrder(orderId,"shipped")
-        orderAdapter.notifyItemRemoved(position)
+        sellerOrderAdapter.notifyItemRemoved(position)
     }
 
     override fun cancelClickListener(position: Int) {
-        val orderId = paginateOrderList[position].orderId
+        val orderId = paginateSellerOrderList[position].orderId
         dialogOption(orderId)
     }
 
@@ -595,7 +594,7 @@ class OrdersFragment : Fragment(),OrderAdapter.OrderItemClickListener {
         )
         qtyDialog.requestWindowFeature(1)
 
-        qtyDialog.setContentView(R.layout.le_order_cancellation_lay_1)
+        qtyDialog.setContentView(R.layout.sl_le_order_cancellation_lay_1)
         qtyDialog.setCancelable(true)
         qtyDialog.window!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
 

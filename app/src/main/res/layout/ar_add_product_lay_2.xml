@@ -64,7 +64,6 @@
             android:id="@+id/textView62"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             android:text="Book Type*"
             android:textColor="@color/grey_900"
             android:textSize="17sp"
@@ -109,6 +108,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            app:hintEnabled="false"
             app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -140,7 +140,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             android:text="Book Condition*"
             android:textColor="@color/grey_900"
             android:textSize="17sp" />
@@ -196,7 +195,6 @@
         android:background="@drawable/s_border_1"
         android:backgroundTint="@color/white"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bookConditionLayout">
 
@@ -230,6 +228,55 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/return_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical"
+        android:background="@drawable/s_border_2"
+        android:backgroundTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/stockquantity_layout">
+
+        <TextView
+            android:id="@+id/textView54"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Product Return"
+            android:textSize="17sp"
+            android:textColor="@color/grey_900"
+            app:drawableEndCompat="@drawable/ic_info_24"
+            android:drawablePadding="4dp"
+            app:drawableTint="@color/grey_900" />
+
+        <RadioGroup
+            android:id="@+id/productReturnToggole"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RadioButton
+                android:id="@+id/return_radio1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="yes"
+                android:text="Available"
+                android:textSize="15sp"/>
+
+            <RadioButton
+                android:id="@+id/return_radio2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:tag="no"
+                android:text="Not available"
+                android:textSize="15sp"/>
+        </RadioGroup>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

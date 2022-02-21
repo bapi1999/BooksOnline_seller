@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_loginFragment_to_forgotPasswordFragment"
             app:destination="@id/forgotPasswordFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_newSellerRegisterFragment"
+            app:destination="@id/newSellerRegisterFragment" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -50,7 +53,15 @@
         <argument
             android:name="came_from"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="null" />
+            app:nullable="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/newSellerRegisterFragment"
+        android:name="com.sbdevs.booksonlineseller.fragments.register.NewSellerRegisterFragment"
+        android:label="fragment_new_seller_register"
+        tools:layout="@layout/fragment_new_seller_register" >
+        <action
+            android:id="@+id/action_newSellerRegisterFragment_to_addBusinessDetailsFragment"
+            app:destination="@id/addBusinessDetailsFragment" />
     </fragment>
 </navigation>

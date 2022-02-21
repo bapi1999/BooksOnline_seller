@@ -12,80 +12,17 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:gravity="end"
         android:orientation="vertical"
-        android:visibility="gone"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView42"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bank account No:" />
-
-            <TextView
-                android:id="@+id/acc_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="12345678098"
-                android:textColor="@color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView45"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="IFSC code:" />
-
-            <TextView
-                android:id="@+id/ifsc_code"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="SBIN0000123"
-                android:textColor="@color/black" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView47"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Name:" />
-
-            <TextView
-                android:id="@+id/banking_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Jhon Doe"
-                android:textColor="@color/black" />
-        </LinearLayout>
-
-        <LinearLayout
+            android:id="@+id/upiContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -96,46 +33,37 @@
                 android:id="@+id/textView49"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="UPI Id:" />
+                android:text="UPI Id:"
+                android:textColor="@color/grey_900"
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/uip_id_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="1234567809@upi / jhone@upi"
-                android:textColor="@color/black" />
+                android:text="null"
+                android:textColor="@color/grey_900"
+                android:textSize="17sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/no_account_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="end"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/details_container">
         <TextView
+            android:id="@+id/warningBankText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/s_shape_bg_3"
             android:backgroundTint="@color/red_500"
             android:padding="10dp"
             android:text="@string/no_bank_account_linked"
-            android:textSize="13sp"
             android:textColor="@color/white"
-            android:drawableStart="@drawable/ic_error_outline_24"
-            android:drawableTint="@color/white"/>
+            android:textSize="13sp"
+            app:drawableStartCompat="@drawable/ic_error_outline_24"
+            app:drawableTint="@color/white" />
 
         <Button
-            android:id="@+id/no_account_add_new"
+            android:id="@+id/add_new_upi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -147,5 +75,6 @@
             app:layout_constraintTop_toBottomOf="@+id/details_container" />
 
     </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

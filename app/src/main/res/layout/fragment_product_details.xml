@@ -84,7 +84,7 @@
 
             <include
                 android:id="@+id/lay_1"
-                layout="@layout/ar_product_detail_lay_1" />
+                layout="@layout/sl_ar_product_detail_lay_1" />
 
             <include
                 android:id="@+id/lay_2"
@@ -92,7 +92,11 @@
 
             <include
                 android:id="@+id/lay_4"
-                layout="@layout/ar_product_detail_lay_4" />
+                layout="@layout/sl_ar_product_detail_lay_4" />
+
+            <include
+                android:id="@+id/lay_31"
+                layout="@layout/sl_ar_product_detail_lay_3_1" />
 
             <include
                 android:id="@+id/lay_3"

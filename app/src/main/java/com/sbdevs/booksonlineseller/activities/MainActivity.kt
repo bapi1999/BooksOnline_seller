@@ -1,63 +1,56 @@
 package com.sbdevs.booksonlineseller.activities
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.viewModels
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.ActivityMainBinding
-
-import com.google.android.material.badge.BadgeDrawable
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import com.sbdevs.booksonlineseller.fragments.NotificationsFragment
 import com.sbdevs.booksonlineseller.fragments.order.OrdersFragment
-import com.sbdevs.booksonlineseller.models.DashboardCountModel
-import com.sbdevs.booksonlineseller.models.MyProductModel
 import com.sbdevs.booksonlineseller.models.NotificationModel
-import com.sbdevs.booksonlineseller.otherclass.MainViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.util.ArrayList
+import java.util.*
+import kotlin.collections.HashMap
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var navController:NavController
+
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
 
     private lateinit var notificationBadgeText: TextView
-    var productlist: ArrayList<MyProductModel> = ArrayList()
-    private lateinit var newOrder :String
-    private val fragmentViewModel:MainViewModel by viewModels()
     private lateinit var timeStamp: Timestamp
     private var notificationList:List<NotificationModel> = ArrayList()
     private val loadingDialog = LoadingDialog()
+    private lateinit var bottomSheetDialog: BottomSheetDialog
+
+    private val gone = View.GONE
+    private val visible = View.VISIBLE
+
+    //for bottom message dialog
+    private lateinit var applyBtn: Button
+    private lateinit var normalMessage: TextView
+    private lateinit var warningMessage: TextView
+    //=========================
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,52 +59,37 @@ class MainActivity : AppCompatActivity() {
 
         notificationBadgeText  = binding.layNotify.notificationBadgeCounter
 
-        loadingDialog.show(supportFragmentManager,"show")
+//        loadingDialog.show(supportFragmentManager,"show")
 
+        bottomSheetDialog = BottomSheetDialog(this, R.style.CustomBottomSheetDialog)
+        val view: View = layoutInflater.inflate(R.layout.sl_first_message_bottom_dialog, null)
+        bottomSheetDialog.setContentView(view)
+        bottomSheetDialog.setCancelable(false)
+
+        applyBtn= bottomSheetDialog.findViewById(R.id.dismiss_btn)!!
+        normalMessage= bottomSheetDialog.findViewById(R.id.message_notrmal)!!
+        warningMessage= bottomSheetDialog.findViewById(R.id.message_warning)!!
+        applyBtn.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
 
         lifecycleScope.launch(Dispatchers.Main) {
+            isUserVerified()
             getTimeStamp()
-            delay(1000)
+//            withContext(Dispatchers.Main){
+//                loadingDialog.dismiss()
+//            }
 
-            withContext(Dispatchers.Main){
 
-                loadingDialog.dismiss()
-            }
         }
+
         val orderFragment = OrdersFragment()
-
         supportFragmentManager.beginTransaction().replace(R.id.main_frame_layout,orderFragment).commit()
-
-
-        //val navView: BottomNavigationView = binding.navView
-//        val navHostFragment = supportFragmentManager.findFragmentById(
-//            R.id.nav_host_fragment_activity_main
-//        ) as NavHostFragment
-//
-//        navController = navHostFragment.navController // findNavController(R.id.nav_host_fragment_activity_main)
-//
-//        val appBarConfiguration = AppBarConfiguration(
-//            setOf(
-//                 R.id.ordersFragment2,R.id.myProductFragment2,R.id.myEarningFragment
-//            )
-//        )
-//        setSupportActionBar(binding.toolbar)
-//        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        //navView.setupWithNavController(navController)
-
 
     }
 
-
-
-
-
-
     override fun onStart() {
         super.onStart()
-       //getNotificationForOptionMenu()
-
         binding.layNotify.notificationContainer.setOnClickListener {
 
             updateNotificationForOptionMenu()
@@ -131,6 +109,17 @@ class MainActivity : AppCompatActivity() {
             startActivity(menuIntent)
             overridePendingTransition(R.anim.slide_in_left,R.anim.slide_out_right)
         }
+
+
+    }
+
+
+    private fun dialogFunction(dialog: BottomSheetDialog,message:String,messageType:Long) {
+        val applyBtn: AppCompatButton = dialog.findViewById(R.id.dismiss_btn)!!
+        val normalMessage: TextView = dialog.findViewById(R.id.message_notrmal)!!
+        val warningMessage: TextView = dialog.findViewById(R.id.message_warning)!!
+
+
     }
 
 
@@ -138,9 +127,7 @@ class MainActivity : AppCompatActivity() {
 
         val ref = firebaseFirestore.collection("USERS")
             .document(user!!.uid)
-            .collection("SELLER_DATA")
-            .document("SELLER_DATA")
-            .collection("NOTIFICATION")
+            .collection("NOTIFICATIONS")
             .whereGreaterThan("date",timeStamp1)
 
         ref.addSnapshotListener { value, error ->
@@ -153,7 +140,7 @@ class MainActivity : AppCompatActivity() {
 
                 notificationList = it.toObjects(NotificationModel::class.java)
 
-                //binding.layNotify.notificationBadgeCounter.text= notificationList.size.toString()
+//                binding.layNotify.notificationBadgeCounter.text= notificationList.size.toString()
                 if (notificationList.isEmpty()){
                     textView.visibility = View.GONE
                 }else{
@@ -168,33 +155,71 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateNotificationForOptionMenu() {
-        Toast.makeText(this,"time updated",Toast.LENGTH_LONG).show()
         Log.e("click","auto clicked")
         if (user!= null){
-            val ref = firebaseFirestore.collection("USERS")
-                .document(user.uid)
-                .collection("SELLER_DATA")
-                .document("SELLER_DATA")
+            val ref = firebaseFirestore.collection("USERS").document(user.uid)
+
+            val newDate =Date()
+
+            val fixedTimestamp:Timestamp = Timestamp(newDate)
 
             val notiMAp: MutableMap<String, Any> = HashMap()
-            notiMAp["new_notification"] = FieldValue.serverTimestamp()
-            ref.update(notiMAp)
+            notiMAp["new_notification"] = fixedTimestamp
+
+            ref.update(notiMAp).addOnSuccessListener {
+                timeStamp = fixedTimestamp
+                //Toast.makeText(this,"$timeStamp",Toast.LENGTH_LONG).show()
+            }
         }
 
 
     }
 
     private suspend fun getTimeStamp(){
-        firebaseFirestore.collection("USERS")
-            .document(user!!.uid)
-            .collection("SELLER_DATA")
-            .document("SELLER_DATA")
+        firebaseFirestore.collection("USERS").document(user!!.uid)
             .get().addOnSuccessListener {
-                timeStamp = it.getTimestamp("new_notification")!!
+                timeStamp = it.getTimestamp("new_notification")!! as Timestamp
+
                 getNotificationForOptionMenu(timeStamp,notificationBadgeText)
+
             }.addOnFailureListener {
                 Log.e("get Notification time","${it.message}")
             }.await()
     }
+
+
+    private fun isUserVerified(){
+        firebaseFirestore.collection("USERS")
+            .document(user!!.uid).collection("SELLER_DATA")
+            .document("BUSINESS_DETAILS").get().addOnSuccessListener {
+                val isBusinessAdded = it.getBoolean("Is_BusinessDetail_Added")!!
+                val isVerified = it.getBoolean("is_address_verified")!!
+
+                if (isBusinessAdded){
+
+                    if (isVerified){
+                        warningMessage.visibility = gone
+                        normalMessage.visibility = gone
+                        bottomSheetDialog.dismiss()
+                    }else{
+                        warningMessage.visibility = visible
+                        val st = getString(R.string.seller_address_not_verified)
+                        warningMessage.text = st
+                        bottomSheetDialog.show()
+                    }
+
+
+                }else{
+                    warningMessage.visibility = visible
+                    val st = getString(R.string.you_are_not_a_verified_seller)
+                    warningMessage.text = st
+                    bottomSheetDialog.show()
+                }
+
+
+            }
+
+    }
+
 
 }
