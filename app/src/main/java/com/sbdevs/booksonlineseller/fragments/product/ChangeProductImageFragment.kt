@@ -56,23 +56,23 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
 
     private lateinit var newAddedAdapter: NewUploadImageAdapter
     private lateinit var newAddedImgRecyclerView: RecyclerView
-
     private var deleteedImageList: ArrayList<String> = ArrayList()
-
-    private val loadingDialog = LoadingDialog()
 
     private lateinit var updateMessageText: TextView
 
     private var fileUri: Uri? = null
     private var uriList: ArrayList<Uri> = ArrayList()
     var nameList: ArrayList<String> = ArrayList()
-
     private var downloadUriList: MutableList<String> = ArrayList()
 
     private lateinit var productId: String
     private var currentYear:Int = 0
-
     private var changeInPosition = false
+
+    private val loadingDialog = LoadingDialog()
+    private val gone = View.GONE
+    private val visible = View.VISIBLE
+
 
     private val simpleCallback1 =
         object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.START or ItemTouchHelper.END, 0) {
@@ -225,31 +225,32 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
             loadingDialog.show(childFragmentManager, "Show")
             verificationForProductImage(it)
         }
-
     }
 
 
     private fun checkProductImage(): Boolean {
         val selectBtn = binding.lay4.selectImageBtn
         return if (uriList.isEmpty() and productImgList.isEmpty()) {
-            selectBtn.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+            selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+            binding.lay4.errorMessageText.visibility =visible
             binding.lay4.errorMessageText.text  = "No image found"
             selectBtn.requestFocus()
             false
 
         } else {
 
-            if ((uriList.size + productImgList.size)>3){
-                selectBtn.backgroundTintList =
-                    AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
-                binding.lay4.errorMessageText.text = "Maximum 3 images only"
+            if ((uriList.size + productImgList.size)>2){
+                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+                binding.lay4.errorMessageText.visibility =visible
+                binding.lay4.errorMessageText.text = "Maximum 2 images only"
                 selectBtn.requestFocus()
-                true
-            }else{
-                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_200)
+                false
 
+            }else{
+                binding.lay4.errorMessageText.visibility = gone
+                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.grey_200)
                 true
+
             }
 
 

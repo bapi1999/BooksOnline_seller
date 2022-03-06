@@ -161,35 +161,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         )
         adapterNewUpload = NewUploadImageAdapter(uriList, this)
 
-//        val startForThumbnail =
-//            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-//                val resultCode = result.resultCode
-//                val data = result.data
-//
-//                when (resultCode) {
-//                    Activity.RESULT_OK -> {
-//                        //Image Uri will not be null for RESULT_OK
-//                        thumbUri = data?.data!!
-//
-////                        val namefile = getFileName(thumbUri!!)
-////                        binding.lay4.errorMessageText.text = namefile
-//                        Glide.with(this).load(thumbUri).placeholder(R.drawable.as_square_placeholder).into(productThumbnail)
-//
-//                        loadingDialog.dismiss()
-//                    }
-//                    ImagePicker.RESULT_ERROR -> {
-//                        Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-//                        Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
-//                        loadingDialog.dismiss()
-//                    }
-//                    else -> {
-//                        Toast.makeText(requireContext(), "Task Cancelled", Toast.LENGTH_SHORT).show()
-//                        loadingDialog.dismiss()
-//
-//                    }
-//                }
-//            }
-
         val startForProductImages =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
                 val resultCode = result.resultCode
@@ -587,17 +558,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         }
     }
 
-//    private fun checkThumbnail(): Boolean {
-//        return if (thumbUri == null) {
-//            binding.lay4.errorMessageText.text = "Select image"
-//            binding.lay4.errorMessageText.visibility = View.VISIBLE
-//            false
-//        } else {
-//            binding.lay4.errorMessageText.text = ""
-//            binding.lay4.errorMessageText.visibility = View.GONE
-//            true
-//        }
-//    }
 
     private fun checkProductImage(): Boolean {
         val selectBtn = binding.lay4.selectImageBtn
@@ -608,9 +568,9 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             selectBtn.requestFocus()
             false
         } else {
-            if(uriList.size >3) {
+            if(uriList.size >2) {
                 val message =  binding.lay4.textView44
-                message.text = "Select maximum 3 images only"
+                message.text = "Select maximum 2 images only"
 
                 message.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.red_700))
 
@@ -888,6 +848,8 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             val languageString: String = language.editText?.text.toString().trim()
             val bookCondition = bookConditionRadio?.tag.toString().trim()
             val bookType = bookStateRadio?.tag.toString().trim()
+            val year:String = printDateInput.editText?.text.toString().trim()
+
 
 
             for (category in categoryList) {
@@ -902,6 +864,10 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                 .append(categoryString).append(",")
                 .append(bookCondition).append(",")
                 .append(bookType)
+
+            if (!year.isNullOrEmpty()){
+                docBuilder.append(",").append(year)
+            }
 
             val docName = docBuilder.toString().replace(".", ",").replace(":", ",")
                 .replace("/", ",").replace(" ", ",")

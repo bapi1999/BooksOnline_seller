@@ -12,10 +12,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.ktx.messaging
+import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.MainActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentLoginBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
@@ -32,6 +38,7 @@ class LoginFragment : Fragment() {
 
     private val firebaseFirestore = Firebase.firestore
     private val firebaseAuth = Firebase.auth
+    private val firebaseMessaging = Firebase.messaging
 
     lateinit var email: TextInputLayout
     lateinit var pass: TextInputLayout
@@ -127,6 +134,7 @@ class LoginFragment : Fragment() {
 
             firebaseAuth.signInWithEmailAndPassword(email.editText?.text.toString().trim(),pass.editText?.text.toString())
                 .addOnSuccessListener {
+                    retrieveUserToken()
                     checkIsSeller()
 
                 }
@@ -162,6 +170,23 @@ class LoginFragment : Fragment() {
                 errorTxt.visibility = View.VISIBLE
                 errorTxt.text = "Error: Can not fetch user details"
             }
+    }
+
+    private fun retrieveUserToken(){
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token:String = task.result
+                val userId:String = FirebaseAuth.getInstance().currentUser!!.uid
+
+                FirebaseDatabase.getInstance().getReference("Tokens")
+                    .child(userId)
+                    .setValue(token)
+
+            }
+
+        }
+
     }
 
 }
