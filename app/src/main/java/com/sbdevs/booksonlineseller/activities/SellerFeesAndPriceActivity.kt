@@ -2,9 +2,20 @@ package com.sbdevs.booksonlineseller.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import com.sbdevs.booksonlineseller.databinding.ActivitySellerFeesAndPriceBinding
+import com.sbdevs.booksonlineseller.otherclass.NotificationData
+import com.sbdevs.booksonlineseller.otherclass.PushNotification
+import com.sbdevs.booksonlineseller.otherclass.RetrofitInstance
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
+const val TOPIC = "/topics/myTopic2"
 
 class SellerFeesAndPriceActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySellerFeesAndPriceBinding
@@ -18,8 +29,23 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
         enterPriceInput = binding.lay1.enterPriceInputLayout
         calculateBtn = binding.lay1.calculateBtn
 
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
+
         calculateBtn.setOnClickListener {
-            checkInput()
+            //checkInput()
+
+            val title = "etTitle.text.toString()"
+            val message = "etMessage.text.toString()"
+            //val recipientToken = etToken.text.toString()
+            if(title.isNotEmpty() && message.isNotEmpty() ) {
+                PushNotification(
+                    NotificationData(title, message),
+                    TOPIC
+                ).also {
+                    sendNotification(it)
+                }
+            }
+
         }
 
 
@@ -47,6 +73,19 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
         lay2.deliveryFee.text = pickupCharge.toString()
         lay2.totalProfit.text = profit.toString()
 
+    }
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d("TAG", "Response: ${Gson().toJson(response)}")
+            } else {
+                Log.e("error2", response.errorBody().toString())
+            }
+        } catch(e: Exception) {
+            Log.e("error1", e.toString())
+        }
     }
 
 

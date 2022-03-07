@@ -15,7 +15,7 @@
             android:orientation="vertical">
 
             <include
-                android:id="@+id/lay1"
+                android:id="@+id/lay_1"
                 layout="@layout/sl_ar_myaccount_1_lay" />
 
             <LinearLayout

@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.ProductActivity
 import com.sbdevs.booksonlineseller.models.MyProductModel
-import com.sbdevs.booksonlineseller.otherclass.FireStoreData
+import com.sbdevs.booksonlineseller.otherclass.TimeDateAgo
 
 class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<MyProductModel>):RecyclerView.Adapter<MyProductAdapter.ViewHolder>() {
 
@@ -105,7 +105,7 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
 
             }
 
-            updatedTimeText.text = FireStoreData().msToTimeAgo(itemView.context,item.PRODUCT_UPDATE_ON)
+            updatedTimeText.text = TimeDateAgo().msToTimeAgo(itemView.context,item.PRODUCT_UPDATE_ON)
 
 //            Picasso.get()
 //                .load(url)

@@ -181,8 +181,14 @@ class LoginFragment : Fragment() {
 
                 FirebaseDatabase.getInstance().getReference("Tokens")
                     .child(userId)
-                    .setValue(token)
+                    .setValue(token).addOnSuccessListener {
+                        Log.d("Token:", "saved")
+                    }.addOnFailureListener {
+                        Log.e("Token:", "${it.message}")
+                    }
 
+            }else{
+                Log.e("error","${task.exception?.message}")
             }
 
         }

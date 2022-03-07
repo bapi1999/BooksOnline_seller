@@ -6,10 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -18,7 +16,7 @@ import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
 
 import com.sbdevs.booksonlineseller.models.NotificationModel
-import com.sbdevs.booksonlineseller.otherclass.FireStoreData
+import com.sbdevs.booksonlineseller.otherclass.TimeDateAgo
 
 class NotificationAdapter(var list:List<NotificationModel>, var docNameList:ArrayList<String>): RecyclerView.Adapter<NotificationAdapter.ViewHolder>() {
 
@@ -77,7 +75,7 @@ class NotificationAdapter(var list:List<NotificationModel>, var docNameList:Arra
             Glide.with(itemView.context).load(image).placeholder(R.drawable.as_notification_holder)
                 .into(notificationImage)
 
-            val dateFormat = FireStoreData()
+            val dateFormat = TimeDateAgo()
             val msAgo = dateFormat.msToTimeAgo(itemView.context,item.date)
             notificationTime.text = msAgo
         }

@@ -12,7 +12,9 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
@@ -24,7 +26,8 @@ class MyAccountFragment : Fragment() {
     private var _binding:FragmentMyAccountBinding? =null
     private val binding get() = _binding!!
     private val firebaseFirestore = Firebase.firestore
-    private val user = Firebase.auth.currentUser
+    private val firebaseAuth = Firebase.auth
+    private val user = firebaseAuth.currentUser
 
     private lateinit var businessNameText:TextView
     private lateinit var businessTypeText:TextView
@@ -68,6 +71,10 @@ class MyAccountFragment : Fragment() {
         binding.editUpi.setOnClickListener {
             val action = MyAccountFragmentDirections.actionMyAccountFragmentToAddBankDetailsFragment()
             findNavController().navigate(action)
+        }
+
+        binding.logoutBtn.setOnClickListener {
+            logOutUser()
         }
     }
 
@@ -184,6 +191,21 @@ class MyAccountFragment : Fragment() {
             }
     }
 
+    private fun logOutUser(){
+        val userId = FirebaseAuth.getInstance().currentUser
+        if (userId != null){
+            firebaseAuth.signOut()
+            deleteToken(userId.uid)
+        }
+    }
+    private fun deleteToken(uid:String){
+
+        FirebaseDatabase.getInstance()
+            .getReference("Tokens")
+            .child(uid)
+            .removeValue()
+
+    }
 
 
 }

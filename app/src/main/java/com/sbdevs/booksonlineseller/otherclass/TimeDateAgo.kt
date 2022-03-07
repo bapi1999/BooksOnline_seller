@@ -5,7 +5,7 @@ import com.google.firebase.Timestamp
 import com.sbdevs.booksonlineseller.R
 import java.util.*
 
-class FireStoreData {
+class TimeDateAgo {
 
 
 

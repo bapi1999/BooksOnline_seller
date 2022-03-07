@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.sbdevs.booksonlineseller.models.ProductReviewModel
 
-import com.sbdevs.booksonlineseller.otherclass.FireStoreData
+import com.sbdevs.booksonlineseller.otherclass.TimeDateAgo
 import com.sbdevs.booksonlineseller.R
 
 
@@ -48,7 +48,7 @@ class ProductReviewAdapter(var list: List<ProductReviewModel>) :
             val rating: Long = reviewModel.rating
             val review: String = reviewModel.review
             val reviewDate = reviewModel.review_Date!!
-            val daysAgo = FireStoreData().msToTimeAgo(itemView.context,reviewDate)
+            val daysAgo = TimeDateAgo().msToTimeAgo(itemView.context,reviewDate)
 
             buyerNameTxt.text = buyerName
             reviewDateTxt.text = daysAgo

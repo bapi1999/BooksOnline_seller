@@ -32,7 +32,7 @@ import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.ActivityOrderDetailsBinding
 import com.sbdevs.booksonlineseller.databinding.ArOrderDetailsLay4Binding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
-import com.sbdevs.booksonlineseller.otherclass.FireStoreData
+import com.sbdevs.booksonlineseller.otherclass.TimeDateAgo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -227,7 +227,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                     .placeholder(R.drawable.as_square_placeholder)
                     .into(binding.lay1.productImage)
 
-                val timeAgo:String = FireStoreData().msToTimeAgo(this@OrderDetailsActivity,orderTime)
+                val timeAgo:String = TimeDateAgo().msToTimeAgo(this@OrderDetailsActivity,orderTime)
                 binding.orderedTimeText.text = timeAgo
 
 
@@ -463,7 +463,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         binding.orderTrackContainer.visibility = gone
         binding.statusTxt.text = "Canceled"
 
-        binding.lay0.cancellationTime.text = FireStoreData().msToTimeAgo(this,cancelT)
+        binding.lay0.cancellationTime.text = TimeDateAgo().msToTimeAgo(this,cancelT)
         binding.lay0.cancellationText.text = "Order is canceled by seller"
 
 

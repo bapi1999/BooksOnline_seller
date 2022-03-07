@@ -22,7 +22,7 @@ import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.OrderDetailsActivity
 import com.sbdevs.booksonlineseller.models.SellerOrderModel
-import com.sbdevs.booksonlineseller.otherclass.FireStoreData
+import com.sbdevs.booksonlineseller.otherclass.TimeDateAgo
 import java.util.*
 
 class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItemClickListener) :RecyclerView.Adapter<SellerOrderAdapter.ViewHolder> (){
@@ -175,7 +175,7 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
             when(status){
                 "new" ->{
 
-                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_ordered)
+                    val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_ordered)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Ordered"
 
@@ -200,7 +200,7 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                 }
 
                 "accepted" ->{
-                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_accepted!!)
+                    val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_accepted!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Accepted"
                     newButtonContainer.visibility = gone
@@ -216,7 +216,7 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
 
                 "packed" ->{
 
-                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_packed!!)
+                    val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_packed!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Packed"
                     newButtonContainer.visibility = gone
@@ -233,7 +233,7 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                     newButtonContainer.visibility = gone
                     acceptButtonContainer.visibility = gone
                     packedButtonContainer.visibility = gone
-                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_shipped!!)
+                    val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_shipped!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Shipped"
 
@@ -246,7 +246,7 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                     newButtonContainer.visibility = gone
                     acceptButtonContainer.visibility = gone
                     packedButtonContainer.visibility = gone
-                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_delivered!!)
+                    val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_delivered!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Delivered"
 
@@ -261,7 +261,7 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                     newButtonContainer.visibility = gone
                     acceptButtonContainer.visibility = gone
                     packedButtonContainer.visibility = gone
-                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_returned!!)
+                    val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_returned!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Returned"
                     autoCancelText.visibility = gone
@@ -270,14 +270,14 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                     newButtonContainer.visibility = gone
                     acceptButtonContainer.visibility = gone
                     packedButtonContainer.visibility = gone
-                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_canceled!!)
+                    val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_canceled!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Canceled"
                     autoCancelText.visibility = gone
 
                 }
                 else ->{
-                    val dateFormat = FireStoreData().msToTimeAgo(itemView.context,item.Time_ordered)
+                    val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_ordered)
                     orderTime.text = dateFormat
                 }
             }
