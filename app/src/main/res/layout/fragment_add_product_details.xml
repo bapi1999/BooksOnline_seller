@@ -64,6 +64,9 @@
             <include android:id="@+id/lay2"
                 layout="@layout/ar_add_product_lay_2" />
 
+            <include android:id="@+id/lay21"
+                layout="@layout/ar_add_product_lay_21" />
+
             <include android:id="@+id/lay3"
                 layout="@layout/ar_add_product_lay_3" />
 

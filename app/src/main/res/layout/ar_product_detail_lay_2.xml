@@ -37,10 +37,10 @@
         android:textColor="@color/purple_500"
         android:textSize="17sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout13" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout1" />
 
     <LinearLayout
-        android:id="@+id/linearLayout13"
+        android:id="@+id/linearLayout1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -133,9 +133,9 @@
         android:paddingStart="3dp"
         android:paddingEnd="3dp"
         android:text="000"
-        android:textSize="13sp"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout13"
-        app:layout_constraintStart_toEndOf="@+id/linearLayout13" />
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout1"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout1" />
 
     <TextView
         android:id="@+id/percent_off"
@@ -143,9 +143,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="70% off"
-        android:textColor="@color/ratingGreen"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/linearLayout13"
+        android:textColor="@color/teal_700"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout1"
         app:layout_constraintStart_toEndOf="@+id/strikeThroughPrice" />
 
 

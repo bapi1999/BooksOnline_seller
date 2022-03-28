@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
@@ -243,7 +244,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     //val dimensionArray: List<String> = bookDimension!!.split("x")
                     productImgList = it.get("productImage_List") as ArrayList<String>
 
-                    val returnAvalilable = it.getBoolean("product_return_available")!!
+                    val returnAvailable = it.getString("Replacement_policy")!!
+                    binding.lay31.textView55.text = returnAvailable
 
                     dbStockQty = stock.toInt()
 
@@ -260,13 +262,10 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
                     lay4.stockQuantity.text = stock.toString()
 
-                    when{
-                        returnAvalilable ->{
-                            binding.lay31.textView55.text = "7 Days Return Policy"
-                        }
-                        !returnAvalilable ->{
-                            binding.lay31.textView55.text = "No Return Policy"
-                        }
+                    if (returnAvailable == "No Replacement Policy"){
+                        val imgview = binding.lay31.replacementPolicyImage
+                        imgview.imageTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
+                        Glide.with(requireContext()).load(R.drawable.ic_outline_cancel_24).into(imgview)
                     }
 
 

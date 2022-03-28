@@ -55,7 +55,7 @@ class EditProductActivity : AppCompatActivity() {
 
     private lateinit var productReturnRadioTogole: RadioGroup
     private var productReturnRadio: RadioButton? = null
-    private var returnAvalilable = true
+    private var replacementPolicy = ""
 
 
 
@@ -80,6 +80,7 @@ class EditProductActivity : AppCompatActivity() {
 
         val lay1 = binding.lay1
         val lay2 = binding.lay2
+        val lay21 = binding.lay21
         val lay3 = binding.lay3
 
         bookName = lay1.bookName
@@ -99,7 +100,7 @@ class EditProductActivity : AppCompatActivity() {
         categoryInput = lay3.categoryInput
         tagInput = lay3.editTags
         stockQuantity = lay2.stockQuantity
-        productReturnRadioTogole = lay2.productReturnToggole
+        productReturnRadioTogole = lay21.productReturnToggle
         updateMessageText = binding.updateMessage
 
 
@@ -148,10 +149,10 @@ class EditProductActivity : AppCompatActivity() {
             productReturnRadio = group.findViewById(checkedId)
             when (checkedId) {
                 R.id.return_radio1 -> {
-                    returnAvalilable = true
+                    replacementPolicy = "7 days Replacement Policy"
                 }
                 R.id.return_radio2 -> {
-                    returnAvalilable = false
+                    replacementPolicy = "No Replacement Policy"
                 }
             }
         }
@@ -189,7 +190,7 @@ class EditProductActivity : AppCompatActivity() {
                 val isbnNumber = it.getString("book_ISBN")
                 val bookDimension = it.getString("book_dimension")
                 val dimensionArray: List<String> = bookDimension!!.split("x")
-                returnAvalilable = it.getBoolean("product_return_available")!!
+                replacementPolicy = it.getString("Replacement_policy")!!
 
                 stockQuantity.setText(stock.toString())
 
@@ -242,14 +243,14 @@ class EditProductActivity : AppCompatActivity() {
                     }
                 }
 
-                when{
-                    returnAvalilable ->{
-                        binding.lay2.productReturnToggole.check(R.id.return_radio1)
-                        productReturnRadio = binding.lay2.returnRadio1
+                when (replacementPolicy){
+                    "7 days Replacement Policy" ->{
+                        binding.lay21.productReturnToggle.check(R.id.return_radio1)
+                        productReturnRadio = binding.lay21.returnRadio1
                     }
-                    !returnAvalilable ->{
-                        binding.lay2.productReturnToggole.check(R.id.return_radio2)
-                        productReturnRadio = binding.lay2.returnRadio1
+                    "No Replacement Policy" ->{
+                        binding.lay21.productReturnToggle.check(R.id.return_radio2)
+                        productReturnRadio = binding.lay21.returnRadio1
                     }
                 }
 
@@ -534,11 +535,11 @@ class EditProductActivity : AppCompatActivity() {
 
     private fun checkProductReturnState():Boolean{
         return if (productReturnRadio == null) {
-            binding.lay2.returnContainer.backgroundTintList =
+            binding.lay21.returnContainer.backgroundTintList =
                 AppCompatResources.getColorStateList(this, R.color.red_a700)
             false
         } else {
-            binding.lay2.returnContainer.backgroundTintList =
+            binding.lay21.returnContainer.backgroundTintList =
                 AppCompatResources.getColorStateList(this, R.color.white)
             true
         }
@@ -621,7 +622,7 @@ class EditProductActivity : AppCompatActivity() {
         addProductMap["tags"] = tagList
 
         addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
-        addProductMap["product_return_available"] = returnAvalilable
+        addProductMap["Replacement_policy"] = replacementPolicy
 
         firebaseFirestore.collection("PRODUCTS").document(documentName).update(addProductMap)
             .addOnSuccessListener {

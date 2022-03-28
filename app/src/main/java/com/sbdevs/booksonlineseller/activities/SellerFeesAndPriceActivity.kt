@@ -1,19 +1,28 @@
 package com.sbdevs.booksonlineseller.activities
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.gson.Gson
 import com.sbdevs.booksonlineseller.databinding.ActivitySellerFeesAndPriceBinding
-import com.sbdevs.booksonlineseller.otherclass.NotificationData
-import com.sbdevs.booksonlineseller.otherclass.PushNotification
-import com.sbdevs.booksonlineseller.otherclass.RetrofitInstance
-import kotlinx.coroutines.CoroutineScope
+import com.sbdevs.booksonlineseller.otherclass.Constants.Companion.BASE_URL
+import com.sbdevs.booksonlineseller.otherclass.Constants.Companion.CONTENT_TYPE_FCM
+import com.sbdevs.booksonlineseller.otherclass.Constants.Companion.SERVER_KEY
+import com.sbdevs.booksonlineseller.otherclass.FirebaseService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
 
 const val TOPIC = "/topics/myTopic2"
 
@@ -21,6 +30,10 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySellerFeesAndPriceBinding
     private lateinit var enterPriceInput:TextInputLayout
     private lateinit var calculateBtn:Button
+    val buyerToken = "dAQSAUqOT7SNZ8wRmm4CVE:APA91bHScwPLlHw8TngGYJuzlukMD_bY1gWu1TS4sBGxniae-FEpKGrC-VEZ4A6Ge528Hi-fHCk0i3HtHrJUWseHhW37visyxNbFbw_S4e0JJpEqpsxGYwOzKMyeFpkMgqZneSat3o_3"
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySellerFeesAndPriceBinding.inflate(layoutInflater)
@@ -29,21 +42,18 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
         enterPriceInput = binding.lay1.enterPriceInputLayout
         calculateBtn = binding.lay1.calculateBtn
 
+        FirebaseService.sharedPref = getSharedPreferences("sharedPref", Context.MODE_PRIVATE)
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
 
         calculateBtn.setOnClickListener {
             //checkInput()
 
-            val title = "etTitle.text.toString()"
-            val message = "etMessage.text.toString()"
+            val title = "etTitle"
+            val message = "etMessage"
             //val recipientToken = etToken.text.toString()
             if(title.isNotEmpty() && message.isNotEmpty() ) {
-                PushNotification(
-                    NotificationData(title, message),
-                    TOPIC
-                ).also {
-                    sendNotification(it)
-                }
+
+                sendNotificationStep1(title,message)
             }
 
         }
@@ -75,18 +85,55 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
 
     }
 
-    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+
+    //TODO-<<<<<<<<<<<<<=================  SEND NOTIFICATION ==============================================
+    private fun sendNotificationStep1(title:String,message:String){
+        val topic = "/topics/Enter_your_topic_name" //topic has to match what the receiver subscribed to
+
+        val notification = JSONObject()
+        val notifcationBody = JSONObject()
+
         try {
-            val response = RetrofitInstance.api.postNotification(notification)
-            if(response.isSuccessful) {
-                Log.d("TAG", "Response: ${Gson().toJson(response)}")
-            } else {
-                Log.e("error2", response.errorBody().toString())
-            }
-        } catch(e: Exception) {
-            Log.e("error1", e.toString())
+            notifcationBody.put("title", "Enter_title")
+            notifcationBody.put("message", message)   //Enter your notification message
+            notification.put("to", buyerToken)
+            notification.put("data", notifcationBody)
+            Log.e("TAG", "try")
+        } catch (e: JSONException) {
+            Log.e("TAG", "onCreate: " + e.message)
         }
+
+        sendNotificationStep2(notification)
+
     }
 
+    private fun sendNotificationStep2(notification: JSONObject) {
+        Log.e("TAG", "sendNotification")
+        val jsonObjectRequest = object : JsonObjectRequest(Request.Method.POST,BASE_URL, notification,
+            Response.Listener<JSONObject> { response ->
+                Log.i("TAG", "onResponse: $response")
 
+            },
+            Response.ErrorListener {
+                Toast.makeText(this, "Request error", Toast.LENGTH_LONG).show()
+                Log.i("TAG", "onErrorResponse: Didn't work")
+            }) {
+
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = SERVER_KEY
+                params["Content-Type"] = CONTENT_TYPE_FCM
+                return params
+            }
+        }
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    private val requestQueue: RequestQueue by lazy {
+        Volley.newRequestQueue(this.applicationContext)
+    }
+
+    //TODO-==============================  SEND NOTIFICATION ==========================>>>>>>>>>>>>>>>>>>>>>
 }
+
+

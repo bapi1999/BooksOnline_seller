@@ -77,7 +77,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
     private lateinit var productReturnRadioTogole: RadioGroup
     private var productReturnRadio: RadioButton? = null
-    private var returnAvalilable = true
+    private var replacementPolicy = ""
 
 
     private var printDateMandatory: Boolean = false
@@ -146,7 +146,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         myOwnCategoryText = lay3.myOwnCategoryEditText
         tagInput = lay3.editTags
         stockQuantity = lay2.stockQuantity
-        productReturnRadioTogole = binding.lay2.productReturnToggole
+        productReturnRadioTogole = binding.lay21.productReturnToggle
 
 
         currentYear = Year.now().value
@@ -195,16 +195,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             }
 
 
-//        productThumbnail.setOnClickListener {
-//            ImagePicker.with(this)
-//                .crop()
-//                .compress(100)
-//                .maxResultSize(500, 500) //Final image resolution will be less than 1080 x 1080
-//                .createIntent { intent ->
-//                    startForThumbnail.launch(intent)
-//                    loadingDialog.show(childFragmentManager, "Show")
-//                }
-//        }
 
         binding.lay4.selectImageBtn.setOnClickListener {
             ImagePicker.with(this)
@@ -265,10 +255,10 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
             when (checkedId) {
                 R.id.return_radio1 -> {
-                    returnAvalilable = true
+                    replacementPolicy = "7 days Replacement Policy"
                 }
                 R.id.return_radio2 -> {
-                    returnAvalilable = false
+                    replacementPolicy = "No Replacement Policy"
                 }
             }
 
@@ -548,11 +538,11 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
     private fun checkProductReturnState():Boolean{
         return if (productReturnRadio == null) {
-            binding.lay2.returnContainer.backgroundTintList =
+            binding.lay21.returnContainer.backgroundTintList =
                 AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
             false
         } else {
-            binding.lay2.returnContainer.backgroundTintList =
+            binding.lay21.returnContainer.backgroundTintList =
                 AppCompatResources.getColorStateList(requireContext(), R.color.white)
             true
         }
@@ -644,7 +634,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         addProductMap["book_condition"] = bookConditionRadio?.tag.toString().trim()
         addProductMap["book_type"] = bookStateRadio?.tag.toString().trim()
         addProductMap["product_thumbnail"] = ""
-        addProductMap["process_complete"] = true
 
         if (printDateMandatory) {
             addProductMap["book_printed_ON"] = printDateInput.editText?.text.toString().trim().toLong()
@@ -668,7 +657,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         addProductMap["rating_Star_1"] = 0L
         addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
         addProductMap["PRODUCT_SELLER_ID"] = user!!.uid
-        addProductMap["product_return_available"] = returnAvalilable
+        addProductMap["Replacement_policy"] = replacementPolicy
 
 
 
@@ -684,32 +673,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             }
     }
 
-
-    private fun uploadThumbnail(productID: String) {
-        //val mRef: StorageReference = storageReference.child("image/" + user!!.uid + "/").child(getFileName(thumbUri!!))
-        val mRef: StorageReference =
-            storageReference.child("image/" + user!!.uid + "/")
-                .child("$currentYear/")
-                .child("$productID/")
-                .child(productID+"thumb")
-
-        mRef.putFile(thumbUri!!)
-            .addOnCompleteListener {
-                mRef.downloadUrl.addOnSuccessListener {
-                    val uploadThumbMap: MutableMap<String, Any> = HashMap()
-                    uploadThumbMap["product_thumbnail"] = it.toString()
-                    firebaseFirestore.collection("PRODUCTS").document(productID)
-                        .update(uploadThumbMap)
-                        .addOnSuccessListener {
-                            Log.i("Update Product Thumbnail", "Successfully updated")
-                        }.addOnFailureListener { e ->
-                            Log.e("get Product Thumbnail url", "${e.message}")
-                        }
-                }.addOnFailureListener {
-                    Log.e("uploadThumbnail", "${it.message}")
-                }
-            }
-    }
 
     private suspend fun uploadProductImage(productID: String) {
         for (i in 0 until uriList.size) {

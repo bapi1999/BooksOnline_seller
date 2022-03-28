@@ -74,12 +74,13 @@
                         android:text="Packed(0)" />
                 </RadioGroup>
 
-                <ImageButton
+                <ImageView
                     android:id="@+id/other_order_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginStart="8dp"
-                    android:src="@drawable/ic_baseline_drag_indicator_24"/>
+                    android:padding="10dp"
+                    android:src="@drawable/ic_round_view_list_24"/>
             </LinearLayout>
 
 

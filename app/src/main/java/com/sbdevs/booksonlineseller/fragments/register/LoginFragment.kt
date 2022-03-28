@@ -48,6 +48,7 @@ class LoginFragment : Fragment() {
 
     private  val loadingDialog  = LoadingDialog()
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

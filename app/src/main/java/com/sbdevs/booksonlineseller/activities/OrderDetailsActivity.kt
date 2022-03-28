@@ -15,8 +15,14 @@ import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.lifecycleScope
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -32,12 +38,15 @@ import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.ActivityOrderDetailsBinding
 import com.sbdevs.booksonlineseller.databinding.ArOrderDetailsLay4Binding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
+import com.sbdevs.booksonlineseller.otherclass.Constants
 import com.sbdevs.booksonlineseller.otherclass.TimeDateAgo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
@@ -49,7 +58,8 @@ class OrderDetailsActivity : AppCompatActivity() {
 
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
-
+    private val database = Firebase.database
+    private var buyerToken = ""
     private lateinit var viewProductBtn: Button
 
     val visible= View.VISIBLE
@@ -95,6 +105,7 @@ class OrderDetailsActivity : AppCompatActivity() {
 //        }
 
         binding.acceptOrderBtn.setOnClickListener {
+
             loadingDialog.show(supportFragmentManager,"Show")
 
             lay4.acceptImageButton.backgroundTintList = AppCompatResources
@@ -108,6 +119,10 @@ class OrderDetailsActivity : AppCompatActivity() {
             binding.buttonContainer2.visibility = visible
             binding.packedBtn.visibility = visible
             binding.shippedBtn.visibility =gone
+
+            val title = "Order Accepted By seller"
+
+//            sendNotificationStep1()
 
         }
 
@@ -253,7 +268,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                         binding.buttonContainer2.visibility = gone
 
                         orderNew(orderTime)
-
+                        getSellerToken(buyerId)
                     }
                     "accepted" ->{
 
@@ -522,6 +537,66 @@ class OrderDetailsActivity : AppCompatActivity() {
     }
 
 
+
+
+
+
+    //TODO-<<<<<<<<<<<<<=================  SEND NOTIFICATION start ==============================================
+    private fun sendNotificationStep1(title:String,message:String){
+        val topic = "/topics/Enter_your_topic_name" //topic has to match what the receiver subscribed to
+
+        val notification = JSONObject()
+        val notifcationBody = JSONObject()
+
+        try {
+            notifcationBody.put("title", "Enter_title")
+            notifcationBody.put("message", message)   //Enter your notification message
+            notification.put("to", buyerToken)
+            notification.put("data", notifcationBody)
+            Log.e("TAG", "try")
+        } catch (e: JSONException) {
+            Log.e("TAG", "onCreate: " + e.message)
+        }
+
+        sendNotificationStep2(notification)
+
+    }
+
+    private fun sendNotificationStep2(notification: JSONObject) {
+        Log.e("TAG", "sendNotification")
+        val jsonObjectRequest = object : JsonObjectRequest(
+            Request.Method.POST, Constants.BASE_URL, notification,
+            Response.Listener<JSONObject> { response ->
+                Log.i("TAG", "onResponse: $response")
+
+            },
+            Response.ErrorListener {
+                Toast.makeText(this, "Request error", Toast.LENGTH_LONG).show()
+                Log.i("TAG", "onErrorResponse: Didn't work")
+            }) {
+
+            override fun getHeaders(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["Authorization"] = Constants.SERVER_KEY
+                params["Content-Type"] = Constants.CONTENT_TYPE_FCM
+                return params
+            }
+        }
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    private val requestQueue: RequestQueue by lazy {
+        Volley.newRequestQueue(this.applicationContext)
+    }
+
+    //==============================  SEND NOTIFICATION end ==========================>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+
+
+//todo ================================BILLING INVOICE ==================================================
 
 
 
@@ -816,15 +891,20 @@ class OrderDetailsActivity : AppCompatActivity() {
         table.addCell(Cell().add(Paragraph("")))
 
 
-
-
-
-
         document.add(table)
         document.close()
         Toast.makeText(this,"pdf crated",Toast.LENGTH_SHORT).show()
     }
 
+    private fun getSellerToken( buyerId1: String) {
+        database.getReference("Tokens").child(buyerId1).get().addOnSuccessListener { snapShot ->
+            buyerToken = snapShot.value.toString()
+
+        }.addOnFailureListener {
+            Log.e(" getSellerToken error1", it.message.toString())
+        }
+
+    }
 
 
 
