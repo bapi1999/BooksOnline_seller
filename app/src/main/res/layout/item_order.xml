@@ -187,7 +187,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
         android:orientation="vertical"
@@ -197,88 +196,11 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout25">
 
         <LinearLayout
-            android:id="@+id/new_button_container"
+            android:id="@+id/button_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="8dp"
             android:orientation="horizontal"
-            android:visibility="gone">
-
-            <Button
-                android:id="@+id/reject_order_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/white"
-                android:stateListAnimator="@null"
-                android:text="Reject"
-                android:textAllCaps="false"
-                android:textColor="@color/red_a700"
-                android:textSize="15sp"
-                app:cornerRadius="20dp"
-                app:strokeColor="#F44336"
-                app:strokeWidth="2dp" />
-
-
-            <Button
-                android:id="@+id/accept_order_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/amber_600"
-                android:stateListAnimator="@null"
-                android:text="Accept"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-
-                app:cornerRadius="20dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/accept_button_container"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:elevation="8dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Reject"
-                android:visibility="invisible" />
-
-
-            <Button
-                android:id="@+id/view_order_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/purple_500"
-                android:stateListAnimator="@null"
-                android:text="View details"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="15sp"
-                app:cornerRadius="20dp"
-                android:layout_marginStart="8dp"
-                app:strokeColor="@color/purple_500"
-                app:strokeWidth="2dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/pack_button_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="8dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <Button
                 android:id="@+id/cancel_order_btn"
@@ -286,31 +208,72 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
+                android:backgroundTint="@color/white"
                 android:stateListAnimator="@null"
                 android:text="Cancel"
-                android:backgroundTint="@color/white"
                 android:textAllCaps="false"
-                android:textColor="@color/grey_600"
+                android:textColor="@color/red_600"
                 android:textSize="15sp"
                 app:cornerRadius="20dp"
-                app:strokeColor="@color/grey_400"
+                app:strokeColor="@color/red_600"
                 app:strokeWidth="2dp" />
 
-
-            <Button
-                android:id="@+id/ship_order_btn"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:elevation="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/teal_700"
-                android:stateListAnimator="@null"
-                android:text="Ship"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="15sp"
+                android:orientation="vertical"
+                android:visibility="visible">
+                <Button
+                    android:id="@+id/accept_order_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/amber_600"
+                    android:stateListAnimator="@null"
+                    android:text="Accept"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
 
-                app:cornerRadius="20dp" />
+                    app:cornerRadius="20dp" />
+
+                <Button
+                    android:id="@+id/view_order_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:backgroundTint="@color/purple_500"
+                    android:stateListAnimator="@null"
+                    android:text="View details"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+                    app:cornerRadius="20dp"
+                    app:strokeColor="@color/purple_500"
+                    app:strokeWidth="2dp" />
+
+                <Button
+                    android:id="@+id/ship_order_btn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/teal_700"
+                    android:stateListAnimator="@null"
+                    android:text="Ship"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="15sp"
+
+                    app:cornerRadius="20dp" />
+
+            </LinearLayout>
+
+
+
 
         </LinearLayout>
 
@@ -331,10 +294,10 @@
         app:layout_constraintTop_toBottomOf="@+id/product_image">
 
         <TextView
-            android:id="@+id/product_item_id"
+            android:id="@+id/order_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Product Id: 1234556789"
+            android:text="Order Id: 1234556789"
             android:textColor="@color/grey_700"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/product_image" />
@@ -362,10 +325,10 @@
             android:id="@+id/auto_cancel_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Auto cancel on 12 jan 12:45"
+            android:text="Auto cancel after 24 hour"
             android:layout_marginTop="8dp"
-            android:textSize="12sp"
-            android:textColor="@color/grey_800"
+            android:textSize="11sp"
+            android:textColor="@color/grey_700"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView93" />
 

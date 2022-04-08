@@ -56,7 +56,13 @@
             android:id="@+id/myProductFragment"
             android:name="com.sbdevs.booksonlineseller.fragments.MyProductFragment"
             android:label="My Products"
-            tools:layout="@layout/fragment_my_product" />
+            tools:layout="@layout/fragment_my_product" >
+            <action
+                android:id="@+id/action_myProductFragment_to_profileMenuFragment2"
+                app:destination="@id/profileMenuFragment2"
+                app:popUpTo="@id/profileMenuFragment2"
+                app:popUpToInclusive="true" />
+        </fragment>
         <fragment
             android:id="@+id/myEarningFragment"
             android:name="com.sbdevs.booksonlineseller.fragments.MyEarningFragment"

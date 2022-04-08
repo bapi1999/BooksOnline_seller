@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="purple_50">#F3E5F5</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
+
+    <color name="teal_100">#B2DFDB</color>
     <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_500">#009688</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="splash">#6600CC</color>
 
 
+
+
+
+    <color name="pink_100">#F8BBD0</color>
+    <color name="pink_500">#E91E63</color>
+
+
+    <color name="brown">#C89B14</color>
+
+    <color name="amber_100">#FFECB3</color>
     <color name="amber_500">#FFC107</color>
     <color name="amber_600">#FFB300</color>
     <color name="amber_700">#FFA000</color>
@@ -19,13 +33,16 @@
 
     <color name="yellow_600">#FFEB3B</color>
 
+    <color name="green_100">#C8E6C9</color>
+    <color name="green_600">#43A047</color>
+
     <color name="successGreen">#0DCB62</color>
     <color name="ratingGreen">#0AAE59</color>
-    <color name="brikeRed">#E53935</color>
     <color name="orange">#FF3D00</color>
     <color name="viewAll">#0288D1</color>
     <color name="blueLink">#0199FF</color>
 
+    <color name="red_100">#FFCDD2</color>
     <color name="red_500">#F44336</color>
     <color name="red_600">#E53935</color>
     <color name="red_700">#D32F2F</color>

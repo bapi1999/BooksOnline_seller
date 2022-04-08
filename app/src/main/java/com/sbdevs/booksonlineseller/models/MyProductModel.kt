@@ -4,9 +4,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 data class MyProductModel (
-    val productId:String = "",
+    val documentId:String = "",
+    val sku:String = "",
     val book_title: String = "",
-    val product_thumbnail: String = "",
     val productImage_List:MutableList<String> = ArrayList(),
     val price_selling: Long = 0,
     val price_original: Long = 0,

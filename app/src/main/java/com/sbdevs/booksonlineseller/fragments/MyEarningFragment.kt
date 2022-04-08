@@ -57,7 +57,7 @@ class MyEarningFragment : Fragment() {
     ): View {
 
         _binding = FragmentMyEarningBinding.inflate(inflater, container, false)
-        recyclerView = binding.earningRecycler
+        recyclerView = binding.lay2.earningRecycler
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
 

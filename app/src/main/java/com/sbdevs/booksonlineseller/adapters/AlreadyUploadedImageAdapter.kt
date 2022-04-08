@@ -37,7 +37,7 @@ class AlreadyUploadedImageAdapter (var list:ArrayList<String>, val listener:Alre
         parent: ViewGroup,
         viewType: Int
     ): AlreadyUploadedImageAdapter.ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_upload_already_image_item, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_upload_already_image, parent, false)
         return ViewHolder(view)
     }
 

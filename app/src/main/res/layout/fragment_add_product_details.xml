@@ -42,20 +42,19 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatButton
+            <Button
                 android:id="@+id/read_instruction_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/read_instruction"
-                android:textColor="@color/white"
-                android:textAllCaps="false"
-                android:drawableStart="@drawable/ic_info_24"
-                android:drawableTint="@color/white"
-                android:gravity="center"
-                android:backgroundTint="@color/brikeRed"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"/>
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="@color/purple_50"
+                android:text="@string/read_instruction"
+                android:textAllCaps="false"
+                android:textColor="@color/purple_200"
+                app:icon="@drawable/ic_info_24"
+                app:iconTint="@color/purple_200" />
 
 
             <include android:id="@+id/lay1"

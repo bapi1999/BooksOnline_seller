@@ -10,40 +10,56 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/s_border_1"
-        android:backgroundTint="@color/grey_500"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/s_shape_bg_2"
+        android:elevation="5dp"
         android:orientation="vertical"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textView51"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Account Balance"
-            android:textColor="@color/grey_700"
-            android:textSize="15sp" />
+            android:gravity="center"
 
-        <View
-            android:id="@+id/divider12"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:background="?android:attr/listDivider" />
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Account Balance"
+                android:textSize="19dp"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textColor="@color/grey_500"
+                />
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:padding="6dp"
+                android:background="@drawable/s_shape_bg_2"
+                android:backgroundTint="@color/amber_100"
+                app:srcCompat="@drawable/ic_outline_account_balance_wallet_24"
+                app:tint="@color/brown" />
+
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/account_balance_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="10"
+            android:text="0"
+            android:fontFamily="@font/nunito_sans_semibold"
             android:textColor="@color/grey_900"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:textStyle="bold"
             app:drawableStartCompat="@drawable/ic_rupee_24"
             app:drawableTint="@color/black" />
@@ -72,25 +88,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Rs.000/- will be added in next 0 days"
+            android:text="Rs.0/- will be added in next 0 days"
             android:textColor="@color/grey_700"
             android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/withdrawal_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/amber_500"
+            android:text="Withdraw"
+            android:textColor="@color/grey_900"
+            app:cornerRadius="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
     </LinearLayout>
 
-    <Button
-        android:id="@+id/withdrawal_btn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/amber_500"
-        android:text="Withdraw"
-        android:textColor="@color/grey_900"
-        app:cornerRadius="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

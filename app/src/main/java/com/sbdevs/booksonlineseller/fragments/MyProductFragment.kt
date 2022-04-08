@@ -4,14 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
-import androidx.appcompat.widget.AppCompatButton
+import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.chip.ChipGroup
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -19,12 +19,10 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
-
 import com.sbdevs.booksonlineseller.activities.AddProductActivity
 import com.sbdevs.booksonlineseller.adapters.MyProductAdapter
 import com.sbdevs.booksonlineseller.databinding.FragmentMyProductBinding
 import com.sbdevs.booksonlineseller.models.MyProductModel
-import com.sbdevs.booksonlineseller.models.ProductReviewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 
@@ -38,12 +36,19 @@ class MyProductFragment : Fragment() {
 
     private lateinit var recyclerView:RecyclerView
     private lateinit var productAdapter: MyProductAdapter
-    private var productIdsList:ArrayList<String> = ArrayList()
     private var productlist:ArrayList<MyProductModel> = ArrayList()
+
+    private lateinit var searchContainer :LinearLayout
+    private lateinit var searchView: androidx.appcompat.widget.SearchView
+    private lateinit var searchImageIcon:ImageView
+
     private val loadingDialog = LoadingDialog()
-    private lateinit var bottomSheetDialog: BottomSheetDialog
     private var dateModified = Query.Direction.DESCENDING
     private var searchCode:Int = 0
+    private var searchBarVisiBle = false
+
+    private val gone = View.GONE
+    private val visible = View.VISIBLE
 
     private var lastResult:DocumentSnapshot ? = null
     private lateinit var times:Timestamp
@@ -57,10 +62,9 @@ class MyProductFragment : Fragment() {
        _binding = FragmentMyProductBinding.inflate(inflater,container, false)
         loadingDialog.show(childFragmentManager,"Show")
 
-        bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.CustomBottomSheetDialog)
-        val view: View = layoutInflater.inflate(R.layout.ar_product_filter_bottom_sheet, null)
-        bottomSheetDialog.setContentView(view)
-        dialogFunction(bottomSheetDialog)
+        searchContainer = binding.searchContainer
+        searchView = binding.searchView
+        searchImageIcon = binding.searchImageIcon
 
         binding.addNewProduct.setOnClickListener {
             val intent = Intent(context,AddProductActivity::class.java)
@@ -69,12 +73,55 @@ class MyProductFragment : Fragment() {
 
         recyclerView = binding.myProductRecycler
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        productAdapter = MyProductAdapter(productIdsList,productlist)
-
+        productAdapter = MyProductAdapter(productlist)
         recyclerView.adapter = productAdapter
-
         getMyProduct(dateModified)
+
+
+
+        searchImageIcon.setOnClickListener {
+            if (searchBarVisiBle){
+
+                searchBarVisiBle = false
+                searchContainer.visibility = gone
+                searchImageIcon.setImageResource(R.drawable.ic_search_24)
+                binding.productTypeContainer.visibility = visible
+                changeProductType()
+                when(searchCode){
+                    0 ->{
+
+                        getMyProduct(dateModified)
+                    }
+                    1 -> {
+                        //out of stock = 1
+                        getOutOfStockProduct(dateModified)
+                    }
+                    2 -> {
+                        //low in stock = 2
+                        getLowStockProduct(dateModified)
+                    }
+                    3 -> {
+                        //hidden = 3
+                        getHiddenProduct(dateModified)
+                    }
+                    else -> {
+                        //all = 0
+                        getMyProduct(dateModified)
+                    }
+                }
+
+            }else{
+                searchBarVisiBle = true
+                searchContainer.visibility = visible
+                searchImageIcon.setImageResource(R.drawable.ic_close_24)
+                binding.productTypeContainer.visibility = gone
+            }
+        }
+
+        binding.backButton.setOnClickListener {
+            val fragmentAction = MyProductFragmentDirections.actionMyProductFragmentToProfileMenuFragment2()
+            findNavController().navigate(fragmentAction)
+        }
 
 
 
@@ -85,12 +132,6 @@ class MyProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.filterBtn.setOnClickListener {
-            bottomSheetDialog.show()
-        }
-
-
-
 
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
 
@@ -100,8 +141,6 @@ class MyProductFragment : Fragment() {
 
                 if (!recyclerView.canScrollVertically(RecyclerView.FOCUS_DOWN) && recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
                     // end scrolling: do what you want here and after calling the function change the value of boolean
-
-                    //binding.textView83.text = isReachLast.toString()
 
                     if (isReachLast){
                         Log.w("Query item","Last item is reached already")
@@ -139,123 +178,72 @@ class MyProductFragment : Fragment() {
 
             }
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
+        })
 
+
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (!query.isNullOrEmpty()){
+
+                    changeProductType()
+                    getProductBySKU(query)
+                }
+
+                return false
             }
 
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
         })
 
 
 
 
-    }
-
-    private fun dialogFunction(dialog: BottomSheetDialog) {
-        val applyBtn:AppCompatButton = dialog.findViewById(R.id.apply_btn)!!
-        val typeChipGroup: ChipGroup = dialog.findViewById(R.id.type_chipGroup)!!
-        val dateModifiedChipGroup: ChipGroup = dialog.findViewById(R.id.relevance_chipGroup)!!
-
-        chipListenerForDateModified(dateModifiedChipGroup)
-        chipListenerForType(typeChipGroup)
-
-        applyBtn.setOnClickListener {
-//            Toast.makeText(requireContext(),"clicked",Toast.LENGTH_SHORT).show()
-            productAdapter.notifyItemRangeRemoved(0,productlist.size)
-            lastResult = null
-            productlist.clear()
-            productIdsList.clear()
 
 
-            when(searchCode){
-                0 ->{
-
-                    getMyProduct(dateModified)
-                }
-                1 -> {
-                    //out of stock = 1
-                    getOutOfStockProduct(dateModified)
-                }
-                2 -> {
-                    //low in stock = 2
-                    getLowStockProduct(dateModified)
-                }
-                3 -> {
-                    //hidden = 3
-                    getHiddenProduct(dateModified)
-                }
-                else -> {
-                    //all = 0
-                    getMyProduct(dateModified)
-                }
-            }
-            bottomSheetDialog.dismiss()
-        }
-
-
-
-
-    }
-
-
-    private fun chipListenerForDateModified(chipGroup: ChipGroup) {
-
-        chipGroup.setOnCheckedChangeListener { group, checkedId ->
-
-            //val chip: Chip = group.findViewById(checkedId) as Chip
-
-            dateModified = when (checkedId) {
-                R.id.relevance_chip1 -> {
-                    Query.Direction.DESCENDING
-
-                }
-                R.id.relevance_chip2 -> {
-                    Query.Direction.ASCENDING
-                }
-                else -> {
-                    Query.Direction.DESCENDING
-                }
-            }
-//            binding.textView83.text = dateModified.toString()
-
-
-        }
-
-    }
-
-    //todo - add click listener to type chip
-
-    private fun chipListenerForType(chipGroup: ChipGroup) {
-
-        chipGroup.setOnCheckedChangeListener { group, checkedId ->
-
-            //val chip: Chip = group.findViewById(checkedId) as Chip
+        binding.productTypeRadioGroup.setOnCheckedChangeListener { group, checkedId ->
 
             when (checkedId) {
-                R.id.type_chip1 -> {
-                    //all = 0
-                   searchCode = 0
-                }
-                R.id.type_chip2 -> {
-                   //out of stock = 1
-                    searchCode = 1
-                }
-                R.id.type_chip3 -> {
-                    //low in stock = 2
-                    searchCode = 2
-                }
-                R.id.type_chip4 -> {
-                    //hidden = 3
-                    searchCode = 3
-                }
-                else -> {
+                R.id.radioButton1 -> {
                     //all = 0
                     searchCode = 0
+                    changeProductType()
+                    getMyProduct(dateModified)
+                }
+                R.id.radioButton2 -> {
+                    //out of stock = 1
+                    searchCode = 1
+                    changeProductType()
+                    getOutOfStockProduct(dateModified)
+                }
+                R.id.radioButton3 -> {
+                    //low in stock = 2
+                    searchCode = 2
+                    changeProductType()
+                    getLowStockProduct(dateModified)
+                }
+                R.id.radioButton4 -> {
+                    //hidden = 3
+                    searchCode = 3
+                    changeProductType()
+                    getHiddenProduct(dateModified)
                 }
             }
-
-
         }
+
+
+
+    }
+
+    private fun changeProductType(){
+
+        productlist.clear()
+        productAdapter.notifyDataSetChanged()
+        lastResult = null
+        isReachLast = false
+        loadingDialog.show(childFragmentManager,"Show")
 
     }
 
@@ -263,9 +251,9 @@ class MyProductFragment : Fragment() {
 
 
     private fun getMyProduct(direction:Query.Direction){
+        val resultList:ArrayList<MyProductModel> = ArrayList()
 
-
-        var query:Query = if (lastResult == null){
+        val query:Query = if (lastResult == null){
             firebaseFirestore.collection("PRODUCTS")
                 .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
                 .whereEqualTo("hide_this_product",false)
@@ -285,11 +273,23 @@ class MyProductFragment : Fragment() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size < 10
-
                 for (item in allDocumentSnapshot){
-                    productIdsList.add(item.id)
+                    val documentId = item.id
+                    val sku = item.getString("SKU").toString()
+                    val productName = item.getString("book_title").toString()
+                    val productImgList:ArrayList<String> = item.get("productImage_List") as ArrayList<String>
+                    val stockQty: Long = item.getLong("in_stock_quantity")!!.toLong()
+                    val avgRating = item.getString("rating_avg")!!
+                    val totalRatings: Long = item.getLong("rating_total")!!
+                    val priceOriginal = item.getLong("price_original")!!.toLong()
+                    val priceSelling = item.getLong("price_selling")!!.toLong()
+
+                    val updateDate = item.getTimestamp("PRODUCT_UPDATE_ON")!!.toDate()
+
+                    resultList.add(MyProductModel(documentId,sku,productName,productImgList,priceSelling,priceOriginal,avgRating,totalRatings,stockQty,updateDate))
                 }
+
+                isReachLast = allDocumentSnapshot.size < 10
 
             }else{
                 isReachLast = true
@@ -298,19 +298,17 @@ class MyProductFragment : Fragment() {
 
 
 
-            val resultList = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
+
             productlist.addAll(resultList)
 
 
             if (productlist.isEmpty()){
-                binding.emptyContainer.visibility = View.VISIBLE
-                binding.myProductRecycler.visibility = View.GONE
-                loadingDialog.dismiss()
+                binding.emptyContainer.visibility = visible
+                binding.myProductRecycler.visibility = gone
             }else{
-                binding.emptyContainer.visibility = View.GONE
-                binding.myProductRecycler.visibility = View.VISIBLE
+                binding.emptyContainer.visibility = gone
+                binding.myProductRecycler.visibility = visible
 
-                productAdapter.productIdList = productIdsList
                 productAdapter.list = productlist
 
                 if (lastResult == null ){
@@ -327,21 +325,18 @@ class MyProductFragment : Fragment() {
             }
 
             loadingDialog.dismiss()
-            binding.progressBar2.visibility = View.GONE
+            binding.progressBar2.visibility = gone
         }.addOnFailureListener {
             Log.e("MyProducts","${it.message}")
-            binding.progressBar2.visibility = View.GONE
+            binding.progressBar2.visibility = gone
             loadingDialog.dismiss()
 
         }
 
     }
 
-
-
-
     private fun getOutOfStockProduct(direction:Query.Direction){
-
+        val resultList:ArrayList<MyProductModel> = ArrayList()
 
         val query:Query = if (lastResult == null){
             firebaseFirestore.collection("PRODUCTS")
@@ -364,16 +359,23 @@ class MyProductFragment : Fragment() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size < 10 // limit is 7
-
                 for (item in allDocumentSnapshot){
-                    productIdsList.add(item.id)
+                    val documentId = item.id
+                    val sku = item.getString("SKU").toString()
+                    val productName = item.getString("book_title").toString()
+                    val productImgList:ArrayList<String> = item.get("productImage_List") as ArrayList<String>
+                    val stockQty: Long = item.getLong("in_stock_quantity")!!.toLong()
+                    val avgRating = item.getString("rating_avg")!!
+                    val totalRatings: Long = item.getLong("rating_total")!!
+                    val priceOriginal = item.getLong("price_original")!!.toLong()
+                    val priceSelling = item.getLong("price_selling")!!.toLong()
 
+                    val updateDate = item.getTimestamp("PRODUCT_UPDATE_ON")!!.toDate()
+
+                    resultList.add(MyProductModel(documentId,sku,productName,productImgList,priceSelling,priceOriginal,avgRating,totalRatings,stockQty,updateDate))
                 }
 
-//                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-//                lastResult = lastR
-//                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+                isReachLast = allDocumentSnapshot.size < 10
 
             }else{
                 isReachLast = true
@@ -381,21 +383,23 @@ class MyProductFragment : Fragment() {
             }
 
 
-            productAdapter.productIdList = productIdsList
-
-            val resultList = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
             productlist.addAll(resultList)
-            productAdapter.list = productlist
+
+
+
 
             if (productlist.isEmpty()){
-                binding.emptyContainer.visibility = View.VISIBLE
-                binding.myProductRecycler.visibility = View.GONE
-                loadingDialog.dismiss()
+                binding.emptyContainer.visibility = visible
+                binding.myProductRecycler.visibility = gone
             }else{
 
-                binding.emptyContainer.visibility = View.GONE
-                binding.myProductRecycler.visibility = View.VISIBLE
+                binding.emptyContainer.visibility = gone
+                binding.myProductRecycler.visibility = visible
+
                 if (lastResult == null ){
+
+                    productAdapter.list = productlist
+
                     productAdapter.notifyItemRangeInserted(0,resultList.size)
                 }else{
                     productAdapter.notifyItemRangeInserted(productlist.size-1,resultList.size)
@@ -409,7 +413,7 @@ class MyProductFragment : Fragment() {
             }
 
             loadingDialog.dismiss()
-            binding.progressBar2.visibility = View.GONE
+            binding.progressBar2.visibility = gone
         }.addOnFailureListener {
             Log.e("MyProducts","${it.message}")
             loadingDialog.dismiss()
@@ -419,19 +423,18 @@ class MyProductFragment : Fragment() {
     }
 
     private fun getLowStockProduct(direction:Query.Direction){
+        val resultList:ArrayList<MyProductModel> = ArrayList()
 
         val query:Query = if (lastResult == null){
             firebaseFirestore.collection("PRODUCTS")
                 .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
                 .whereLessThan("in_stock_quantity",5L)
-                .whereGreaterThan("in_stock_quantity",0L)
                 .orderBy("in_stock_quantity")
                 .orderBy("PRODUCT_UPDATE_ON",direction)
         }else{
             firebaseFirestore.collection("PRODUCTS")
                 .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
                 .whereLessThan("in_stock_quantity",5L)
-                .whereGreaterThan("in_stock_quantity",0L)
                 .orderBy("in_stock_quantity")
                 .orderBy("PRODUCT_UPDATE_ON",direction)
                 .startAfter(inStockOrder,times)
@@ -443,36 +446,42 @@ class MyProductFragment : Fragment() {
             val allDocumentSnapshot = it.documents
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size <10 // limit is 7
-
                 for (item in allDocumentSnapshot){
-                    productIdsList.add(item.id)
+                    val documentId = item.id
+                    val sku = item.getString("SKU").toString()
+                    val productName = item.getString("book_title").toString()
+                    val productImgList:ArrayList<String> = item.get("productImage_List") as ArrayList<String>
+                    val stockQty: Long = item.getLong("in_stock_quantity")!!.toLong()
+                    val avgRating = item.getString("rating_avg")!!
+                    val totalRatings: Long = item.getLong("rating_total")!!
+                    val priceOriginal = item.getLong("price_original")!!.toLong()
+                    val priceSelling = item.getLong("price_selling")!!.toLong()
 
+                    val updateDate = item.getTimestamp("PRODUCT_UPDATE_ON")!!.toDate()
+
+                    resultList.add(MyProductModel(documentId,sku,productName,productImgList,priceSelling,priceOriginal,avgRating,totalRatings,stockQty,updateDate))
                 }
-//                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-//                lastResult = lastR
-//                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
-//                inStockOrder = lastR.getLong("in_stock_quantity")!!
+
+                isReachLast = allDocumentSnapshot.size < 10
             }else{
                 isReachLast = true
 
             }
 
 
-            productAdapter.productIdList = productIdsList
-
-            val resultList = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
             productlist.addAll(resultList)
-            productAdapter.list = productlist
+
 
             if (productlist.isEmpty()){
-                binding.emptyContainer.visibility = View.VISIBLE
-                binding.myProductRecycler.visibility = View.GONE
-                loadingDialog.dismiss()
+                binding.emptyContainer.visibility = visible
+                binding.myProductRecycler.visibility = gone
             }else{
 
-                binding.emptyContainer.visibility = View.GONE
-                binding.myProductRecycler.visibility = View.VISIBLE
+                binding.emptyContainer.visibility = gone
+                binding.myProductRecycler.visibility =visible
+
+                productAdapter.list = productlist
+
                 if (lastResult == null ){
                     productAdapter.notifyItemRangeInserted(0,resultList.size)
                 }else{
@@ -487,7 +496,7 @@ class MyProductFragment : Fragment() {
 
             }
             loadingDialog.dismiss()
-            binding.progressBar2.visibility = View.GONE
+            binding.progressBar2.visibility = gone
         }.addOnFailureListener {
             Log.e("MyProducts","${it.message}")
 
@@ -498,7 +507,7 @@ class MyProductFragment : Fragment() {
     }
 
     private fun getHiddenProduct(direction:Query.Direction){
-
+        val resultList:ArrayList<MyProductModel> = ArrayList()
 
         val query:Query = if (lastResult == null){
             firebaseFirestore.collection("PRODUCTS")
@@ -519,34 +528,39 @@ class MyProductFragment : Fragment() {
 
             if (allDocumentSnapshot.isNotEmpty()){
 
-                isReachLast = allDocumentSnapshot.size <10
-
                 for (item in allDocumentSnapshot){
-                    productIdsList.add(item.id)
-
+                    val documentId = item.id
+                    val sku = item.getString("SKU").toString()
+                    val productName = item.getString("book_title").toString()
+                    val productImgList:ArrayList<String> = item.get("productImage_List") as ArrayList<String>
+                    val stockQty: Long = item.getLong("in_stock_quantity")!!.toLong()
+                    val avgRating = item.getString("rating_avg")!!
+                    val totalRatings: Long = item.getLong("rating_total")!!
+                    val priceOriginal = item.getLong("price_original")!!.toLong()
+                    val priceSelling = item.getLong("price_selling")!!.toLong()
+                    val updateDate = item.getTimestamp("PRODUCT_UPDATE_ON")!!.toDate()
+                    resultList.add(MyProductModel(documentId,sku,productName,productImgList,priceSelling,priceOriginal,avgRating,totalRatings,stockQty,updateDate))
                 }
-//                val lastR = allDocumentSnapshot[allDocumentSnapshot.size - 1]
-//                lastResult = lastR
-//                times = lastR.getTimestamp("PRODUCT_UPDATE_ON")!!
+
+                isReachLast = allDocumentSnapshot.size < 10
+
 
             }else{
                 isReachLast = true
 
             }
 
-
-            productAdapter.productIdList = productIdsList
-            val resultList = it.toObjects(MyProductModel::class.java) as ArrayList<MyProductModel>
             productlist.addAll(resultList)
-            productAdapter.list = productlist
 
             if (productlist.isEmpty()){
-                binding.emptyContainer.visibility = View.VISIBLE
-                binding.myProductRecycler.visibility = View.GONE
-                loadingDialog.dismiss()
+                binding.emptyContainer.visibility = visible
+                binding.myProductRecycler.visibility = gone
             }else{
-                binding.emptyContainer.visibility = View.GONE
-                binding.myProductRecycler.visibility = View.VISIBLE
+                binding.emptyContainer.visibility =gone
+                binding.myProductRecycler.visibility = visible
+
+                productAdapter.list = productlist
+
                 if (lastResult == null ){
                     productAdapter.notifyItemRangeInserted(0,resultList.size)
                 }else{
@@ -559,7 +573,79 @@ class MyProductFragment : Fragment() {
 
             }
             loadingDialog.dismiss()
-            binding.progressBar2.visibility = View.GONE
+            binding.progressBar2.visibility =gone
+        }.addOnFailureListener {
+            Log.e("MyProducts","${it.message}")
+            loadingDialog.dismiss()
+
+        }
+
+    }
+
+
+    private fun getProductBySKU(sku:String){
+        val resultList:ArrayList<MyProductModel> = ArrayList()
+
+        val query:Query = firebaseFirestore.collection("PRODUCTS")
+                .whereEqualTo("PRODUCT_SELLER_ID",user!!.uid)
+                .whereEqualTo("SKU",sku)
+
+        query.get().addOnSuccessListener {
+            val allDocumentSnapshot = it.documents
+
+
+            if (allDocumentSnapshot.isNotEmpty()){
+
+                for (item in allDocumentSnapshot){
+                    val documentId = item.id
+                    val sku = item.getString("SKU").toString()
+                    val productName = item.getString("book_title").toString()
+                    val productImgList:ArrayList<String> = item.get("productImage_List") as ArrayList<String>
+                    val stockQty: Long = item.getLong("in_stock_quantity")!!.toLong()
+                    val avgRating = item.getString("rating_avg")!!
+                    val totalRatings: Long = item.getLong("rating_total")!!
+                    val priceOriginal = item.getLong("price_original")!!.toLong()
+                    val priceSelling = item.getLong("price_selling")!!.toLong()
+
+                    val updateDate = item.getTimestamp("PRODUCT_UPDATE_ON")!!.toDate()
+
+                    resultList.add(MyProductModel(documentId,sku,productName,productImgList,priceSelling,priceOriginal,avgRating,totalRatings,stockQty,updateDate))
+                }
+
+                isReachLast = true
+
+            }else{
+                isReachLast = true
+
+            }
+
+
+            productlist.addAll(resultList)
+
+
+            if (productlist.isEmpty()){
+                binding.emptyContainer.visibility = visible
+                binding.myProductRecycler.visibility = gone
+            }else{
+
+                binding.emptyContainer.visibility =gone
+                binding.myProductRecycler.visibility = visible
+
+                if (lastResult == null ){
+
+                    productAdapter.list = productlist
+
+                    productAdapter.notifyItemRangeInserted(0,resultList.size)
+                }else{
+                    productAdapter.notifyItemRangeInserted(productlist.size-1,resultList.size)
+                }
+
+
+
+            }
+
+            loadingDialog.dismiss()
+            binding.progressBar2.visibility = gone
         }.addOnFailureListener {
             Log.e("MyProducts","${it.message}")
             loadingDialog.dismiss()

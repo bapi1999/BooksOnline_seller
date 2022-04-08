@@ -16,7 +16,7 @@ class ProductZoomImageAdapter(var productImgList: ArrayList<String>) :
         parent: ViewGroup,
         viewType: Int
     ):ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_image_zoom_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_image_zoom,parent,false)
         return ViewHolder(view)
     }
 

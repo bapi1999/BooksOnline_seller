@@ -28,7 +28,7 @@
             android:background="@color/white"
             android:visibility="visible"
             android:layout_weight="1"
-            tools:listitem="@layout/le_notification_item"/>
+            tools:listitem="@layout/item_notification"/>
         <ProgressBar
             android:id="@+id/progressBar2"
             style="?android:attr/progressBarStyle"

@@ -10,6 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
 
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/button_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,8 +45,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
                     android:layout_marginEnd="16dp"
-                    android:text=""
                     android:layout_weight="1"
+                    android:text=""
                     android:textAllCaps="true"
                     android:textColor="@color/black"
                     android:textSize="17sp"
@@ -113,8 +114,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="3dp"
-                    android:text=""
                     android:layout_weight="1"
+                    android:text=""
                     android:textColor="@color/grey_900"
                     android:textSize="15sp" />
             </LinearLayout>
@@ -135,45 +136,41 @@
                     android:gravity="center_vertical|start"
                     android:text="@string/tracking_id_won_t_generate"
                     android:textColor="@color/grey_500"
-                    android:textSize="12sp"
-                    />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/brikeRed"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="8dp"
-                android:orientation="vertical"
-                >
+                android:background="@color/red_600"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/order_cancel_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
                     android:text="Order is canceled"
                     android:textColor="@color/white"
                     android:textSize="15sp"
-                    android:layout_weight="1"
-                    android:layout_margin="10dp"
-                    android:visibility="gone"
-                    />
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/order_wrong_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
                     android:gravity="center_vertical|start"
                     android:text="@string/order_warning_1"
                     android:textColor="@color/white"
                     android:textSize="15sp"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
+                    android:visibility="gone"
                     app:drawableStartCompat="@drawable/ic_error_outline_24"
-                    app:drawableTint="@color/white"
-                    android:visibility="gone"/>
-
+                    app:drawableTint="@color/white" />
 
 
             </LinearLayout>
@@ -251,111 +248,85 @@
         android:id="@+id/button_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:elevation="8dp"
+        android:layout_marginStart="16dp"
 
-        android:orientation="vertical"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
+        android:elevation="8dp"
+        android:orientation="horizontal"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
-            android:id="@+id/accept_button_container"
+
+        <Button
+            android:id="@+id/cancel_order_btn"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:elevation="8dp"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/grey_100"
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/reject_order_btn"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/grey_100"
-                android:stateListAnimator="@null"
-                android:text="Reject"
-                android:textAllCaps="false"
-                android:textColor="@color/red_a700"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+            android:insetTop="0dp"
+            android:text="Cancel Order"
+            android:textAllCaps="false"
+            android:textColor="@color/red_a700"
+            app:cornerRadius="30dp"
+            app:icon="@drawable/ic_close_24"
+            app:iconPadding="0dp"
+            app:iconTint="@color/red_a700"
+            app:strokeColor="@color/red_a700"
+            app:strokeWidth="2dp" />
 
-            <androidx.appcompat.widget.AppCompatButton
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
                 android:id="@+id/accept_order_btn"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/successGreen"
-                android:stateListAnimator="@null"
+                android:backgroundTint="@color/teal_700"
+                android:insetTop="0dp"
                 android:text="Accept"
                 android:textAllCaps="false"
-                android:textColor="@color/black"
-                android:textSize="17sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/button_container_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/cancel_order_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Cancel Order"
-                android:textAllCaps="false"
-                android:background="@color/brikeRed"
                 android:textColor="@color/white"
-                android:textSize="17sp"
-                android:textStyle="bold" />
+                app:cornerRadius="30dp"
+                app:icon="@drawable/ic_check"
+                app:iconPadding="0dp" />
 
-
-            <LinearLayout
+            <Button
+                android:id="@+id/packed_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:backgroundTint="@color/blueLink"
+                android:insetTop="0dp"
+                android:text="Packed"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:visibility="visible"
+                app:cornerRadius="30dp" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/packed_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@color/teal_200"
-                    android:stateListAnimator="@null"
-                    android:text="Packed"
-                    android:textAllCaps="false"
-                    android:textColor="@color/grey_900"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/shipped_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@color/teal_700"
-                    android:stateListAnimator="@null"
-                    android:text="Shipped"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="17sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-
-
-            </LinearLayout>
-
+            <Button
+                android:id="@+id/shipped_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/indigo_500"
+                android:insetTop="0dp"
+                android:text="Shipped"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:visibility="visible"
+                app:cornerRadius="30dp" />
 
 
         </LinearLayout>
-
-
 
     </LinearLayout>
 

@@ -15,7 +15,7 @@ class EarningAdapter(var list: List<EarningModel>): RecyclerView.Adapter<Earning
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_earning_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_earning,parent,false)
         return ViewHolder(view)
     }
 

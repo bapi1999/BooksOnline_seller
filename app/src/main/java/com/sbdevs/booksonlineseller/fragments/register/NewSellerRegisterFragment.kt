@@ -120,6 +120,16 @@ class NewSellerRegisterFragment : Fragment() {
         val userMap: MutableMap<String, Any> = HashMap()
         userMap["Is_seller"] = true
         userMap["seller_register_date"] = timstamp1
+        userMap["TotalSeals"] = 0L
+        userMap["TotalProfit"] = 0L
+        userMap["OrdersDelivered"] = 0L
+        userMap["OrdersCanceled"] = 0L
+        userMap["new_notification_seller"] = timstamp1
+
+        userMap["LastDeliveredOrderTime"] = timstamp1
+        userMap["LastCanceledOrderTime"] = timstamp1
+        userMap["LastProductAddedTime"] = timstamp1
+        userMap["LastTimeSealsChecked"] = timstamp1
 
         val earningMap: MutableMap<String, Any> = HashMap()
         earningMap["current_amount"] = 0L
@@ -135,16 +145,28 @@ class NewSellerRegisterFragment : Fragment() {
         bankDetailsMap["UPI_id"] =""
         bankDetailsMap["Is_BankDetail_Added"] = false
 
+        val welcomeNoti: String = getString(R.string.welcome_notification_for_seller)
+        val notificationMap: MutableMap<String, Any> = HashMap()
+        notificationMap["date"] = FieldValue.serverTimestamp()
+        notificationMap["description"] = welcomeNoti
+        notificationMap["image"] = ""
+        notificationMap["NOTIFICATION_CODE"]=0L
+        notificationMap["order_id"] = ""
+        notificationMap["seen"] = false
+
         val currentUser = firebaseAuth.currentUser!!.uid
 
         firebaseFirestore.collection("USERS").document(currentUser).update(userMap).await()
 
-        val docRef = firebaseFirestore.collection("USERS")
-            .document(currentUser).collection("SELLER_DATA")
+        val docRef = firebaseFirestore.collection("USERS").document(currentUser)
 
-        docRef.document("BANK_DETAILS").set(bankDetailsMap).await()
-        docRef.document("BUSINESS_DETAILS").set(businessDetailsMap).await()
-        docRef.document("MY_EARNING").set(earningMap).await()
+        docRef.set(userMap).await()
+        docRef.collection("SELLER_NOTIFICATIONS").add(notificationMap).await()
+
+        val sellerRef = docRef.collection("SELLER_DATA")
+        sellerRef.document("BANK_DETAILS").set(bankDetailsMap).await()
+        sellerRef.document("BUSINESS_DETAILS").set(businessDetailsMap).await()
+        sellerRef.document("MY_EARNING").set(earningMap).await()
 
         withContext(Dispatchers.Main){
             Toast.makeText(context, "Successfully Registered", Toast.LENGTH_SHORT).show()

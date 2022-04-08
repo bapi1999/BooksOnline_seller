@@ -30,13 +30,12 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
 
     interface OrderItemClickListener{
         fun acceptClickListener(position: Int)
-        fun rejectClickListener(position: Int)
         fun shipClickListener(position: Int)
         fun cancelClickListener(position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SellerOrderAdapter.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.sl_le_order_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_order,parent,false)
         return ViewHolder(view)
     }
 
@@ -64,13 +63,10 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
         private val paidStatusText:TextView = itemView.findViewById(R.id.paid_status_text)
         private val errorText:TextView = itemView.findViewById(R.id.error_message_text)
         private val autoCancelText:TextView = itemView.findViewById(R.id.auto_cancel_text)
-        private val productIdText:TextView = itemView.findViewById(R.id.product_item_id)
+        private val orderIdText:TextView = itemView.findViewById(R.id.order_id)
 
-        private val newButtonContainer:LinearLayout = itemView.findViewById(R.id.new_button_container)
-        private val acceptButtonContainer:LinearLayout = itemView.findViewById(R.id.accept_button_container)
-        private val packedButtonContainer:LinearLayout = itemView.findViewById(R.id.pack_button_container)
+        private val buttonContainer:LinearLayout = itemView.findViewById(R.id.button_container)
 
-        private val rejectBtn:Button = itemView.findViewById(R.id.reject_order_btn)
         private val acceptBtn:Button = itemView.findViewById(R.id.accept_order_btn)
         private val viewOrderBtn:Button = itemView.findViewById(R.id.view_order_btn)
         private val cancelBtn:Button = itemView.findViewById(R.id.cancel_order_btn)
@@ -83,16 +79,16 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
 
 
         fun bind(item:SellerOrderModel){
-            val orderId = item.orderId
+            val orderId = item.documentId
             itemView.setOnClickListener {
                 val orderIntent = Intent(itemView.context,OrderDetailsActivity::class.java)
-                orderIntent.putExtra("orderId",orderId)
+                orderIntent.putExtra("documentId",orderId)
                 itemView.context.startActivity(orderIntent)
             }
 
             viewOrderBtn.setOnClickListener {
                 val orderIntent = Intent(itemView.context,OrderDetailsActivity::class.java)
-                orderIntent.putExtra("orderId",orderId)
+                orderIntent.putExtra("documentId",orderId)
                 itemView.context.startActivity(orderIntent)
             }
 
@@ -100,9 +96,6 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                 listener.acceptClickListener(adapterPosition)
             }
 
-            rejectBtn.setOnClickListener {
-                listener.rejectClickListener(adapterPosition)
-            }
 
             shipBtn.setOnClickListener {
                 listener.shipClickListener(adapterPosition)
@@ -115,7 +108,7 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
 
 
             val status:String = item.status
-            val alreadyPaid = item.already_paid
+            val onlinePayment = item.onlinePayment
             val address:MutableMap<String,Any> = item.address
             val buyerId:String = item.buyerId
             val orderTimed:Date = item.Time_ordered
@@ -126,7 +119,7 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
             orderStatus.text = status
 
 
-            productIdText.text ="Item id hare"// not real productId or it can be hacked by
+            orderIdText.text ="Order Id: ${item.documentId}"
 
 
             Glide.with(itemView.context)
@@ -135,7 +128,7 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                 .into(productImage)
 
 
-            if (!alreadyPaid){
+            if (!onlinePayment){
 
                 paidStatusText.text = "Not paid"
                 paidStatusText.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.grey_400)
@@ -176,63 +169,53 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                 "new" ->{
 
                     val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_ordered)
-                    orderTime.text = dateFormat
+                    orderTime.text = getDateTime(item.Time_ordered)
                     orderTimeType.text = "Ordered"
 
-                    acceptButtonContainer.visibility = gone
-                    packedButtonContainer.visibility = gone
+                    buttonContainer.visibility = visible
+                    acceptBtn.visibility = visible
+                    viewOrderBtn.visibility = gone
+                    shipBtn.visibility = gone
 
                     orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.amber_600)
                     orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.grey_900))
-
-//                    val expireDate = getTimeExpire(item.Time_ordered)
-//                    if (isTimeExpire(item.Time_ordered)) {
-//                        newButtonContainer.visibility = visible
-//                        autoCancelText.text = "Auto cancel on $expireDate"
-//                        autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_800))
-//                    }else{
-//                        newButtonContainer.visibility = gone
-//                        autoCancelText.text = "Already canceled on $expireDate"
-//                        autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.red_900))
-//                    }
-                    showCancellationText(item.Time_ordered,newButtonContainer)
 
                 }
 
                 "accepted" ->{
                     val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_accepted!!)
-                    orderTime.text = dateFormat
+                    orderTime.text = getDateTime(item.Time_accepted)
                     orderTimeType.text = "Accepted"
-                    newButtonContainer.visibility = gone
-                    //acceptButtonContainer.visibility = visible
-                    packedButtonContainer.visibility = gone
+                    buttonContainer.visibility = visible
+                    acceptBtn.visibility = gone
+                    viewOrderBtn.visibility = visible
+                    shipBtn.visibility = gone
 
-                    orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.amber_600)
+
+                    orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.successGreen)
                     orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.black))
 
-                    showCancellationText(item.Time_accepted,acceptButtonContainer)
 
                 }
 
                 "packed" ->{
 
                     val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_packed!!)
-                    orderTime.text = dateFormat
+                    orderTime.text = getDateTime(item.Time_packed)
                     orderTimeType.text = "Packed"
-                    newButtonContainer.visibility = gone
-                    acceptButtonContainer.visibility = gone
-                    //packedButtonContainer.visibility = visible
+                    buttonContainer.visibility = visible
+                    acceptBtn.visibility = gone
+                    viewOrderBtn.visibility = gone
+                    shipBtn.visibility = visible
 
-                    orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.teal_700)
+                    orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,R.color.viewAll)
                     orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.white))
 
-                    showCancellationText(item.Time_accepted!!,packedButtonContainer)
+
                 }
 
                 "shipped"->{
-                    newButtonContainer.visibility = gone
-                    acceptButtonContainer.visibility = gone
-                    packedButtonContainer.visibility = gone
+                   buttonContainer.visibility = gone
                     val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_shipped!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Shipped"
@@ -243,37 +226,42 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                     autoCancelText.visibility = gone
                 }
                 "delivered"->{
-                    newButtonContainer.visibility = gone
-                    acceptButtonContainer.visibility = gone
-                    packedButtonContainer.visibility = gone
+                    buttonContainer.visibility = gone
                     val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_delivered!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Delivered"
 
                     orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,
-                        R.color.red_a700
+                        R.color.teal_700
                     )
                     orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.white))
 
                     autoCancelText.visibility = gone
                 }
                 "returned"->{
-                    newButtonContainer.visibility = gone
-                    acceptButtonContainer.visibility = gone
-                    packedButtonContainer.visibility = gone
+                    buttonContainer.visibility = gone
                     val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_returned!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Returned"
                     autoCancelText.visibility = gone
+                    orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,
+                        R.color.amber_900
+                    )
+                    orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.white))
+
                 }
                 "canceled"->{
-                    newButtonContainer.visibility = gone
-                    acceptButtonContainer.visibility = gone
-                    packedButtonContainer.visibility = gone
+                    buttonContainer.visibility = gone
                     val dateFormat = TimeDateAgo().msToTimeAgo(itemView.context,item.Time_canceled!!)
                     orderTime.text = dateFormat
                     orderTimeType.text = "Canceled"
                     autoCancelText.visibility = gone
+
+                    orderStatus.backgroundTintList = AppCompatResources.getColorStateList(itemView.context,
+                        R.color.red_a700
+                    )
+                    orderStatus.setTextColor( AppCompatResources.getColorStateList(itemView.context,R.color.white))
+
 
                 }
                 else ->{
@@ -284,52 +272,6 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
 
         }
 
-
-        private fun cancelOrderMethod(orderId: String){
-
-            val orderMap:MutableMap<String,Any> = HashMap()
-            orderMap["status"] = "canceled"
-            orderMap["is_order_canceled"] = true
-
-            orderMap["Time_canceled"] = FieldValue.serverTimestamp()
-            firebaseFirestore.collection("USERS")
-                .document(user!!.uid)
-                .collection("SELLER_DATA")
-                .document("SELLER_DATA")
-                .collection("ORDERS")
-                .document(orderId).update(orderMap)
-                .addOnSuccessListener {
-                    Log.i("canceled order","successful")
-                    //loadingDialog.dismiss()
-                }
-                .addOnFailureListener {
-                    //loadingDialog.dismiss()
-                    Log.e("canceled order","${it.message}")
-                }
-        }
-
-        private fun sendNotification(buyerId:String,productName:String,url:String,status: String,orderId: String){
-
-            val ref = firebaseFirestore.collection("USERS").document(buyerId).collection("USER_DATA")
-                .document("MY_NOTIFICATION").collection("NOTIFICATION")
-
-            val notificationMap: MutableMap<String, Any> = HashMap()
-            notificationMap["date"] = FieldValue.serverTimestamp()
-            notificationMap["description"] = "$status:$productName"
-            notificationMap["image"] = url
-            notificationMap["order_id"] = orderId
-            notificationMap["seller_id"] = user!!.uid
-            notificationMap["seen"] = false
-//
-
-            ref.add(notificationMap)
-                .addOnSuccessListener {
-
-                }.addOnFailureListener {
-                    Log.e("get buyer notification","${it.message}")
-                }
-        }
-
         @SuppressLint("SimpleDateFormat")
         private fun getDateTime(date: Date): String? {
             return try {
@@ -337,59 +279,11 @@ class SellerOrderAdapter(var list:List<SellerOrderModel>, val listener:OrderItem
                 val t:TimerBuilder
                 //t.setExpireTime()
 
-                val sdf = SimpleDateFormat("dd MMMM yyyy hh:mm a")
+                val sdf = SimpleDateFormat("hh:mm a dd/MM/yyyy")
 //                val netDate = Date(tm.)
                 sdf.format(date)
             } catch (e: Exception) {
                 e.toString()
-            }
-        }
-
-
-        private fun isTimeExpire(date: Date): Boolean {
-
-            val expireDate = Date(date.time + (1000 * 60 * 60 * 24))
-            val currentTime = Date()
-
-            val diffDate:Long = expireDate.time - currentTime.time
-            diffDate.toString()
-            // false -> expired
-            return diffDate > 0
-
-        }
-
-        private fun getTimeExpire(date: Date): String? {
-            return try {
-
-                val expireDate = Date(date.time + (1000 * 60 * 60 * 24))
-                val sdf = SimpleDateFormat("dd MMMM yyyy , hh:mm a")
-
-//                val currentTime = Date()
-//                val diffDate:Long = expireDate.time - currentTime.time
-//                val seconds = diffDate / 1000
-//                val minutes = seconds / 60
-//                val hours = minutes / 60
-//                val days = hours / 24
-
-                sdf.format(expireDate)
-            } catch (e: Exception) {
-                e.toString()
-            }
-
-
-        }
-
-        private fun showCancellationText(date: Date,container:LinearLayout){
-
-            val expireDate = getTimeExpire(date)
-            if (isTimeExpire(date)) {
-                container.visibility = visible
-                autoCancelText.text = "Auto cancel on $expireDate"
-                autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.grey_800))
-            }else{
-                container.visibility = gone
-                autoCancelText.text = "Already canceled on $expireDate"
-                autoCancelText.setTextColor(AppCompatResources.getColorStateList(itemView.context,R.color.red_900))
             }
         }
 

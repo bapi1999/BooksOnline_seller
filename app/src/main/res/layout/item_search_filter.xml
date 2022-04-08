@@ -184,7 +184,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="4dp"
         android:text="@string/out_of_stock"
-        android:textColor="@color/brikeRed"
+        android:textColor="@color/red_600"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

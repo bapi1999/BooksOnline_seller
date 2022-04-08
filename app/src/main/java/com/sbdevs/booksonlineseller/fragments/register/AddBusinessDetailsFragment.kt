@@ -29,13 +29,10 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.MainActivity
-import com.sbdevs.booksonlineseller.databinding.FragmentAddBankDetailsBinding
 import com.sbdevs.booksonlineseller.databinding.FragmentAddBusinessDetailsBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 
@@ -167,12 +164,12 @@ class AddBusinessDetailsFragment : Fragment() {
 
         autoCompleteType = binding.businessDetails.autoCompleteType
         val addressTypeList = resources.getStringArray(R.array.business_type)
-        val typeAdapter = ArrayAdapter(requireContext(), R.layout.le_dropdown_item, addressTypeList)
+        val typeAdapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, addressTypeList)
         autoCompleteType.setAdapter(typeAdapter)
 
         autoCompleteState = binding.businessDetails.autoCompleteState
         val stateList = resources.getStringArray(R.array.india_states)
-        val sateAdapter = ArrayAdapter(requireContext(), R.layout.le_dropdown_item, stateList)
+        val sateAdapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, stateList)
         autoCompleteState.setAdapter(sateAdapter)
 
 

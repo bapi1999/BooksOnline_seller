@@ -38,6 +38,7 @@
             android:id="@+id/categoryChipGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="visible"
             android:layout_marginStart="8dp"
             app:singleSelection="false">
 
@@ -423,6 +424,8 @@
                 style="@style/CustomChipStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#FCE4EC"
+                android:textColor="@color/grey_900"
                 android:tag="others"
                 android:text="Others" />
 
@@ -453,57 +456,116 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView67"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:drawablePadding="4dp"
-        android:text="Tags"
-        android:textColor="@color/grey_900"
-        android:textSize="17sp"
-        app:drawableEndCompat="@drawable/ic_info_24"
-        app:drawableTint="@color/light_black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/categoryLayout" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edit_tags"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        app:hintEnabled="false"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView67">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryLayout"
+        >
+        <TextView
+            android:id="@+id/textView67"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="4dp"
+            android:text="Tags"
+            android:textColor="@color/grey_900"
+            android:textSize="17sp"
+            app:drawableEndCompat="@drawable/ic_info_24"
+            app:drawableTint="@color/light_black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/categoryLayout" />
 
-        <com.google.android.material.textfield.TextInputEditText
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_tags"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/e_g_tags"
-            android:inputType="textMultiLine"
-            android:textColor="@color/grey_900"
-            android:textStyle="italic" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_marginTop="8dp"
+            app:hintEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView67">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/e_g_tags"
+                android:inputType="textMultiLine"
+                android:textColor="@color/grey_900"
+                android:textStyle="italic" />
+        </com.google.android.material.textfield.TextInputLayout>
 
 
 
-    <Button
-        android:id="@+id/auto_tag_btn"
-        android:layout_width="0dp"
+        <Button
+            android:id="@+id/auto_tag_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Generated Tag"
+            android:textAllCaps="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_tags" />
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="Auto Tag"
-        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_tags" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" >
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawablePadding="4dp"
+            android:text="Product SKU"
+            android:textColor="@color/grey_900"
+            android:textSize="17sp"
+            app:drawableEndCompat="@drawable/ic_info_24"
+            app:drawableTint="@color/light_black" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sku_input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:hintEnabled="false">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="e.g. Product1"
+                android:inputType="textMultiLine"
+                android:textColor="@color/grey_900"
+                android:textStyle="italic" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <Button
+            android:id="@+id/auto_sku_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Generated SKU"
+            android:textAllCaps="false" />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

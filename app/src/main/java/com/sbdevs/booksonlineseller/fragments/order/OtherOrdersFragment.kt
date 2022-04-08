@@ -38,6 +38,7 @@ class OtherOrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener
     private lateinit var sellerOrderAdapter: SellerOrderAdapter
     private lateinit var recyclerView: RecyclerView
 
+
     private var statusString = "shipped"
     private var orderByString = "Time_shipped"
 
@@ -61,6 +62,8 @@ class OtherOrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
             getOrdersByTags(statusString,orderByString)
 
+
+//TODO - create firebase index
 //            firebaseFirestore
 //                .collection("ORDERS")
 //                .whereEqualTo("ID_Of_SELLER",user!!.uid)
@@ -84,6 +87,8 @@ class OtherOrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener
 //                .whereEqualTo("ID_Of_SELLER",user!!.uid)
 //                .whereEqualTo("is_order_canceled",true)
 //                .orderBy("Time_canceled", Query.Direction.DESCENDING).get().addOnSuccessListener {  }
+
+
         }
 
         recyclerView = binding.orderRecycler
@@ -210,7 +215,7 @@ class OtherOrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener
                     val orderedQty =  item.getLong("ordered_Qty")!!
                     val price =  item.getLong("PRICE_TOTAL")!!
                     val buyerId =  item.getString("ID_Of_BUYER").toString()
-                    val already_paid:Boolean = item.getBoolean("already_paid")!!
+                    val onlinePayment: Boolean = item.getBoolean("Online_payment")!!
                     val orderTime: Date = item.getTimestamp("Time_ordered")!!.toDate()
                     val acceptedTime= item.getTimestamp("Time_accepted")?.toDate()
                     val packedTime= item.getTimestamp("Time_packed")?.toDate()
@@ -221,7 +226,7 @@ class OtherOrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener
                     val address:MutableMap<String,Any> = item.get("address") as MutableMap<String,Any>
 
                     resultList.add(SellerOrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
-                        price,already_paid,address,orderTime,acceptedTime,packedTime,
+                        price,onlinePayment,address,orderTime,acceptedTime,packedTime,
                         shippedTime,deliveredTime,returnedTime,canceledTime))
 
                 }
@@ -293,7 +298,7 @@ class OtherOrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener
                     val orderedQty =  item.getLong("ordered_Qty")!!
                     val price =  item.getLong("PRICE_TOTAL")!!
                     val buyerId =  item.getString("ID_Of_BUYER").toString()
-                    val already_paid:Boolean = item.getBoolean("already_paid")!!
+                    val onlinePayment: Boolean = item.getBoolean("Online_payment")!!
                     val orderTime: Date = item.getTimestamp("Time_ordered")!!.toDate()
                     val acceptedTime= item.getTimestamp("Time_accepted")?.toDate()
                     val packedTime= item.getTimestamp("Time_packed")?.toDate()
@@ -304,7 +309,7 @@ class OtherOrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener
                     val address:MutableMap<String,Any> = item.get("address") as MutableMap<String,Any>
 
                     resultList.add(SellerOrderModel(orderId,imageUrl,productName,statusString, buyerId,orderedQty,
-                        price,already_paid,address,orderTime,acceptedTime,packedTime,
+                        price,onlinePayment,address,orderTime,acceptedTime,packedTime,
                         shippedTime,deliveredTime,returnedTime,canceledTime))
                 }
 
@@ -338,9 +343,6 @@ class OtherOrdersFragment : Fragment(),SellerOrderAdapter.OrderItemClickListener
 //        TODO("Not yet implemented")
     }
 
-    override fun rejectClickListener(position: Int) {
-//        TODO("Not yet implemented")
-    }
 
     override fun shipClickListener(position: Int) {
 //        TODO("Not yet implemented")

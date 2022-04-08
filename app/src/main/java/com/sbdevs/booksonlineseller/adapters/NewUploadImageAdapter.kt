@@ -17,7 +17,7 @@ class NewUploadImageAdapter(var list:ArrayList<Uri>, val listener: MyOnItemClick
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewUploadImageAdapter.ViewHolder {
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.le_upload_already_image_item, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_upload_already_image, parent, false)
         return ViewHolder(view)
     }
 

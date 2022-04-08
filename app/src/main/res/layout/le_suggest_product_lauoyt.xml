@@ -63,5 +63,5 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout8"
-        tools:listitem="@layout/le_product_horizontal_item" />
+        tools:listitem="@layout/item_product_horizontal" />
 </androidx.constraintlayout.widget.ConstraintLayout>

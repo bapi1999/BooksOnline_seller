@@ -72,11 +72,10 @@
     <string name="order_cancel_reasons_5"> </string>
 
     <string-array name="order_cancel_reasons">
-        <item>Reason 1</item>
-        <item>Reason 2</item>
-        <item>Reason 3</item>
-        <item>Reason 4</item>
-        <item>Reason 5</item>
+        <item>Out of Stock</item>
+        <item>Incomplete customer details</item>
+        <item>Unable to accept order</item>
+
     </string-array>
 
     <string-array name="business_type">

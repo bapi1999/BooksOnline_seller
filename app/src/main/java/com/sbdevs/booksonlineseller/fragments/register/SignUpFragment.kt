@@ -228,7 +228,19 @@ class SignUpFragment : Fragment() {
         userMap["seller_register_date"] = timstamp1
         userMap["mobile_No"] = phone.editText?.text.toString().trim()
         userMap["profile"] = ""
-        userMap["new_notification"] = timstamp1
+        userMap["new_notification_user"] = timstamp1
+
+        userMap["TotalSeals"] = 0L
+        userMap["TotalProfit"] = 0L
+        userMap["OrdersDelivered"] = 0L
+        userMap["OrdersCanceled"] = 0L
+        userMap["new_notification_seller"] = timstamp1
+
+        userMap["LastDeliveredOrderTime"] = timstamp1
+        userMap["LastCanceledOrderTime"] = timstamp1
+        userMap["LastProductAddedTime"] = timstamp1
+        userMap["LastTimeSealsChecked"] = timstamp1
+
 
 
         val paymentMap: MutableMap<String, Any> = HashMap()
@@ -245,10 +257,6 @@ class SignUpFragment : Fragment() {
         bankDetailsMap["Is_BankDetail_Added"] = false
 
         val welcomeNoti: String = getString(R.string.welcome_notification_for_seller)
-
-
-
-
         val notificationMap: MutableMap<String, Any> = HashMap()
         notificationMap["date"] = FieldValue.serverTimestamp()
         notificationMap["description"] = welcomeNoti
@@ -270,7 +278,8 @@ class SignUpFragment : Fragment() {
                 val docRef = firebaseFirestore.collection("USERS").document(currentUser)
 
                 docRef.set(userMap).await()
-                docRef.collection("NOTIFICATIONS").add(notificationMap).await()
+                docRef.collection("USER_NOTIFICATIONS").add(listSizeMap).await()
+                docRef.collection("SELLER_NOTIFICATIONS").add(notificationMap).await()
 
                 val sellerRef = docRef.collection("SELLER_DATA")
                 sellerRef.document("BANK_DETAILS").set(bankDetailsMap).await()

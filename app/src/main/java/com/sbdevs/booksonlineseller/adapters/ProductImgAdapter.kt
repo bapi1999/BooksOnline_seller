@@ -7,7 +7,6 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.Glide
-import androidx.viewpager2.widget.ViewPager2
 import com.sbdevs.booksonlineseller.R
 
 
@@ -20,7 +19,7 @@ class ProductImgAdapter(var productImgList: ArrayList<String>,val listener: MyOn
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.le_product_image_item,parent,false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product_image,parent,false)
         return ViewHolder(view)
     }
 

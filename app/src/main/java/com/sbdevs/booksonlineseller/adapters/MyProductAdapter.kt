@@ -15,17 +15,17 @@ import com.sbdevs.booksonlineseller.activities.ProductActivity
 import com.sbdevs.booksonlineseller.models.MyProductModel
 import com.sbdevs.booksonlineseller.otherclass.TimeDateAgo
 
-class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<MyProductModel>):RecyclerView.Adapter<MyProductAdapter.ViewHolder>() {
+class MyProductAdapter (var list:ArrayList<MyProductModel>):RecyclerView.Adapter<MyProductAdapter.ViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
-        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.sl_le_my_product_item, parent, false)
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_my_product, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(productIdList[position],list[position])
+        holder.bind(list[position])
     }
 
     override fun getItemCount(): Int {
@@ -48,11 +48,13 @@ class MyProductAdapter (var productIdList:ArrayList<String>,var list:ArrayList<M
         private val stockContainer:LinearLayout = itemView.findViewById(R.id.stock_container)
 
 
-        fun bind(productId:String,item:MyProductModel){
+        fun bind(item:MyProductModel){
+
+            val documentId = item.documentId
 
             itemView.setOnClickListener {
                 val productIntent = Intent(itemView.context,ProductActivity::class.java)
-                productIntent.putExtra("productId",productId)
+                productIntent.putExtra("productId",documentId)
                 itemView.context.startActivity(productIntent)
             }
 

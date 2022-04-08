@@ -62,6 +62,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     private lateinit var isbnNo: TextInputLayout
     private lateinit var description: TextInputLayout
     private lateinit var tagInput: TextInputLayout
+    private lateinit var skuInput: TextInputLayout
 
     private lateinit var bookPrice: TextInputLayout
     private lateinit var discountPrice: TextInputLayout
@@ -145,11 +146,15 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         printDateInput = lay2.printDateInput
         myOwnCategoryText = lay3.myOwnCategoryEditText
         tagInput = lay3.editTags
+        skuInput = lay3.skuInput
         stockQuantity = lay2.stockQuantity
         productReturnRadioTogole = binding.lay21.productReturnToggle
 
 
         currentYear = Year.now().value
+
+
+
 
 
         //val productThumbnail: ImageView = binding.lay4.productThumbnail
@@ -269,6 +274,12 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         lay3.autoTagBtn.setOnClickListener {
             autoTagging()
         }
+
+        lay3.autoSkuBtn.setOnClickListener {
+            skuInput.editText?.setText(generateSKU())
+        }
+
+
     }
 
     private fun chipListenerForCategory(chipGroup: ChipGroup) {
@@ -499,6 +510,19 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         }
     }
 
+    private fun checkSKU(): Boolean {
+        val sku: String = skuInput.editText?.text.toString()
+        return if (sku.isEmpty()) {
+            skuInput.isErrorEnabled = true
+            skuInput.error = "Field can't be empty"
+            false
+        } else {
+            skuInput.isErrorEnabled = false
+            skuInput.error = null
+            true
+        }
+    }
+
     private fun checkStock(): Boolean {
         val stockQuantityString = stockQuantity.text.toString()
 
@@ -579,7 +603,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage() or !checkPageCount()
             or !checkDimensionWidth() or !checkDimensionLength() or !checkDimensionHeight() or !checkProductReturnState()
             or !checkDescription() or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()
-            or !checkTags() or !checkStock() or !checkPrintDate()  or !checkProductImage()
+            or !checkTags() or !checkSKU() or !checkStock() or !checkPrintDate()  or !checkProductImage()
         ) {
             loadingDialog.dismiss()
             Snackbar.make(v!!, "Fill all fields", Snackbar.LENGTH_SHORT).show()
@@ -590,9 +614,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                     addNewProduct(v, documentName)
                     delay(1000)
                 }
-//                withContext(Dispatchers.IO) {
-//                    uploadThumbnail(documentName)
-//                }
+
                 withContext(Dispatchers.IO) {
                     uploadProductImage(documentName)
                 }
@@ -657,11 +679,9 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         addProductMap["rating_Star_1"] = 0L
         addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
         addProductMap["PRODUCT_SELLER_ID"] = user!!.uid
+        addProductMap["SKU"] = skuInput.editText?.text.toString()
         addProductMap["Replacement_policy"] = replacementPolicy
 
-
-
-        //loadingDialog.show()
         firebaseFirestore.collection("PRODUCTS").document(documentName).set(addProductMap)
             .addOnSuccessListener {
                 Log.i("CreateProductToFirebase", "Product successfully added")
@@ -854,6 +874,18 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         docBuilder.append(timeString).append(userString)
         return docBuilder.toString().replace(".", "_").replace("-", "_").replace(":", "_")
     }
+
+
+    private fun generateSKU(): String {
+
+        val rnds = (10..100000).random().toString()
+        val userString = user!!.uid.toString().substring(0..4)
+        val docBuilder: StringBuilder = StringBuilder()
+        docBuilder.append(userString).append(rnds)
+        return docBuilder.toString()
+    }
+
+
 
     override fun onNewImageDeleteClick(position: Int) {
         uriList.removeAt(position)

@@ -76,11 +76,6 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.Main) {
             isUserVerified()
             getTimeStamp()
-//            withContext(Dispatchers.Main){
-//                loadingDialog.dismiss()
-//            }
-
-
         }
 
         val orderFragment = OrdersFragment()
@@ -127,7 +122,7 @@ class MainActivity : AppCompatActivity() {
 
         val ref = firebaseFirestore.collection("USERS")
             .document(user!!.uid)
-            .collection("NOTIFICATIONS")
+            .collection("SELLER_NOTIFICATIONS")
             .whereGreaterThan("date",timeStamp1)
 
         ref.addSnapshotListener { value, error ->
@@ -164,7 +159,7 @@ class MainActivity : AppCompatActivity() {
             val fixedTimestamp:Timestamp = Timestamp(newDate)
 
             val notiMAp: MutableMap<String, Any> = HashMap()
-            notiMAp["new_notification"] = fixedTimestamp
+            notiMAp["new_notification_seller"] = fixedTimestamp
 
             ref.update(notiMAp).addOnSuccessListener {
                 timeStamp = fixedTimestamp
@@ -178,7 +173,7 @@ class MainActivity : AppCompatActivity() {
     private suspend fun getTimeStamp(){
         firebaseFirestore.collection("USERS").document(user!!.uid)
             .get().addOnSuccessListener {
-                timeStamp = it.getTimestamp("new_notification")!! as Timestamp
+                timeStamp = it.getTimestamp("new_notification_seller")!! as Timestamp
 
                 getNotificationForOptionMenu(timeStamp,notificationBadgeText)
 

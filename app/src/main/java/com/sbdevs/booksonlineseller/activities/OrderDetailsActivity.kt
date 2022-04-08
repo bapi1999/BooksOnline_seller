@@ -72,21 +72,22 @@ class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var buyerId:String
     private lateinit var imageUrl:String
     private lateinit var productName: String
+    private var onlinePayment = false
 
-    private lateinit var orderId: String
+    private lateinit var documentId: String
     lateinit var lay4: ArOrderDetailsLay4Binding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOrderDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        orderId = intent.getStringExtra("orderId").toString().trim()
+        documentId = intent.getStringExtra("documentId").toString().trim()
         viewProductBtn = binding.lay1.viewProductBtn
         loadingDialog.show(supportFragmentManager,"show")
 
         lifecycleScope.launch(Dispatchers.Main) {
             withContext(Dispatchers.IO){
-                getOrderDetails(orderId)
+                getOrderDetails(documentId)
             }
 
         }
@@ -112,25 +113,16 @@ class OrderDetailsActivity : AppCompatActivity() {
                 .getColorStateList(this@OrderDetailsActivity,R.color.successGreen)
             lay4.acceptImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
 
-            updateOrder(orderId,"accepted")
+            updateOrder(documentId,"accepted")
             binding.statusTxt.text = "accepted"
 
-            binding.acceptButtonContainer.visibility = gone
-            binding.buttonContainer2.visibility = visible
+            binding.acceptOrderBtn.visibility = gone
             binding.packedBtn.visibility = visible
             binding.shippedBtn.visibility =gone
 
             val title = "Order Accepted By seller"
 
 //            sendNotificationStep1()
-
-        }
-
-        binding.rejectOrderBtn.setOnClickListener {
-            loadingDialog.show(supportFragmentManager,"Show")
-
-            updateOrder(orderId,"rejected")
-            binding.statusTxt.text = "rejected"
 
         }
 
@@ -142,11 +134,10 @@ class OrderDetailsActivity : AppCompatActivity() {
                 .getColorStateList(this@OrderDetailsActivity,R.color.blueLink)
             lay4.packedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
 
-            updateOrder(orderId,"packed")
+            updateOrder(documentId,"packed")
 
             binding.statusTxt.text = "packed"
-            binding.acceptButtonContainer.visibility = gone
-            binding.buttonContainer2.visibility = visible
+            binding.acceptOrderBtn.visibility = gone
             binding.packedBtn.visibility = gone
             binding.shippedBtn.visibility =visible
 
@@ -162,22 +153,20 @@ class OrderDetailsActivity : AppCompatActivity() {
             lay4.shippedImageButton.setImageResource(R.drawable.ic_check_circle_outline_24)
 
             //send notification may produce runtime exception
-            binding.acceptButtonContainer.visibility = gone
-            binding.buttonContainer2.visibility = gone
+            binding.buttonContainer.visibility = gone
             binding.statusTxt.text = "shipped"
 
-            updateOrder(orderId,"shipped")
+            updateOrder(documentId,"shipped")
             sendNotification(buyerId,productName,imageUrl,"Shipped")
         }
 
         binding.cancelOrderBtn.setOnClickListener {
             loadingDialog.show(supportFragmentManager,"Show")
-            cancelOrder(orderId)
+            cancelOrder(documentId)
 
             binding.statusTxt.text = "canceled"
 
-            binding.acceptButtonContainer.visibility = gone
-            binding.buttonContainer2.visibility = gone
+            binding.buttonContainer.visibility = gone
             binding.orderCancelText.visibility = visible
         }
 
@@ -217,7 +206,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                 val sellerId =  it.getString("ID_Of_SELLER")
                 val productId =  it.getString("productId")
 
-                val already_paid:Boolean = it.getBoolean("already_paid")!!
+                onlinePayment = it.getBoolean("Online_payment")!!
                 val isOrderCanceled = it.getBoolean("is_order_canceled")!!
                 val orderCanceledBy = it.get("order_canceled_by").toString()
                 val cancelletionReason = it.get("cancellation_reason").toString()
@@ -264,8 +253,9 @@ class OrderDetailsActivity : AppCompatActivity() {
 
                 when(status){
                     "new" ->{
-                        binding.acceptButtonContainer.visibility = visible
-                        binding.buttonContainer2.visibility = gone
+                        binding.acceptOrderBtn.visibility = visible
+                        binding.packedBtn.visibility = gone
+                        binding.shippedBtn.visibility =gone
 
                         orderNew(orderTime)
                         getSellerToken(buyerId)
@@ -273,8 +263,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                     "accepted" ->{
 
 
-                        binding.acceptButtonContainer.visibility = gone
-                        binding.buttonContainer2.visibility = visible
+                        binding.acceptOrderBtn.visibility = gone
                         binding.packedBtn.visibility = visible
                         binding.shippedBtn.visibility =gone
                         binding.downloadsLabelContainer.visibility = visible
@@ -288,8 +277,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                     }
                     "packed" ->{
 
-                        binding.acceptButtonContainer.visibility = gone
-                        binding.buttonContainer2.visibility = visible
+                        binding.acceptOrderBtn.visibility = gone
                         binding.packedBtn.visibility = gone
                         binding.shippedBtn.visibility =visible
 
@@ -304,8 +292,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                     }
 
                     "shipped"->{
-                        binding.acceptButtonContainer.visibility = gone
-                        binding.buttonContainer2.visibility = gone
+                        binding.buttonContainer.visibility = gone
 
                         val acceptedT= acceptedTime!!.toDate()
                         val packT = packedTime!!.toDate()
@@ -318,8 +305,7 @@ class OrderDetailsActivity : AppCompatActivity() {
                     }
                     "delivered"->{
 
-                        binding.acceptButtonContainer.visibility = gone
-                        binding.buttonContainer2.visibility = gone
+                        binding.buttonContainer.visibility = gone
 
                         val acceptT= acceptedTime!!.toDate()
                         val packT = packedTime!!.toDate()
@@ -335,27 +321,23 @@ class OrderDetailsActivity : AppCompatActivity() {
                     }
                     "returned"->{
                         val returnTime: Date = it.getTimestamp("Time_returned")!!.toDate()
-                        binding.acceptButtonContainer.visibility = gone
-                        binding.buttonContainer2.visibility = gone
+                        binding.buttonContainer.visibility = gone
                     }
 //                    "canceled"->{
 //                        val returnTime: Date = it.getTimestamp("Time_canceled")!!.toDate()
-//                        binding.acceptButtonContainer.visibility = gone
-//                        binding.buttonContainer2.visibility = gone
+//                        binding.buttonContainer.visibility = gone
 //                        binding.orderCancelText.visibility = visible
 //
 //                    }
                     else ->{
-                        binding.acceptButtonContainer.visibility = gone
-                        binding.buttonContainer2.visibility = gone
+                        binding.buttonContainer.visibility = gone
                     }
                 }
 
                 if (isOrderCanceled){
                     val cancelT= canceledTime!!.toDate()
 
-                    binding.cancelOrderBtn.visibility = gone
-
+                    binding.buttonContainer.visibility = gone
                     binding.orderTrackContainer.visibility = gone
                     binding.cancelContainer.visibility = visible
                     orderCanceled(cancelT,orderCanceledBy,cancelletionReason)
@@ -464,6 +446,10 @@ class OrderDetailsActivity : AppCompatActivity() {
         firebaseFirestore.collection("ORDERS")
             .document(orderId).update(orderMap)
             .addOnSuccessListener {
+                if (onlinePayment){
+                    sendRefundRequest()
+                }
+
                 Log.i("canceled order","successful")
                 loadingDialog.dismiss()
             }
@@ -494,7 +480,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         notificationMap["date"] = FieldValue.serverTimestamp()
         notificationMap["description"] = "$status:$productName"
         notificationMap["image"] = url
-        notificationMap["order_id"] = orderId
+        notificationMap["order_doc_id"] = documentId
         notificationMap["seller_id"] = user!!.uid
         notificationMap["seen"] = false
 //
@@ -519,6 +505,8 @@ class OrderDetailsActivity : AppCompatActivity() {
     }
 
 
+
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -537,6 +525,17 @@ class OrderDetailsActivity : AppCompatActivity() {
     }
 
 
+
+    private fun sendRefundRequest(){
+        val refundMap: MutableMap<String, Any> = java.util.HashMap()
+        refundMap["Buyer_Id"] = buyerId
+        refundMap["Time"] = FieldValue.serverTimestamp()
+        refundMap["Money_refunded"]=false
+        refundMap["Order_doc_id"] = documentId
+
+        firebaseFirestore.collection("REFUND_REQUEST").add(refundMap)
+            .addOnSuccessListener {  }
+    }
 
 
 

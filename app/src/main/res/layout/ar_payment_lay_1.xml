@@ -14,7 +14,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="Sells Report"
-        android:textColor="@color/brikeRed"
+        android:textColor="@color/red_600"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/imageView12"

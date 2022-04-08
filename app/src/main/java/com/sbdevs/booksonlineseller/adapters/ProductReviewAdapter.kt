@@ -21,7 +21,7 @@ class ProductReviewAdapter(var list: List<ProductReviewModel>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(parent.context)
-            .inflate(R.layout.le_product_review_item, parent, false)
+            .inflate(R.layout.item_product_review, parent, false)
         return ViewHolder(view)
     }
 

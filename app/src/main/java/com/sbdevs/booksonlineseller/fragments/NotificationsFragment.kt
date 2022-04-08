@@ -124,11 +124,11 @@ class NotificationsFragment : Fragment() {
 
         val query:Query = if (lastResult == null){
             firebaseFirestore.collection("USERS").document(user!!.uid)
-                .collection("NOTIFICATIONS")
+                .collection("SELLER_NOTIFICATIONS")
                 .orderBy("date", Query.Direction.DESCENDING)
         }else{
             firebaseFirestore.collection("USERS").document(user!!.uid)
-                .collection("NOTIFICATIONS")
+                .collection("SELLER_NOTIFICATIONS")
                 .orderBy("date", Query.Direction.DESCENDING)
                 .startAfter(times)
 

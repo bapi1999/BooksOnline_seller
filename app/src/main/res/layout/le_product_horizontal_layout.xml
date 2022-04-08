@@ -58,7 +58,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/batch_background"
-        tools:listitem="@layout/le_product_horizontal_item" >
+        tools:listitem="@layout/item_product_horizontal" >
 
     </androidx.recyclerview.widget.RecyclerView>
 

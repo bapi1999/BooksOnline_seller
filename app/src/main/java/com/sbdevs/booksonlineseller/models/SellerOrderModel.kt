@@ -6,14 +6,14 @@ import kotlin.collections.HashMap
 
 data class SellerOrderModel (
     //val orderTime:Date = Date(),
-    val orderId:String  = "",
+    val documentId:String  = "",
     val productThumbnail:String = "",
     val productTitle:String = "",
     val status:String = "",
     val buyerId:String = "",
     val ordered_Qty:Long = 0L,
     val price:Long = 0L,
-    val already_paid:Boolean = false,
+    val onlinePayment:Boolean = false,
 
     val address:MutableMap<String,Any> = HashMap(),
 

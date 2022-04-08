@@ -111,12 +111,12 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
         Log.e("TAG", "sendNotification")
         val jsonObjectRequest = object : JsonObjectRequest(Request.Method.POST,BASE_URL, notification,
             Response.Listener<JSONObject> { response ->
-                Log.i("TAG", "onResponse: $response")
+                Log.i("sendNotificationStep2", "onResponse: $response")
 
             },
             Response.ErrorListener {
                 Toast.makeText(this, "Request error", Toast.LENGTH_LONG).show()
-                Log.i("TAG", "onErrorResponse: Didn't work")
+                Log.i("sendNotificationStep2 error", "${it.message}")
             }) {
 
             override fun getHeaders(): Map<String, String> {

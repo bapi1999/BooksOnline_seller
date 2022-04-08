@@ -11,6 +11,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.AddProductActivity
+import com.sbdevs.booksonlineseller.activities.MyStoreActivity
 import com.sbdevs.booksonlineseller.activities.SellerFeesAndPriceActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentProfileMenuBinding
 
@@ -50,6 +51,11 @@ class ProfileMenuFragment : Fragment() {
                     true
                 }
 
+//                R.id.myStore ->{
+//                    val intent = Intent(context, MyStoreActivity::class.java)
+//                    startActivity(intent)
+//                    true
+//                }
 
                 R.id.myAccountFragment ->{
                     fragmentAction = ProfileMenuFragmentDirections.actionProfileMenuFragment2ToMyAccountFragment()
