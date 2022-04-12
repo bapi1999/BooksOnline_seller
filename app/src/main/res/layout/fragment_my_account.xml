@@ -44,11 +44,11 @@
                     android:layout_marginEnd="24dp"
                     android:text="@string/you_are_not_a_verified_seller"
                     android:background="@drawable/s_shape_bg_3"
-                    android:backgroundTint="@color/red_500"
+                    android:backgroundTint="@color/red_100"
                     android:padding="5dp"
                     android:textSize="16sp"
                     android:visibility="visible"
-                    android:textColor="@color/white"
+                    android:textColor="@color/red_500"
                      />
 
 
@@ -110,11 +110,11 @@
                     android:layout_marginEnd="25dp"
                     android:text="@string/no_bank_account_linked"
                     android:background="@drawable/s_shape_bg_3"
-                    android:backgroundTint="@color/red_500"
+                    android:backgroundTint="@color/red_100"
                     android:padding="5dp"
                     android:textSize="16sp"
                     android:visibility="visible"
-                    android:textColor="@color/white"/>
+                    android:textColor="@color/red_500"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"

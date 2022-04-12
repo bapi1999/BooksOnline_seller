@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +20,7 @@ import com.sbdevs.booksonlineseller.otherclass.Constants.Companion.BASE_URL
 import com.sbdevs.booksonlineseller.otherclass.Constants.Companion.CONTENT_TYPE_FCM
 import com.sbdevs.booksonlineseller.otherclass.Constants.Companion.SERVER_KEY
 import com.sbdevs.booksonlineseller.otherclass.FirebaseService
+import com.sbdevs.booksonlineseller.otherclass.FixedPriceClass
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
@@ -31,6 +33,9 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
     private lateinit var enterPriceInput:TextInputLayout
     private lateinit var calculateBtn:Button
     val buyerToken = "dAQSAUqOT7SNZ8wRmm4CVE:APA91bHScwPLlHw8TngGYJuzlukMD_bY1gWu1TS4sBGxniae-FEpKGrC-VEZ4A6Ge528Hi-fHCk0i3HtHrJUWseHhW37visyxNbFbw_S4e0JJpEqpsxGYwOzKMyeFpkMgqZneSat3o_3"
+    //
+
+    private var showAndHideProfit = true
 
 
 
@@ -46,16 +51,23 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
 
         calculateBtn.setOnClickListener {
-            //checkInput()
+            checkInput()
 
-            val title = "etTitle"
-            val message = "etMessage"
-            //val recipientToken = etToken.text.toString()
-            if(title.isNotEmpty() && message.isNotEmpty() ) {
+        }
 
-                sendNotificationStep1(title,message)
+        binding.lay2.hideAndShoWText.visibility = View.VISIBLE
+
+        binding.lay2.hideAndShoWText.setOnClickListener {
+
+            if (showAndHideProfit){
+                showAndHideProfit = false
+                binding.lay2.hideAndShoWText.text = "Show"
+                binding.lay2.allPriceContainer.visibility = View.GONE
+            }else{
+                showAndHideProfit = true
+                binding.lay2.hideAndShoWText.text = "Hide"
+                binding.lay2.allPriceContainer.visibility = View.VISIBLE
             }
-
         }
 
 
@@ -75,7 +87,7 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
     private fun calculateProfit(sellingPrice:Int){
         val lay2 = binding.lay2
         val platformCharge = sellingPrice/10F
-        val pickupCharge = 30F
+        val pickupCharge = FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
         val profit:Float = sellingPrice - platformCharge-pickupCharge
 
         lay2.sellingPrice.text = sellingPrice.toString()

@@ -16,6 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BooksOnlineSeller">
         <activity
+            android:name=".activities.EditBusinessDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AddBusinessDetailsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.MyStoreActivity"
             android:exported="false" />
 
@@ -68,6 +74,9 @@
             android:exported="true"
             android:label="@string/app_name" />
 
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

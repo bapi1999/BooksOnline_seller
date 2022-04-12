@@ -6,6 +6,8 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,7 +21,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -38,6 +39,7 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.sbdevs.booksonlineseller.adapters.NewUploadImageAdapter
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
+import com.sbdevs.booksonlineseller.otherclass.FixedPriceClass
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
@@ -93,8 +95,11 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     private var downloadUriList: MutableList<String> = ArrayList()
     private lateinit var docname: String
     private var currentYear:Int = 0
-
+    private var showAndHideProfit = false
+    private var sellerProfit:Double = 0.0
     private val loadingDialog = LoadingDialog()
+    private val gone = View.GONE
+    private val visible = View.VISIBLE
 
     private val simpleCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.START or ItemTouchHelper.END,0){
         override fun onMove(
@@ -220,9 +225,88 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         val itemTouchHelper1 = ItemTouchHelper(simpleCallback)
         itemTouchHelper1.attachToRecyclerView(recyclerView)
 
+        bookPrice.editText!!.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val price = s.toString().trim()
+                val priceOffer = lay2.discountPrice.editText!!.text.toString()
+
+                if(!price.isNullOrEmpty()){
+                    lay2.bookPrice.error = null
+                    if (priceOffer.isNullOrEmpty()){
+                        calculateProfit(price.toInt())
+                    }else{
+                        Log.e("Not"," calculate")
+                    }
+                }else{
+                    lay2.bookPrice.error = "Field can't be empty"
+                }
+
+
+            }
+
+        })
+
+        discountPrice.editText!!.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val price = lay2.bookPrice.editText!!.text.toString()
+                val priceOffer = s.toString()
+
+                if (!price.isNullOrEmpty() and !priceOffer.isNullOrEmpty()){
+                    if (price.toInt()<priceOffer.toInt()){
+                        lay2.discountPrice.error = "Offer price is greater than the original price"
+                        binding.lay2.discountPercentText.visibility = gone
+                    }else{
+                        lay2.discountPrice.error = null
+                        calculateProfit(priceOffer.toInt())
+                        binding.lay2.discountPercentText.visibility = visible
+                        val percent:Int = (100* (price.toInt() - priceOffer.toInt())) / ( price.toInt() )
+
+                        binding.lay2.discountPercentText.text = "${percent}% OFF"
+
+                    }
+                }else if(price.isNullOrEmpty()){
+                    lay2.discountPrice.error = "Original Price is empty"
+                    binding.lay2.discountPercentText.visibility = gone
+                }else{
+                    lay2.discountPrice.error = null
+                    binding.lay2.discountPercentText.visibility = gone
+                }
+
+            }
+
+        })
+
+
+
+
+
+
 
         return binding.root
     }
+
+
+
+
+
+
+
 
     override fun onStart() {
         super.onStart()
@@ -269,6 +353,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
         }
 
+
         chipListenerForCategory(lay3.categoryChipGroup)
 
         lay3.autoTagBtn.setOnClickListener {
@@ -277,6 +362,22 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
         lay3.autoSkuBtn.setOnClickListener {
             skuInput.editText?.setText(generateSKU())
+        }
+
+
+        binding.lay2.lay2.hideAndShoWText.text = "Show"
+        binding.lay2.lay2.allPriceContainer.visibility = gone
+        binding.lay2.lay2.hideAndShoWText.setOnClickListener {
+
+            if (showAndHideProfit){
+                showAndHideProfit = false
+                binding.lay2.lay2.hideAndShoWText.text = "Show"
+                binding.lay2.lay2.allPriceContainer.visibility = View.GONE
+            }else{
+                showAndHideProfit = true
+                binding.lay2.lay2.hideAndShoWText.text = "Hide"
+                binding.lay2.lay2.allPriceContainer.visibility = View.VISIBLE
+            }
         }
 
 
@@ -560,6 +661,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         }
     }
 
+
     private fun checkProductReturnState():Boolean{
         return if (productReturnRadio == null) {
             binding.lay21.returnContainer.backgroundTintList =
@@ -678,7 +780,9 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         addProductMap["rating_Star_2"] = 0L
         addProductMap["rating_Star_1"] = 0L
         addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
+        addProductMap["PRODUCT_ADDED_ON"] = FieldValue.serverTimestamp()
         addProductMap["PRODUCT_SELLER_ID"] = user!!.uid
+        addProductMap["SELLER_PROFIT"] = sellerProfit
         addProductMap["SKU"] = skuInput.editText?.text.toString()
         addProductMap["Replacement_policy"] = replacementPolicy
 
@@ -805,7 +909,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             val categoryArray: List<String> = secondFilterTag.split(",")
             categoryList.addAll(categoryArray)
 
-//        binding.lay3.autoTagText.text = "${tagList[0]} and ${tagList.size}"
 
             categoryList
         } else {
@@ -834,10 +937,10 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             val year:String = printDateInput.editText?.text.toString().trim()
 
 
-
             for (category in categoryList) {
                 categoryString += "$category,"
             }
+
 
             val docBuilder: StringBuilder = StringBuilder()
             docBuilder.append(nameInput).append(",")
@@ -878,13 +981,12 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
     private fun generateSKU(): String {
 
-        val rnds = (10..100000).random().toString()
-        val userString = user!!.uid.toString().substring(0..4)
+        val rnds = (100..1000000).random().toString()
+        val userString = user!!.uid.toString().substring(0..3)
         val docBuilder: StringBuilder = StringBuilder()
         docBuilder.append(userString).append(rnds)
         return docBuilder.toString()
     }
-
 
 
     override fun onNewImageDeleteClick(position: Int) {
@@ -895,5 +997,17 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     }
 
 
+    private fun calculateProfit(sellingPrice:Int){
+        val profitLay = binding.lay2.lay2
+        val platformCharge = sellingPrice/10F
+        val pickupCharge = FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
+        sellerProfit = (sellingPrice - platformCharge-pickupCharge).toDouble()
+
+        profitLay.sellingPrice.text = sellingPrice.toString()
+        profitLay.commissionFee.text = platformCharge.toString()
+        profitLay.deliveryFee.text = pickupCharge.toString()
+        profitLay.totalProfit.text = sellerProfit.toString()
+
+    }
 
 }

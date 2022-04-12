@@ -25,26 +25,12 @@
         android:name="com.sbdevs.booksonlineseller.fragments.MyAccountFragment"
         android:label="fragment_my_account"
         tools:layout="@layout/fragment_my_account" >
-        <action
-            android:id="@+id/action_myAccountFragment_to_addBusinessDetailsFragment2"
-            app:destination="@id/addBusinessDetailsFragment2" />
+
         <action
             android:id="@+id/action_myAccountFragment_to_addBankDetailsFragment"
             app:destination="@id/addBankDetailsFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/addBusinessDetailsFragment2"
-        android:name="com.sbdevs.booksonlineseller.fragments.register.AddBusinessDetailsFragment"
-        android:label="fragment_add_business_details"
-        tools:layout="@layout/fragment_add_business_details" >
-        <action
-            android:id="@+id/action_addBusinessDetailsFragment2_to_myAccountFragment"
-            app:destination="@id/myAccountFragment" />
-        <argument
-            android:name="came_from"
-            app:argType="string"
-            app:nullable="true" />
-    </fragment>
+
     <fragment
         android:id="@+id/addBankDetailsFragment"
         android:name="com.sbdevs.booksonlineseller.fragments.register.AddBankDetailsFragment"

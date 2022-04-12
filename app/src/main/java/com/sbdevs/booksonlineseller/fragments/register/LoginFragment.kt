@@ -23,6 +23,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.ktx.messaging
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.MainActivity
+import com.sbdevs.booksonlineseller.activities.SellerRegisterActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentLoginBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.Dispatchers
@@ -162,9 +163,10 @@ class LoginFragment : Fragment() {
                     activity?.finish()
 
                 }else{
-                    val action = LoginFragmentDirections.actionLoginFragmentToNewSellerRegisterFragment()
-                    findNavController().navigate(action)
                     loadingDialog.dismiss()
+                    val intent = Intent(context, SellerRegisterActivity::class.java)
+                    startActivity(intent)
+                    activity?.finish()
                 }
             }.addOnFailureListener {
                 loadingDialog.dismiss()
@@ -180,9 +182,10 @@ class LoginFragment : Fragment() {
                 val token:String = task.result
                 val userId:String = FirebaseAuth.getInstance().currentUser!!.uid
 
-                FirebaseDatabase.getInstance().getReference("Tokens")
+                FirebaseDatabase.getInstance().getReference("Seller_Tokens")
                     .child(userId)
-                    .setValue(token).addOnSuccessListener {
+                    .setValue(token)
+                    .addOnSuccessListener {
                         Log.d("Token:", "saved")
                     }.addOnFailureListener {
                         Log.e("Token:", "${it.message}")

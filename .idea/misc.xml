@@ -180,7 +180,9 @@
         <entry key="..\:/Users/bapi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.20555555555555555" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/drawable/ic_round_rule_24.xml" value="0.1" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/font/alata.xml" value="0.1712962962962963" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_add_business_details.xml" value="0.25" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_add_product.xml" value="0.11018518518518519" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_edit_business_details.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_edit_product.xml" value="0.16666666666666666" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/activity_menu.xml" value="0.11018518518518519" />
@@ -199,9 +201,9 @@
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_add_product_lay_5.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_dashboard_lay_1.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_date_filter_bottom_sheet.xml" value="0.11018518518518519" />
-        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_edit_product_lay_3.xml" value="0.11018518518518519" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_edit_product_lay_3.xml" value="0.25" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_edit_product_lay_4.xml" value="0.2" />
-        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_fees_profit_lay.xml" value="0.11018518518518519" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_fees_profit_lay.xml" value="0.22" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_my_earning_lay_1.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_my_earning_lay_2.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_my_earning_lay_3.xml" value="0.2" />
@@ -223,7 +225,7 @@
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_qualtity_dialog.xml" value="0.11018518518518519" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_rating_lay.xml" value="0.11018518518518519" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_register_layout_1.xml" value="0.2" />
-        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_register_layout_2.xml" value="0.1102873030583874" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_register_layout_2.xml" value="0.22" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_withdrawal_lay_1.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_withdrawal_lay_2.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/ar_withdrawal_lay_3.xml" value="0.2" />
@@ -282,7 +284,7 @@
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/sl_ar_product_detail_lay_1.xml" value="0.11018518518518519" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/sl_ar_product_detail_lay_3_1.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/sl_ar_product_detail_lay_4.xml" value="0.2" />
-        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/sl_ar_register_layout_2_1.xml" value="0.11018518518518519" />
+        <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/sl_ar_register_layout_2_1.xml" value="0.22" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/sl_ar_register_layout_2_2.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/sl_first_message_bottom_dialog.xml" value="0.2" />
         <entry key="..\:/Users/nikhi/AndroidStudioProjects/BooksOnlineSeller/app/src/main/res/layout/sl_le_my_product_item.xml" value="0.2" />

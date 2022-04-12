@@ -125,10 +125,7 @@ class MyEarningFragment : Fragment() {
 
                     upcomingPaymentText.text =
                         "Rs.${orderList[0].PRICE_SELLING_TOTAL}/-  will be added in next ${
-                            durationFromNow(
-                                orderList[0].Time_delivered!!,
-                                orderList[0].Time_period
-                            )
+                            durationFromNow(orderList[0])
                         }"
                 }
 
@@ -224,13 +221,14 @@ class MyEarningFragment : Fragment() {
 
 
 
-    private fun durationFromNow(timeDelivered: Date, timePeriod: Long): String {
+    private fun durationFromNow(model:EarningModel): String {
 
-//            val days7lay = Date(timeDelivered!!.time +(1000 * 60 * 60 * 24*timePeriod))
+        val timeDelivered = model.Time_delivered!!
+        val timePeriod = model.Time_period
 
-        val days7lay = Date(timeDelivered.time + (1000 * 60 * 60 * 24*2))
+        val afterTimePeriod = Date(timeDelivered.time + (1000 * 60 * 60 * 24*timePeriod))
         val cal = Calendar.getInstance()
-        cal.time = days7lay
+        cal.time = afterTimePeriod
         cal[Calendar.HOUR_OF_DAY] = 23
         cal[Calendar.MINUTE] = 59
         cal[Calendar.SECOND] = 50

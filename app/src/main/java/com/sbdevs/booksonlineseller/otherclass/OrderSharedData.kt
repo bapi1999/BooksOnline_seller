@@ -8,5 +8,6 @@ class OrderSharedData {
         var newSellerOrderList:MutableList<SellerOrderModel> = ArrayList()
         var acceptSellerOrderList:MutableList<SellerOrderModel> = ArrayList()
         var packSellerOrderList:MutableList<SellerOrderModel> = ArrayList()
+
     }
 }

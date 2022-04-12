@@ -4,14 +4,19 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.ActivitySellerRegisterBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
@@ -98,6 +103,7 @@ class SellerRegisterActivity : AppCompatActivity() {
             loadingDialog.dismiss()
         }else{
             lifecycleScope.launch(Dispatchers.IO) {
+                retrieveUserToken()
                 createPaths()
 
             }
@@ -113,6 +119,16 @@ class SellerRegisterActivity : AppCompatActivity() {
         val userMap: MutableMap<String, Any> = HashMap()
         userMap["Is_seller"] = true
         userMap["seller_register_date"] = timstamp1
+        userMap["TotalSeals"] = 0L
+        userMap["TotalProfit"] = 0L
+        userMap["OrdersDelivered"] = 0L
+        userMap["OrdersCanceled"] = 0L
+        userMap["new_notification_seller"] = timstamp1
+
+        userMap["LastDeliveredOrderTime"] = timstamp1
+        userMap["LastCanceledOrderTime"] = timstamp1
+        userMap["LastProductAddedTime"] = timstamp1
+        userMap["LastTimeSealsChecked"] = timstamp1
 
         val earningMap: MutableMap<String, Any> = HashMap()
         earningMap["current_amount"] = 0L
@@ -128,26 +144,64 @@ class SellerRegisterActivity : AppCompatActivity() {
         bankDetailsMap["UPI_id"] =""
         bankDetailsMap["Is_BankDetail_Added"] = false
 
+        val welcomeNoti: String = getString(R.string.welcome_notification_for_seller)
+        val notificationMap: MutableMap<String, Any> = HashMap()
+        notificationMap["date"] = FieldValue.serverTimestamp()
+        notificationMap["description"] = welcomeNoti
+        notificationMap["image"] = ""
+        notificationMap["NOTIFICATION_CODE"]=0L
+        notificationMap["order_id"] = ""
+        notificationMap["seen"] = false
+
         val currentUser = firebaseAuth.currentUser!!.uid
 
         firebaseFirestore.collection("USERS").document(currentUser).update(userMap).await()
 
-        val docRef = firebaseFirestore.collection("USERS")
-            .document(currentUser).collection("SELLER_DATA")
+        val docRef = firebaseFirestore.collection("USERS").document(currentUser)
 
-        docRef.document("BANK_DETAILS").set(bankDetailsMap).await()
-        docRef.document("BUSINESS_DETAILS").set(businessDetailsMap).await()
-        docRef.document("MY_EARNING").set(earningMap).await()
+        docRef.set(userMap).await()
+        docRef.collection("SELLER_NOTIFICATIONS").add(notificationMap).await()
+
+        val sellerRef = docRef.collection("SELLER_DATA")
+        sellerRef.document("BANK_DETAILS").set(bankDetailsMap).await()
+        sellerRef.document("BUSINESS_DETAILS").set(businessDetailsMap).await()
+        sellerRef.document("MY_EARNING").set(earningMap).await()
 
         withContext(Dispatchers.Main){
             Toast.makeText(this@SellerRegisterActivity, "Successfully Registered", Toast.LENGTH_SHORT).show()
 
-            val mainintent = Intent(this@SellerRegisterActivity, MainActivity::class.java)
-            startActivity(mainintent)
-            finish()
+            val newIntent = Intent(this@SellerRegisterActivity,AddBusinessDetailsActivity::class.java)
+            startActivity(newIntent)
             loadingDialog.dismiss()
         }
 
 
     }
+
+
+    private fun retrieveUserToken(){
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token:String = task.result
+                val userId:String = FirebaseAuth.getInstance().currentUser!!.uid
+
+                FirebaseDatabase.getInstance().getReference("Seller_Tokens")
+                    .child(userId)
+                    .setValue(token).addOnSuccessListener {
+                        Log.d("Token:", "saved")
+                    }.addOnFailureListener {
+                        Log.e("Token:", "${it.message}")
+                    }
+
+            }else{
+                Log.e("error","${task.exception?.message}")
+            }
+
+        }
+
+    }
+
+
+
 }

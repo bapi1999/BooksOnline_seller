@@ -1,6 +1,7 @@
 package com.sbdevs.booksonlineseller.fragments.register
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -22,6 +23,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.sbdevs.booksonlineseller.R
+import com.sbdevs.booksonlineseller.activities.AddBusinessDetailsActivity
+import com.sbdevs.booksonlineseller.activities.MainActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentSignUpBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +40,7 @@ class SignUpFragment : Fragment() {
     private val firebaseAuth = Firebase.auth
 
     private lateinit var email: TextInputLayout
-    lateinit var phone:TextInputLayout
+    lateinit var userName:TextInputLayout
     lateinit var pass: TextInputLayout
     lateinit var confirmPass:TextInputLayout
     private lateinit var termAndPolicyBox:CheckBox
@@ -55,7 +58,7 @@ class SignUpFragment : Fragment() {
         _binding = FragmentSignUpBinding.inflate(inflater, container, false)
 
         email = binding.signupLay.emailInput
-        phone = binding.signupLay.mobileInput
+        userName = binding.signupLay.userNameInput
         pass = binding.signupLay.passwordInput
         confirmPass = binding.signupLay.confirmPassInput
         termAndPolicyBox = binding.signupLay.checkBox6
@@ -109,22 +112,15 @@ class SignUpFragment : Fragment() {
     }
 
 
-    private fun checkPhone(): Boolean {
-        val phoneInput: String = phone.editText?.text.toString().trim()
-        return if (phoneInput.isEmpty()) {
-            phone.isErrorEnabled = true
-            phone.error = "Field can't be empty"
+    private fun checkUserName(): Boolean {
+        val userNameInput: String = userName.editText?.text.toString().trim()
+        return if (userNameInput.isEmpty()) {
+            userName.isErrorEnabled = true
+            userName.error = "Field can't be empty"
             false
         } else {
-            if(phoneInput.length==10){
-                phone.error = null
-                true
-            }else{
-                phone.isErrorEnabled = true
-                phone.error = "Must be 10 digit number"
-                false
-            }
-
+            userName.error = null
+            true
         }
     }
 
@@ -188,7 +184,7 @@ class SignUpFragment : Fragment() {
     }
 
     private fun checkAllDetails() {
-        if (!checkMail() or !checkPhone() or !checkPassword() or !checkConfirmPassword()
+        if (!checkMail() or !checkUserName() or !checkPassword() or !checkConfirmPassword()
             or !checkTermsAndPolicyBox() or !checkReturnPolicyBox()) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
             loadingDialog.dismiss()
@@ -220,13 +216,12 @@ class SignUpFragment : Fragment() {
         val timstamp1 = FieldValue.serverTimestamp()
 
         val userMap: MutableMap<String, Any> = HashMap()
-        userMap["name"] = ""
+        userMap["name"] = userName.editText?.text.toString().trim()
         userMap["email"] = email.editText?.text.toString().trim()
         userMap["Is_user"] = true
         userMap["Is_seller"] = true
         userMap["signup_date"] = timstamp1
         userMap["seller_register_date"] = timstamp1
-        userMap["mobile_No"] = phone.editText?.text.toString().trim()
         userMap["profile"] = ""
         userMap["new_notification_user"] = timstamp1
 
@@ -295,11 +290,11 @@ class SignUpFragment : Fragment() {
 
 
                 withContext(Dispatchers.Main){
-                    Toast.makeText(context, "Successfully login", Toast.LENGTH_SHORT).show()
-
-                    val action = SignUpFragmentDirections.actionSignUpFragmentToAddBusinessDetailsFragment(null)
-                    findNavController().navigate(action)
+                    Toast.makeText(context, "Successfully Signup", Toast.LENGTH_SHORT).show()
                     loadingDialog.dismiss()
+                    val intent = Intent(context, AddBusinessDetailsActivity::class.java)
+                    startActivity(intent)
+                    activity?.finish()
                 }
             }
 
@@ -313,7 +308,7 @@ class SignUpFragment : Fragment() {
                 val token:String = task.result
                 val userId:String = FirebaseAuth.getInstance().currentUser!!.uid
 
-                FirebaseDatabase.getInstance().getReference("Tokens")
+                FirebaseDatabase.getInstance().getReference("Seller_Tokens")
                     .child(userId)
                     .setValue(token)
 

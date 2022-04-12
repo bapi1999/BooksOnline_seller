@@ -1,14 +1,12 @@
-package com.sbdevs.booksonlineseller.fragments.register
+package com.sbdevs.booksonlineseller.activities
 
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.ImageView
@@ -16,8 +14,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.textfield.TextInputLayout
@@ -28,17 +24,14 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.sbdevs.booksonlineseller.R
-import com.sbdevs.booksonlineseller.activities.MainActivity
-import com.sbdevs.booksonlineseller.databinding.FragmentAddBusinessDetailsBinding
+import com.sbdevs.booksonlineseller.databinding.ActivityAddBusinessDetailsBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
-class AddBusinessDetailsFragment : Fragment() {
-    private var _binding: FragmentAddBusinessDetailsBinding? = null
-    private val binding get() = _binding!!
+class AddBusinessDetailsActivity : AppCompatActivity() {
+    private lateinit var binding:ActivityAddBusinessDetailsBinding
 
     private val firebaseFirestore = Firebase.firestore
     private val user = Firebase.auth.currentUser
@@ -56,17 +49,13 @@ class AddBusinessDetailsFragment : Fragment() {
     lateinit var autoCompleteState: AutoCompleteTextView
     private lateinit var image: ImageView
 
-    private val args:AddBusinessDetailsFragmentArgs by navArgs()
-
-
-
     var fileUri: Uri? = null
     private var cameFrom: String? = null
 
     private val loadingDialog = LoadingDialog()
     private var newNotificationLong:Long = 0L
 
-    private val startForProfileImageResult =
+    private val startForAddressProf =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             val resultCode = result.resultCode
             val data = result.data
@@ -80,27 +69,22 @@ class AddBusinessDetailsFragment : Fragment() {
                         .placeholder(R.drawable.as_square_placeholder).into(image)
                 }
                 ImagePicker.RESULT_ERROR -> {
-                    Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
                 }
                 else -> {
-                    Toast.makeText(context, "Task Cancelled", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Task Cancelled", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityAddBusinessDetailsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        _binding = FragmentAddBusinessDetailsBinding.inflate(inflater, container, false)
         val businessLay = binding.businessDetails
-
-
-
         businessType = businessLay.businessType
         businessNameInput = businessLay.businessName
         businessPhoneInput = businessLay.businessPhoneNo
@@ -114,9 +98,9 @@ class AddBusinessDetailsFragment : Fragment() {
         cameFrom = null// args.cameFrom
 
         if (cameFrom == null) {
-            binding.skipBtn.visibility = View.VISIBLE
+            binding.lay1.skipBtn.visibility = View.VISIBLE
         } else {
-            binding.skipBtn.visibility = View.GONE
+            binding.lay1.skipBtn.visibility = View.GONE
         }
 
 
@@ -131,51 +115,42 @@ class AddBusinessDetailsFragment : Fragment() {
                     1080
                 )    //Final image resolution will be less than 1080 x 1080(Optional)
                 .createIntent { intent ->
-                    loadingDialog.show(childFragmentManager, "Show")
-                    startForProfileImageResult.launch(intent)
+                    loadingDialog.show(supportFragmentManager, "Show")
+                    startForAddressProf.launch(intent)
                 }
         }
 
 
-
-        return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onStart() {
+        super.onStart()
 
         binding.proceedBtn.setOnClickListener {
-            loadingDialog.show(childFragmentManager, "Show")
+            loadingDialog.show(supportFragmentManager, "Show")
             checkAllDetails()
         }
 
-        binding.skipBtn.setOnClickListener {
-            val intent = Intent(context, MainActivity::class.java)
+        binding.lay1.skipBtn.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            activity?.finish()
+            finish()
         }
-
     }
-
-
 
     override fun onResume() {
         super.onResume()
-
         autoCompleteType = binding.businessDetails.autoCompleteType
         val addressTypeList = resources.getStringArray(R.array.business_type)
-        val typeAdapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, addressTypeList)
+        val typeAdapter = ArrayAdapter(this, R.layout.item_dropdown, addressTypeList)
         autoCompleteType.setAdapter(typeAdapter)
 
         autoCompleteState = binding.businessDetails.autoCompleteState
         val stateList = resources.getStringArray(R.array.india_states)
-        val sateAdapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, stateList)
+        val sateAdapter = ArrayAdapter(this, R.layout.item_dropdown, stateList)
         autoCompleteState.setAdapter(sateAdapter)
-
-
-
-
     }
+
 
 
     private fun checkName(): Boolean {
@@ -323,6 +298,7 @@ class AddBusinessDetailsFragment : Fragment() {
         val businessDetailsMap: MutableMap<String, Any> = HashMap()
         businessDetailsMap["Business_name"] = businessNameInput.editText?.text.toString()
         businessDetailsMap["Business_phone"] = businessPhoneInput.editText?.text.toString()
+
         businessDetailsMap["is_address_verified"] = false
         businessDetailsMap["Business_type"] = autoCompleteType.text.toString()
         businessDetailsMap["Is_BusinessDetail_Added"] = true
@@ -344,7 +320,7 @@ class AddBusinessDetailsFragment : Fragment() {
         val sellerRef = firebaseFirestore.collection("USERS")
             .document(user!!.uid).collection("SELLER_DATA")
 
-            sellerRef.document("BUSINESS_DETAILS").set(businessDetailsMap)
+        sellerRef.document("BUSINESS_DETAILS").set(businessDetailsMap)
             .addOnSuccessListener {
                 Log.i("UpdateBusinessDetails", "successfully updated")
             }.addOnFailureListener {
@@ -353,7 +329,7 @@ class AddBusinessDetailsFragment : Fragment() {
 
 
         sellerRef.document("SELLER_DATA")
-            .collection("NOTIFICATION").add(notificationMap)
+            .collection("SELLER_NOTIFICATIONS").add(notificationMap)
             .addOnSuccessListener { Log.i("Notification","Successfully added") }
             .addOnFailureListener { Log.e("Notification","${it.message}") }
 
@@ -368,6 +344,8 @@ class AddBusinessDetailsFragment : Fragment() {
                 mRef.downloadUrl.addOnSuccessListener {
                     val uploadThumbMap: MutableMap<String, Any> = java.util.HashMap()
                     uploadThumbMap["Address_prof_image"] = it.toString()
+
+
                     firebaseFirestore.collection("USERS")
                         .document(user!!.uid).collection("SELLER_DATA")
                         .document("BUSINESS_DETAILS")
@@ -375,23 +353,38 @@ class AddBusinessDetailsFragment : Fragment() {
                         .addOnSuccessListener {
                             Log.i("Update Product Thumbnail", "Successfully updated")
                             loadingDialog.dismiss()
-                            if (cameFrom == null) {
-                                val mainActivityIntent = Intent(context, MainActivity::class.java)
-                                startActivity(mainActivityIntent)
-                                activity?.finish()
-                            } else {
-                                val action = AddBusinessDetailsFragmentDirections.actionAddBusinessDetailsFragment2ToMyAccountFragment()
-                                findNavController().navigate(action)
-                            }
+                            val mainActivityIntent = Intent(this, MainActivity::class.java)
+                            startActivity(mainActivityIntent)
+                            finish()
                         }.addOnFailureListener { e ->
                             Log.e("get Product Thumbnail url", "${e.message}")
                         }
+                    sendVerificationRequest(it.toString())
                 }.addOnFailureListener {
                     Log.e("uploadThumbnail", "${it.message}")
                 }
             }
     }
 
+    private fun sendVerificationRequest(addressProf:String){
+
+        val addressMap: MutableMap<String, Any> = HashMap()
+        addressMap["Address_line_1"] = addressLine1Input.editText?.text.toString()
+        addressMap["Town_Vill"] = townOrVillInput.editText?.text.toString()
+        addressMap["PinCode"] = pincodeInput.editText?.text.toString()
+        addressMap["State"] = autoCompleteState.text.toString()
+
+        val verifyMap: MutableMap<String, Any> = HashMap()
+        verifyMap["SellerId"] = FieldValue.serverTimestamp()
+        verifyMap["time"] = FieldValue.serverTimestamp()
+        verifyMap["address_prof"] = addressProf
+        verifyMap["address_map"] = addressMap
+        verifyMap["Business_name"] = businessNameInput.editText?.text.toString()
+        verifyMap["is_verified"] = false
+        verifyMap["request_type"] = "new" //new , verified, canceled
+
+        firebaseFirestore.collection("USERS").add(verifyMap)
+    }
 
 
 }

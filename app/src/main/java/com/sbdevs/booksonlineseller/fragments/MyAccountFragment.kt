@@ -1,5 +1,6 @@
 package com.sbdevs.booksonlineseller.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,16 +12,17 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
+import com.sbdevs.booksonlineseller.activities.AddBusinessDetailsActivity
+import com.sbdevs.booksonlineseller.activities.EditBusinessDetailsActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentMyAccountBinding
 import de.hdodenhof.circleimageview.CircleImageView
-import kotlinx.coroutines.tasks.await
+import java.io.Serializable
 
 class MyAccountFragment : Fragment() {
     private var _binding:FragmentMyAccountBinding? =null
@@ -36,6 +38,10 @@ class MyAccountFragment : Fragment() {
     private lateinit var profileImage:CircleImageView
     private val gone = View.GONE
     private val visible = View.VISIBLE
+    private var businessAddressMap:MutableMap<String,Any> = HashMap()
+    private var businessContentList:ArrayList<String> = ArrayList()
+    private var isAddressAvailable = false
+    private var addressProfImage = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,11 +63,12 @@ class MyAccountFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.noBusinessBtn.setOnClickListener {
-            val action = MyAccountFragmentDirections.actionMyAccountFragmentToAddBusinessDetailsFragment2("my_account")
-            findNavController().navigate(action)
+            val businessIntent = Intent (requireContext(),AddBusinessDetailsActivity::class.java)
+            startActivity(businessIntent)
         }
         binding.addNewUpi.setOnClickListener {
             val action = MyAccountFragmentDirections.actionMyAccountFragmentToAddBankDetailsFragment()
@@ -73,10 +80,27 @@ class MyAccountFragment : Fragment() {
             findNavController().navigate(action)
         }
 
+        binding.layBusiness.editAddressBtn.setOnClickListener {
+            if (isAddressAvailable){
+                val editIntent = Intent(context, EditBusinessDetailsActivity::class.java)
+                editIntent.putStringArrayListExtra("businessContentList",businessContentList)
+                editIntent.putExtra("address",businessAddressMap as Serializable)
+                editIntent.putExtra("addressImage",addressProfImage)
+                startActivity(editIntent)
+            }else{
+                val newIntent = Intent(context, AddBusinessDetailsActivity::class.java)
+                startActivity(newIntent)
+            }
+
+        }
+
         binding.logoutBtn.setOnClickListener {
             logOutUser()
         }
+
     }
+
+
 
     private fun isUserVerified(){
         val docRef = firebaseFirestore.collection("USERS")
@@ -89,15 +113,24 @@ class MyAccountFragment : Fragment() {
                     binding.warningText.visibility = View.GONE
                     binding.businessContainer.visibility = View.VISIBLE
                     binding.noBusinessBtn.visibility = View.GONE
-                    val businessName = it.get("Business_name")!!.toString()
-                    val businessType = it.get("Business_type")!!.toString()
-                    val businessPhone= it.get("Business_phone")!!.toString()
 
-                    val businessAddress:MutableMap<String,Any> = (it.get("address") as MutableMap<String, Any>?)!!
-                    val addlissLine1 = businessAddress["Address_line_1"].toString()
-                    val town = businessAddress["Town_Vill"].toString()
-                    val pincode= businessAddress["PinCode"].toString()
-                    val state = businessAddress["State"].toString()
+                    val businessType = it.get("Business_type")!!.toString()
+                    val businessName = it.get("Business_name")!!.toString()
+                    val businessPhone= it.get("Business_phone")!!.toString()
+                    addressProfImage= it.getString("Address_prof_image")!!.toString()
+
+                    businessContentList.add(0,businessType)
+                    businessContentList.add(1,businessName)
+                    businessContentList.add(2,businessPhone)
+
+                    businessAddressMap = (it.get("address") as MutableMap<String, Any>?)!!
+
+                    isAddressAvailable = businessAddressMap.isNotEmpty()
+
+                    val addlissLine1 = businessAddressMap["Address_line_1"].toString()
+                    val town = businessAddressMap["Town_Vill"].toString()
+                    val pincode= businessAddressMap["PinCode"].toString()
+                    val state = businessAddressMap["State"].toString()
 
 
                     if (isVerified){
@@ -110,8 +143,6 @@ class MyAccountFragment : Fragment() {
                         binding.lay1.verifyContainer.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
 
                     }
-//                    businessNameString = businessName
-//                    businessTypeString = businessType
 
                     businessNameText.text = businessName
                     businessTypeText.text = businessType
@@ -201,7 +232,7 @@ class MyAccountFragment : Fragment() {
     private fun deleteToken(uid:String){
 
         FirebaseDatabase.getInstance()
-            .getReference("Tokens")
+            .getReference("Seller_Tokens")
             .child(uid)
             .removeValue()
 

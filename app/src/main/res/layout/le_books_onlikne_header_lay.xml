@@ -8,11 +8,30 @@
         android:id="@+id/imageView2"
         android:layout_width="200dp"
         android:layout_height="100dp"
+        android:layout_marginTop="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/books_online_seller_logo"
         app:tint="@color/black" />
+
+    <Button
+        android:id="@+id/skipBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:drawableEnd="@drawable/ic_chevron_right_24"
+        android:drawableTint="@color/white"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="Skip"
+        android:backgroundTint="@color/amber_900"
+        android:textAllCaps="false"
+        app:cornerRadius="30dp"
+        app:iconPadding="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

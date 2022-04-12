@@ -3,6 +3,8 @@ package com.sbdevs.booksonlineseller.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -18,6 +20,7 @@ import com.google.firebase.ktx.Firebase
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.ActivityEditProductBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
+import com.sbdevs.booksonlineseller.otherclass.FixedPriceClass
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.util.*
@@ -39,6 +42,7 @@ class EditProductActivity : AppCompatActivity() {
     private lateinit var isbnNo: TextInputLayout
     private lateinit var description: TextInputLayout
     private lateinit var tagInput: TextInputLayout
+    private lateinit var skuInput: TextInputLayout
 
     private lateinit var bookPrice: TextInputLayout
     private lateinit var discountPrice: TextInputLayout
@@ -57,17 +61,17 @@ class EditProductActivity : AppCompatActivity() {
     private var productReturnRadio: RadioButton? = null
     private var replacementPolicy = ""
 
-
-
     private var printDateMandatory: Boolean = false
     private val categoryList: MutableList<String> = ArrayList()
     private var tagList: MutableList<String> = ArrayList()
     private lateinit var updateMessageText:TextView
-
     private lateinit var productId: String
-
     private val loadingDialog = LoadingDialog()
 
+    private var showAndHideProfit = false
+    private var sellerProfit:Double = 0.0
+    private val gone = View.GONE
+    private val visible = View.VISIBLE
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,12 +103,10 @@ class EditProductActivity : AppCompatActivity() {
         printDateInput = lay2.printDateInput
         categoryInput = lay3.categoryInput
         tagInput = lay3.editTags
+        skuInput = lay3.skuInput
         stockQuantity = lay2.stockQuantity
         productReturnRadioTogole = lay21.productReturnToggle
         updateMessageText = binding.updateMessage
-
-
-        //productThumbnail = binding.lay4.productThumbnail
 
         lifecycleScope.launch(Dispatchers.Main) {
             loadingDialog.show(supportFragmentManager, "Show")
@@ -112,6 +114,76 @@ class EditProductActivity : AppCompatActivity() {
                 getProductData(productId)
             }
         }
+
+
+
+        bookPrice.editText!!.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val price = s.toString().trim()
+                val priceOffer = lay2.discountPrice.editText!!.text.toString()
+
+                if(!price.isNullOrEmpty()){
+                    lay2.bookPrice.error = null
+                    if (priceOffer.isNullOrEmpty()){
+                        calculateProfit(price.toInt())
+                    }else{
+                        Log.e("Not"," calculate")
+                    }
+                }else{
+                    lay2.bookPrice.error = "Field can't be empty"
+                }
+
+
+            }
+
+        })
+
+        discountPrice.editText!!.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val price = lay2.bookPrice.editText!!.text.toString()
+                val priceOffer = s.toString()
+
+                if (!price.isNullOrEmpty() and !priceOffer.isNullOrEmpty()){
+                    if (price.toInt()<priceOffer.toInt()){
+                        lay2.discountPrice.error = "Offer price is greater than the original price"
+                        binding.lay2.discountPercentText.visibility = gone
+                    }else{
+                        lay2.discountPrice.error = null
+                        calculateProfit(priceOffer.toInt())
+                        binding.lay2.discountPercentText.visibility = visible
+                        val percent:Int = (100* (price.toInt() - priceOffer.toInt())) / ( price.toInt() )
+
+                        binding.lay2.discountPercentText.text = "${percent}% OFF"
+
+                    }
+                }else if(price.isNullOrEmpty()){
+                    lay2.discountPrice.error = "Original Price is empty"
+                    binding.lay2.discountPercentText.visibility = gone
+                }else{
+                    lay2.discountPrice.error = null
+                    binding.lay2.discountPercentText.visibility = gone
+                }
+
+            }
+
+        })
+
 
 
     }
@@ -154,6 +226,21 @@ class EditProductActivity : AppCompatActivity() {
                 R.id.return_radio2 -> {
                     replacementPolicy = "No Replacement Policy"
                 }
+            }
+        }
+
+        binding.lay2.lay2.hideAndShoWText.text = "Show"
+        binding.lay2.lay2.allPriceContainer.visibility = gone
+        binding.lay2.lay2.hideAndShoWText.setOnClickListener {
+
+            if (showAndHideProfit){
+                showAndHideProfit = false
+                binding.lay2.lay2.hideAndShoWText.text = "Show"
+                binding.lay2.lay2.allPriceContainer.visibility = View.GONE
+            }else{
+                showAndHideProfit = true
+                binding.lay2.lay2.hideAndShoWText.text = "Hide"
+                binding.lay2.lay2.allPriceContainer.visibility = View.VISIBLE
             }
         }
 
@@ -203,10 +290,6 @@ class EditProductActivity : AppCompatActivity() {
                 }
 
                 bookName.editText?.setText(productName)
-
-
-
-
 
                 description.editText?.setText(bookDescription)
                 writerName.editText?.setText(bookWriter)
@@ -298,6 +381,7 @@ class EditProductActivity : AppCompatActivity() {
                 loadingDialog.dismiss()
 
             }.await()
+
     }
 
     private fun checkName(): Boolean {
@@ -496,6 +580,20 @@ class EditProductActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkSKU(): Boolean {
+        val sku: String = skuInput.editText?.text.toString()
+        return if (sku.isEmpty()) {
+            skuInput.isErrorEnabled = true
+            skuInput.error = "Field can't be empty"
+            false
+        } else {
+            skuInput.isErrorEnabled = false
+            skuInput.error = null
+            true
+        }
+    }
+
+
     private fun checkStock(): Boolean {
         val stockQuantityString = stockQuantity.text.toString()
 
@@ -510,7 +608,7 @@ class EditProductActivity : AppCompatActivity() {
                 false
             } else {
                 stockQuantity.backgroundTintList =
-                    AppCompatResources.getColorStateList(this, R.color.white)
+                    AppCompatResources.getColorStateList(this, R.color.purple_500)
                 true
             }
 
@@ -546,29 +644,23 @@ class EditProductActivity : AppCompatActivity() {
     }
 
 
-
-
-
     private fun checkAllDetails(v: View?, productID:String) {
 
         if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage() or !checkPageCount()
             or !checkDimensionWidth() or !checkDimensionLength() or !checkDimensionHeight()
             or !checkDescription() or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()
-            or !checkTags() or !checkStock() or !checkPrintDate() or !checkProductReturnState()
+            or !checkTags() or !checkSKU() or !checkStock() or !checkPrintDate() or !checkProductReturnState()
         ) {
             loadingDialog.dismiss()
             Snackbar.make(v!!, "Fill all fields", Snackbar.LENGTH_SHORT).show()
             return
         } else {
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
 
-                withContext(Dispatchers.IO) {
-                    tagsToList()
-                    myOwnCategory()
-                    delay(100)
-                    updateProduct( productID)
-
-                }
+                tagsToList()
+                myOwnCategory()
+                delay(100)
+                updateProduct( productID)
 
             }
 
@@ -623,6 +715,8 @@ class EditProductActivity : AppCompatActivity() {
 
         addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
         addProductMap["Replacement_policy"] = replacementPolicy
+        addProductMap["SELLER_PROFIT"] = sellerProfit
+        addProductMap["SKU"] = skuInput.editText?.text.toString().trim()
 
         firebaseFirestore.collection("PRODUCTS").document(documentName).update(addProductMap)
             .addOnSuccessListener {
@@ -643,7 +737,6 @@ class EditProductActivity : AppCompatActivity() {
                 loadingDialog.dismiss()
             }
     }
-
 
 
     private fun tagsToList(): MutableList<String> {
@@ -680,6 +773,19 @@ class EditProductActivity : AppCompatActivity() {
         categoryList
 
 
+
+    }
+
+    private fun calculateProfit(sellingPrice:Int){
+        val profitLay = binding.lay2.lay2
+        val platformCharge = sellingPrice/10F
+        val pickupCharge = FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
+        sellerProfit = (sellingPrice - platformCharge-pickupCharge).toDouble()
+
+        profitLay.sellingPrice.text = sellingPrice.toString()
+        profitLay.commissionFee.text = platformCharge.toString()
+        profitLay.deliveryFee.text = pickupCharge.toString()
+        profitLay.totalProfit.text = sellerProfit.toString()
 
     }
 
