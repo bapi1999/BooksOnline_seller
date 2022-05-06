@@ -28,8 +28,7 @@
                     android:id="@+id/business_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <include
                         android:id="@+id/lay_business"
@@ -58,6 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="6dp"
                     android:backgroundTint="@color/purple_500"
                     android:text="Add business details"
                     android:textAllCaps="false"
@@ -65,12 +65,8 @@
                     android:textSize="13sp" />
 
                 <View
-                    android:id="@+id/divider7"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="24dp"
                     android:layout_marginBottom="16dp"
                     android:background="?android:attr/listDivider" />
 

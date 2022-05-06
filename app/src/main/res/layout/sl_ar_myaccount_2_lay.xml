@@ -31,29 +31,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider19" />
 
-    <TextView
-        android:id="@+id/textView39"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
-        android:text="Seller Id: "
-        android:textColor="@color/light_black"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView84" />
-
-    <TextView
-        android:id="@+id/seller_id"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="null"
-        android:textColor="@color/light_black"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView39"
-        app:layout_constraintTop_toTopOf="@+id/textView39" />
 
     <ImageView
         android:id="@+id/edit_address_btn"
@@ -95,6 +72,8 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -108,12 +87,12 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="16dp"
         android:text="Address"
-        android:textColor="@color/grey_900"
+        android:textColor="@color/grey_700"
         android:textSize="15sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView39" />
+        app:layout_constraintTop_toBottomOf="@+id/textView84" />
 
     <TextView
         android:id="@+id/buyer_address"

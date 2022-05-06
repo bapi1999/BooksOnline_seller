@@ -173,8 +173,16 @@ class AddBusinessDetailsActivity : AppCompatActivity() {
             businessPhoneInput.error = "Field can't be empty"
             false
         } else {
-            businessPhoneInput.error = null
-            true
+
+            if(businessPhoneString.length==10){
+                businessPhoneInput.isErrorEnabled = false
+                businessPhoneInput.error = null
+                true
+            }else{
+                businessPhoneInput.isErrorEnabled = true
+                businessPhoneInput.error = "Must be 10 digit number"
+                false
+            }
 
         }
     }
@@ -328,7 +336,7 @@ class AddBusinessDetailsActivity : AppCompatActivity() {
             }
 
 
-        sellerRef.document("SELLER_DATA")
+        firebaseFirestore.collection("USERS").document(user!!.uid)
             .collection("SELLER_NOTIFICATIONS").add(notificationMap)
             .addOnSuccessListener { Log.i("Notification","Successfully added") }
             .addOnFailureListener { Log.e("Notification","${it.message}") }
@@ -383,7 +391,7 @@ class AddBusinessDetailsActivity : AppCompatActivity() {
         verifyMap["is_verified"] = false
         verifyMap["request_type"] = "new" //new , verified, canceled
 
-        firebaseFirestore.collection("USERS").add(verifyMap)
+        firebaseFirestore.collection("VRIFICATION_REQUEST").add(verifyMap)
     }
 
 

@@ -33,6 +33,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
@@ -42,13 +43,16 @@ import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import com.sbdevs.booksonlineseller.otherclass.FixedPriceClass
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.Year
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 
 class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClickListener {
 
-    private var _binding: FragmentAddProductDetailsBinding?= null
+    private var _binding: FragmentAddProductDetailsBinding? = null
     private val binding get() = _binding!!
 
     private val firebaseFirestore = Firebase.firestore
@@ -70,13 +74,12 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     private lateinit var discountPrice: TextInputLayout
     private lateinit var printDateInput: TextInputLayout
     private lateinit var dimensionWidth: TextInputLayout
-    private lateinit var dimensionLength: TextInputLayout
-    private lateinit var dimensionHeight: TextInputLayout
+    private lateinit var weight: TextInputLayout
     private lateinit var myOwnCategoryText: EditText
 
     private var bookStateRadio: RadioButton? = null
     private var bookConditionRadio: RadioButton? = null
-    private lateinit var stockQuantity: EditText
+    private lateinit var stockQuantity: TextInputLayout
 
     private lateinit var productReturnRadioTogole: RadioGroup
     private var productReturnRadio: RadioButton? = null
@@ -94,34 +97,35 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     lateinit var adapterNewUpload: NewUploadImageAdapter
     private var downloadUriList: MutableList<String> = ArrayList()
     private lateinit var docname: String
-    private var currentYear:Int = 0
+    private var currentYear: Int = 0
     private var showAndHideProfit = false
-    private var sellerProfit:Double = 0.0
+    private var sellerProfit: BigDecimal = BigDecimal(1)
     private val loadingDialog = LoadingDialog()
     private val gone = View.GONE
     private val visible = View.VISIBLE
 
-    private val simpleCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.START or ItemTouchHelper.END,0){
-        override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
-            val fromPosition = viewHolder.adapterPosition
-            val toPosition = target.adapterPosition
-            Collections.swap(uriList,fromPosition,toPosition)
+    private val simpleCallback =
+        object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.START or ItemTouchHelper.END, 0) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = viewHolder.adapterPosition
+                val toPosition = target.adapterPosition
+                Collections.swap(uriList, fromPosition, toPosition)
 
-            adapterNewUpload.notifyItemMoved(fromPosition,toPosition)
+                adapterNewUpload.notifyItemMoved(fromPosition, toPosition)
 
 
 
-            return false
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                //TODO("Not yet implemented")
+            }
         }
-
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            //TODO("Not yet implemented")
-        }
-    }
 
 
     override fun onCreateView(
@@ -133,6 +137,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
         val lay1 = binding.lay1
         val lay2 = binding.lay2
+        val lay21 = binding.lay21
         val lay3 = binding.lay3
 
         bookName = lay1.bookName
@@ -142,13 +147,13 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         pageCount = lay1.pageCount
         isbnNo = lay1.isbnNumber
         dimensionWidth = lay1.bookDimensionWidth
-        dimensionLength = lay1.bookDimensionLength
-        dimensionHeight = lay1.bookDimensionHeight
+        weight = lay1.bookWeight
+
 
         description = lay1.bookDescription
         bookPrice = lay2.bookPrice
         discountPrice = lay2.discountPrice
-        printDateInput = lay2.printDateInput
+        printDateInput = lay21.printDateInput
         myOwnCategoryText = lay3.myOwnCategoryEditText
         tagInput = lay3.editTags
         skuInput = lay3.skuInput
@@ -157,9 +162,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
 
         currentYear = Year.now().value
-
-
-
 
 
         //val productThumbnail: ImageView = binding.lay4.productThumbnail
@@ -191,7 +193,11 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
                     }
                     ImagePicker.RESULT_ERROR -> {
-                        Toast.makeText(requireContext(), ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            ImagePicker.getError(data),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         Log.e("StartForProductImage", "${ImagePicker.getError(data)}")
                         loadingDialog.dismiss()
                     }
@@ -225,7 +231,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         val itemTouchHelper1 = ItemTouchHelper(simpleCallback)
         itemTouchHelper1.attachToRecyclerView(recyclerView)
 
-        bookPrice.editText!!.addTextChangedListener(object :TextWatcher{
+        bookPrice.editText!!.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 //                TODO("Not yet implemented")
             }
@@ -238,14 +244,15 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                 val price = s.toString().trim()
                 val priceOffer = lay2.discountPrice.editText!!.text.toString()
 
-                if(!price.isNullOrEmpty()){
+                if (price.isNotEmpty()) {
                     lay2.bookPrice.error = null
-                    if (priceOffer.isNullOrEmpty()){
+                    if (priceOffer.isEmpty()) {
                         calculateProfit(price.toInt())
-                    }else{
-                        Log.e("Not"," calculate")
+                    } else {
+                        Log.e("Not", " calculate")
+                        calculateProfit(priceOffer.toInt())
                     }
-                }else{
+                } else {
                     lay2.bookPrice.error = "Field can't be empty"
                 }
 
@@ -254,7 +261,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
         })
 
-        discountPrice.editText!!.addTextChangedListener(object :TextWatcher{
+        discountPrice.editText!!.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 //                TODO("Not yet implemented")
             }
@@ -267,24 +274,26 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                 val price = lay2.bookPrice.editText!!.text.toString()
                 val priceOffer = s.toString()
 
-                if (!price.isNullOrEmpty() and !priceOffer.isNullOrEmpty()){
-                    if (price.toInt()<priceOffer.toInt()){
+                if (price.isNotEmpty() and priceOffer.isNotEmpty()) {
+                    if (price.toInt() < priceOffer.toInt()) {
                         lay2.discountPrice.error = "Offer price is greater than the original price"
                         binding.lay2.discountPercentText.visibility = gone
-                    }else{
+                    } else {
                         lay2.discountPrice.error = null
                         calculateProfit(priceOffer.toInt())
                         binding.lay2.discountPercentText.visibility = visible
-                        val percent:Int = (100* (price.toInt() - priceOffer.toInt())) / ( price.toInt() )
+                        val percent: Int =
+                            (100 * (price.toInt() - priceOffer.toInt())) / (price.toInt())
 
                         binding.lay2.discountPercentText.text = "${percent}% OFF"
 
                     }
-                }else if(price.isNullOrEmpty()){
+                } else if (price.isEmpty() and priceOffer.isNotEmpty()) {
                     lay2.discountPrice.error = "Original Price is empty"
                     binding.lay2.discountPercentText.visibility = gone
-                }else{
+                } else if (price.isNotEmpty() and priceOffer.isEmpty()) {
                     lay2.discountPrice.error = null
+                    calculateProfit(price.toInt())
                     binding.lay2.discountPercentText.visibility = gone
                 }
 
@@ -302,15 +311,9 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     }
 
 
-
-
-
-
-
-
     override fun onStart() {
         super.onStart()
-        val lay2 = binding.lay2
+        val lay2 = binding.lay21
         val lay3 = binding.lay3
 
 
@@ -320,10 +323,32 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
         }
 
+        binding.lay2.stockUp.setOnClickListener {
+            val stock = stockQuantity.editText?.text.toString().toFloat().roundToInt()
+            var newStock = stock+1
+            stockQuantity.editText?.setText(newStock.toString())
+        }
+        binding.lay2.stockDown.setOnClickListener {
+            val stock = stockQuantity.editText?.text.toString().toFloat().roundToInt()
+            var newStock = stock-1
+            if (newStock<0){
+                stockQuantity.editText?.setText("0")
+            }else{
+                stockQuantity.editText?.setText(newStock.toString())
+            }
+        }
+
+
+        binding.lay21.newRadioButton1.text = "New (Printed in ${currentYear})"
         lay2.bookStateToggle.setOnCheckedChangeListener { group, checkedId ->
             bookStateRadio = group.findViewById(checkedId)
             when (checkedId) {
-                R.id.new_radioButton -> {
+                R.id.new_radioButton1 -> {
+                    printDateInput.editText?.hint = "Printed Year *"
+                    printDateInput.editText?.setText("$currentYear")
+                    printDateMandatory = true
+                }
+                R.id.new_radioButton2 -> {
                     printDateInput.editText?.hint = "Printed Year *"
                     printDateMandatory = true
                 }
@@ -369,11 +394,11 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         binding.lay2.lay2.allPriceContainer.visibility = gone
         binding.lay2.lay2.hideAndShoWText.setOnClickListener {
 
-            if (showAndHideProfit){
+            if (showAndHideProfit) {
                 showAndHideProfit = false
                 binding.lay2.lay2.hideAndShoWText.text = "Show"
                 binding.lay2.lay2.allPriceContainer.visibility = View.GONE
-            }else{
+            } else {
                 showAndHideProfit = true
                 binding.lay2.lay2.hideAndShoWText.text = "Hide"
                 binding.lay2.lay2.allPriceContainer.visibility = View.VISIBLE
@@ -471,17 +496,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         }
     }
 
-    private fun checkIsbn(): Boolean {
-        val nameInput: String = isbnNo.editText?.text.toString().trim()
-        return if (nameInput.isEmpty()) {
-            isbnNo.isErrorEnabled = true
-            isbnNo.error = "Field can't be empty"
-            false
-        } else {
-            isbnNo.error = null
-            true
-        }
-    }
 
     private fun checkDimensionWidth(): Boolean {
         val input: String = dimensionWidth.editText?.text.toString().trim()
@@ -492,32 +506,6 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         } else {
             dimensionWidth.isErrorEnabled = false
             dimensionWidth.error = null
-            true
-        }
-    }
-
-    private fun checkDimensionLength(): Boolean {
-        val input: String = dimensionLength.editText?.text.toString().trim()
-        return if (input.isEmpty()) {
-            dimensionLength.isErrorEnabled = true
-            dimensionLength.error = "Field can't be empty"
-            false
-        } else {
-            dimensionLength.isErrorEnabled = false
-            dimensionLength.error = null
-            true
-        }
-    }
-
-    private fun checkDimensionHeight(): Boolean {
-        val input: String = dimensionHeight.editText?.text.toString().trim()
-        return if (input.isEmpty()) {
-            dimensionHeight.isErrorEnabled = true
-            dimensionHeight.error = "Field can't be empty"
-            false
-        } else {
-            dimensionHeight.isErrorEnabled = false
-            dimensionHeight.error = null
             true
         }
     }
@@ -553,11 +541,11 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
     private fun checkType(): Boolean {
         return if (bookStateRadio == null) {
-            binding.lay2.bookStateLayout.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+            binding.lay21.bookStateLayout.backgroundTintList =
+                AppCompatResources.getColorStateList(requireContext(), R.color.red_50)
             false
         } else {
-            binding.lay2.bookStateLayout.backgroundTintList =
+            binding.lay21.bookStateLayout.backgroundTintList =
                 AppCompatResources.getColorStateList(requireContext(), R.color.white)
             true
         }
@@ -565,11 +553,11 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
     private fun checkCondition(): Boolean {
         return if (bookConditionRadio == null) {
-            binding.lay2.bookConditionLayout.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+            binding.lay21.bookConditionLayout.backgroundTintList =
+                AppCompatResources.getColorStateList(requireContext(), R.color.red_50)
             false
         } else {
-            binding.lay2.bookConditionLayout.backgroundTintList =
+            binding.lay21.bookConditionLayout.backgroundTintList =
                 AppCompatResources.getColorStateList(requireContext(), R.color.white)
             true
         }
@@ -625,20 +613,17 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     }
 
     private fun checkStock(): Boolean {
-        val stockQuantityString = stockQuantity.text.toString()
+        val stockQuantityString = stockQuantity.editText?.text.toString()
 
         return if (stockQuantityString.isEmpty()) {
-            stockQuantity.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+            stockQuantity.error = "Field can't be empty"
             false
         } else {
             if (stockQuantityString.toInt() < 0) {
-                stockQuantity.backgroundTintList =
-                    AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+                stockQuantity.error = "Stock quantity is lower than 0"
                 false
             } else {
-                stockQuantity.backgroundTintList =
-                    AppCompatResources.getColorStateList(requireContext(), R.color.white)
+                stockQuantity.error = null
                 true
             }
 
@@ -662,10 +647,10 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     }
 
 
-    private fun checkProductReturnState():Boolean{
+    private fun checkProductReturnState(): Boolean {
         return if (productReturnRadio == null) {
             binding.lay21.returnContainer.backgroundTintList =
-                AppCompatResources.getColorStateList(requireContext(), R.color.red_a700)
+                AppCompatResources.getColorStateList(requireContext(), R.color.red_50)
             false
         } else {
             binding.lay21.returnContainer.backgroundTintList =
@@ -684,16 +669,23 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             selectBtn.requestFocus()
             false
         } else {
-            if(uriList.size >2) {
-                val message =  binding.lay4.textView44
+            if (uriList.size > 2) {
+                val message = binding.lay4.textView44
                 message.text = "Select maximum 2 images only"
 
-                message.setTextColor(AppCompatResources.getColorStateList(requireContext(), R.color.red_700))
+                message.setTextColor(
+                    AppCompatResources.getColorStateList(
+                        requireContext(),
+                        R.color.red_700
+                    )
+                )
 
-                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.red_700)
+                selectBtn.backgroundTintList =
+                    AppCompatResources.getColorStateList(requireContext(), R.color.red_700)
                 false
-            }else{
-                selectBtn.backgroundTintList = AppCompatResources.getColorStateList(requireContext(), R.color.purple_500)
+            } else {
+                selectBtn.backgroundTintList =
+                    AppCompatResources.getColorStateList(requireContext(), R.color.purple_500)
                 true
             }
         }
@@ -701,19 +693,19 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
 
     private fun checkAllDetails(v: View?) {
-        val documentName: String =  generateDocName()
+        val documentName: String = generateDocName()
         if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage() or !checkPageCount()
-            or !checkDimensionWidth() or !checkDimensionLength() or !checkDimensionHeight() or !checkProductReturnState()
-            or !checkDescription() or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()
-            or !checkTags() or !checkSKU() or !checkStock() or !checkPrintDate()  or !checkProductImage()
+            or !checkDimensionWidth() or !checkProductReturnState()
+            or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()
+            or !checkTags() or !checkSKU() or !checkStock() or !checkPrintDate() or !checkProductImage()
         ) {
             loadingDialog.dismiss()
-            Snackbar.make(v!!, "Fill all fields", Snackbar.LENGTH_SHORT).show()
+            Snackbar.make(v!!, "Fill out the required fields", Snackbar.LENGTH_SHORT).show()
             return
         } else {
             viewLifecycleOwner.lifecycleScope.launch {
                 withContext(Dispatchers.IO) {
-                    addNewProduct(v, documentName)
+                    addNewProduct(documentName)
                     delay(1000)
                 }
 
@@ -725,85 +717,111 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         }
     }
 
-    private fun addNewProduct(v: View?, documentName: String) {
-        tagsToList()
-        myOwnCategory()
+    private fun addNewProduct(documentName: String) {
+        try {
+            Log.e("Add New Product", "Launched")
 
-        val width: String = dimensionWidth.editText?.text.toString().trim()
-        val length: String = dimensionLength.editText?.text.toString().trim()
-        val height: String = dimensionHeight.editText?.text.toString().trim()
-        val dimBuilder: StringBuilder = StringBuilder()
-        dimBuilder.append(width).append(" x ").append(length).append(" x ").append(height)
+            tagsToList()
+            myOwnCategory()
+
+            Log.e("After 2 method", "Launched")
 
 
-        val addProductMap: MutableMap<String, Any> = HashMap()
-        addProductMap["book_title"] = bookName.editText!!.text.toString()
-        addProductMap["book_writer"] = writerName.editText!!.text.toString()
-        addProductMap["book_publisher"] = publisherName.editText!!.text.toString()
-        addProductMap["book_details"] = description.editText!!.text.toString()
-        addProductMap["book_ISBN"] = isbnNo.editText!!.text.toString()
-        addProductMap["book_language"] = language.editText!!.text.toString()
-        addProductMap["book_pageCount"] = pageCount.editText!!.text.toString()
-        addProductMap["book_dimension"] = dimBuilder.toString()
 
-        if (discountPrice.editText!!.text.toString().isEmpty()) {
-            addProductMap["price_selling"] = bookPrice.editText!!.text.toString().toLong()
-            addProductMap["price_original"] = 0L
-        } else {
-            addProductMap["price_selling"] = discountPrice.editText!!.text.toString().toLong()
-            addProductMap["price_original"] = bookPrice.editText!!.text.toString().toLong()
-        }
+            val addProductMap: MutableMap<String, Any> = HashMap()
+            addProductMap["book_title"] = bookName.editText!!.text.toString()
+            addProductMap["book_writer"] = writerName.editText!!.text.toString()
+            addProductMap["book_publisher"] = publisherName.editText!!.text.toString()
 
-        addProductMap["number_of_item_sold"] = 0L
-        addProductMap["book_condition"] = bookConditionRadio?.tag.toString().trim()
-        addProductMap["book_type"] = bookStateRadio?.tag.toString().trim()
-        addProductMap["product_thumbnail"] = ""
+            if (description.editText!!.text.toString().isNullOrEmpty()){
+                addProductMap["book_details"] =""
+            }else{
+                addProductMap["book_details"] = description.editText!!.text.toString()
+            }
 
-        if (printDateMandatory) {
-            addProductMap["book_printed_ON"] = printDateInput.editText?.text.toString().trim().toLong()
-        } else {
-            if (printDateInput.editText?.text.toString().isNotEmpty()) {
-                addProductMap["book_printed_ON"] = printDateInput.editText?.text.toString().trim().toLong()
+
+            addProductMap["book_ISBN"] = isbnNo.editText!!.text.toString()
+            addProductMap["book_language"] = language.editText!!.text.toString()
+            addProductMap["book_pageCount"] = pageCount.editText!!.text.toString()
+            addProductMap["book_dimension"] = dimensionWidth.editText?.text.toString().trim()
+
+            if (discountPrice.editText!!.text.toString().isEmpty()) {
+                addProductMap["price_selling"] = bookPrice.editText!!.text.toString().toLong()
+                addProductMap["price_original"] = 0L
             } else {
-                addProductMap["book_printed_ON"] = 0L
+                addProductMap["price_selling"] = discountPrice.editText!!.text.toString().toFloat().roundToLong()
+                addProductMap["price_original"] = bookPrice.editText!!.text.toString().toFloat().roundToLong()
             }
+
+            addProductMap["number_of_item_sold"] = 0L
+            addProductMap["book_condition"] = bookConditionRadio?.tag.toString().trim()
+            addProductMap["book_type"] = bookStateRadio?.tag.toString().trim()
+            addProductMap["product_thumbnail"] = ""
+
+            if (printDateMandatory) {
+                addProductMap["book_printed_ON"] =
+                    printDateInput.editText?.text.toString().trim().toLong()
+            } else {
+                if (printDateInput.editText?.text.toString().isNotEmpty()) {
+                    addProductMap["book_printed_ON"] =
+                        printDateInput.editText?.text.toString().trim().toLong()
+                } else {
+                    addProductMap["book_printed_ON"] = 0L
+                }
+            }
+            addProductMap["hide_this_product"] = false
+            addProductMap["in_stock_quantity"] = stockQuantity.editText?.text.toString().toFloat().roundToLong()
+            addProductMap["categories"] = categoryList
+            addProductMap["tags"] = tagList
+            addProductMap["rating_total"] = 0L
+            addProductMap["rating_avg"] = ""
+            addProductMap["rating_Star_5"] = 0L
+            addProductMap["rating_Star_4"] = 0L
+            addProductMap["rating_Star_3"] = 0L
+            addProductMap["rating_Star_2"] = 0L
+            addProductMap["rating_Star_1"] = 0L
+            addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
+            addProductMap["PRODUCT_ADDED_ON"] = FieldValue.serverTimestamp()
+            addProductMap["PRODUCT_SELLER_ID"] = user!!.uid
+            addProductMap["SELLER_PROFIT"] = sellerProfit.toString()
+            addProductMap["SKU"] = skuInput.editText?.text.toString()
+            addProductMap["Replacement_policy"] = replacementPolicy
+
+            if ( weight.editText?.text.toString().isNullOrEmpty()){
+                addProductMap["weight"] ="Not available"
+            }else{
+                addProductMap["weight"] = weight.editText?.text.toString()
+            }
+
+
+
+            Log.e("After map", "Launched")
+
+
+            Firebase.firestore.collection("PRODUCTS")
+                .document(documentName)
+                .set(addProductMap)
+                .addOnSuccessListener {
+                    Log.e("CreateProductToFirebase", "Product successfully added")
+//                Snackbar.make(v!!, "Product successfully added", Snackbar.LENGTH_SHORT).show()
+                }.addOnFailureListener {
+                    Log.e("CreateProductToFirebase", "${it.message}")
+//                Snackbar.make(v!!, "Failed to add product", Snackbar.LENGTH_SHORT).show()
+                }
+        } catch (e: Exception) {
+            Log.e("try catch exception", "${e.message}")
         }
-        addProductMap["hide_this_product"] = false
-        addProductMap["in_stock_quantity"] = stockQuantity.text.toString().toLong()
-        addProductMap["categories"] = categoryList
-        addProductMap["tags"] = tagList
-        addProductMap["rating_total"] = 0L
-        addProductMap["rating_avg"] = ""
-        addProductMap["rating_Star_5"] = 0L
-        addProductMap["rating_Star_4"] = 0L
-        addProductMap["rating_Star_3"] = 0L
-        addProductMap["rating_Star_2"] = 0L
-        addProductMap["rating_Star_1"] = 0L
-        addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
-        addProductMap["PRODUCT_ADDED_ON"] = FieldValue.serverTimestamp()
-        addProductMap["PRODUCT_SELLER_ID"] = user!!.uid
-        addProductMap["SELLER_PROFIT"] = sellerProfit
-        addProductMap["SKU"] = skuInput.editText?.text.toString()
-        addProductMap["Replacement_policy"] = replacementPolicy
 
-        firebaseFirestore.collection("PRODUCTS").document(documentName).set(addProductMap)
-            .addOnSuccessListener {
-                Log.i("CreateProductToFirebase", "Product successfully added")
-                Snackbar.make(v!!, "Product successfully added", Snackbar.LENGTH_SHORT).show()
 
-            }.addOnFailureListener {
-                Log.e("CreateProductToFirebase", "${it.message}")
-                Snackbar.make(v!!, "Failed to add product", Snackbar.LENGTH_SHORT).show()
-            }
     }
 
 
     private suspend fun uploadProductImage(productID: String) {
+        Log.e("upload Product image", "Launch")
         for (i in 0 until uriList.size) {
             val allRef: StorageReference =
                 storageReference.child("image/" + user!!.uid + "/")
-                    .child("$currentYear/")
-                    .child("$productID/")
+                    .child("products/")
                     .child(nameList[i])
 
             allRef.putFile(uriList[i])
@@ -833,6 +851,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     }
 
     private suspend fun updateProductImageLIST(productID: String, uriList: MutableList<String>) {
+        Log.e("updateProductImageLIST", "Launched")
         val allMap: MutableMap<String, Any> = HashMap()
         allMap["productImage_List"] = uriList
 
@@ -846,7 +865,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                 Log.e("Update Product Image", "${it.message}")
             }.await()
         delay(500)
-        withContext(Dispatchers.Main){
+        withContext(Dispatchers.Main) {
             loadingDialog.dismiss()
             requireActivity().finish()
         }
@@ -879,6 +898,8 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
     private fun tagsToList(): MutableList<String> {
         val tag: String = tagInput.editText?.text.toString().trim().lowercase()
+        val bookCondition = bookConditionRadio?.tag.toString().trim()
+        val bookType = bookStateRadio?.tag.toString().trim()
         //val tagArray = tag.split(",").toTypedArray()
 
         val firstFilterTag = tag.replace(".", ",").replace(":", ",")
@@ -893,8 +914,11 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
 
 
         tagList.addAll(tagArray)
+        tagList.add(bookCondition)
+        tagList.add(bookType)
+        tagList.remove("")
 
-
+        Log.e("tag to list", "Launched")
 
         return tagList
     }
@@ -903,15 +927,25 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
         val category: String = myOwnCategoryText.text.toString().trim().lowercase()
         //val tagArray = tag.split(",").toTypedArray()
         return if (category.isNotEmpty()) {
-            val firstFilterTag = category.replace("-", ",").replace(" ", ",")
+            val firstFilterTag = category.replace("-", ",")
+                .replace(" ", ",")
+                .replace(",,", ",")
+                .replace(",,,", ",")
+
             val secondFilterTag = firstFilterTag.replace(",,", ",")
+                .replace(",,", ",")
+                .replace(",,,", ",")
+                .replace(",,,,", ",")
 
             val categoryArray: List<String> = secondFilterTag.split(",")
             categoryList.addAll(categoryArray)
+            categoryList.remove("")
 
 
+            Log.e("my own category", "Launched")
             categoryList
         } else {
+            Log.e("my own category", "Launched")
             categoryList
         }
 
@@ -919,9 +953,9 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     }
 
     private fun autoTagging() {
-        if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage()
-            or !checkType() or !checkCondition() or !checkCategory()
+        if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage() or !checkCategory()
         ) {
+            Toast.makeText(requireContext(),"Fill out the required fields",Toast.LENGTH_LONG).show()
             return
         } else {
 
@@ -932,9 +966,7 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
             val writerNameString: String = writerName.editText?.text.toString().trim()
             val publisherString: String = publisherName.editText?.text.toString().trim()
             val languageString: String = language.editText?.text.toString().trim()
-            val bookCondition = bookConditionRadio?.tag.toString().trim()
-            val bookType = bookStateRadio?.tag.toString().trim()
-            val year:String = printDateInput.editText?.text.toString().trim()
+            val year: String = printDateInput.editText?.text.toString().trim()
 
 
             for (category in categoryList) {
@@ -947,21 +979,27 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
                 .append(writerNameString).append(",")
                 .append(publisherString).append(",")
                 .append(languageString).append(",")
-                .append(categoryString).append(",")
-                .append(bookCondition).append(",")
-                .append(bookType)
+                .append(categoryString)
 
-            if (!year.isNullOrEmpty()){
+            if (!year.isNullOrEmpty()) {
                 docBuilder.append(",").append(year)
             }
 
-            val docName = docBuilder.toString().replace(".", ",").replace(":", ",")
-                .replace("/", ",").replace(" ", ",")
+            val docName = docBuilder.toString().replace(".", ",")
+                .replace(":", ",").replace("/", ",")
+                .replace(" ", ",").replace("in",",")
+                .replace("(", ",").replace(")",",")
+                .replace("-", ",").replace("_", ",")
+                .replace("#", ",").replace("{",",")
+                .replace("}", ",").replace("$",",")
+                .replace(".", ",").replace("and", ",")
+                .replace("&",",").replace("to",",")
 
             val filterTags = docName
                 .replace(",,", ",")
                 .replace(",,,", ",")
                 .replace(",,,,", ",")
+                .replace(",,,,,", ",")
 
             tagInput.editText?.setText(filterTags)
 
@@ -997,16 +1035,21 @@ class AddProductDetailsFragment : Fragment(), NewUploadImageAdapter.MyOnItemClic
     }
 
 
-    private fun calculateProfit(sellingPrice:Int){
+    private fun calculateProfit(sellingPrice: Int) {
         val profitLay = binding.lay2.lay2
-        val platformCharge = sellingPrice/10F
-        val pickupCharge = FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
-        sellerProfit = (sellingPrice - platformCharge-pickupCharge).toDouble()
+
+        val constFee = BigDecimal("10.0")
+        val platformChargeForShow = sellingPrice / 10F // for showing the text
+        val platformCharge = sellingPrice.toBigDecimal().divide(constFee)
+        val pickupCharge: BigDecimal =
+            FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
+        val temp: BigDecimal = platformCharge.add(pickupCharge)
+        sellerProfit = sellingPrice.toBigDecimal().subtract(temp)
 
         profitLay.sellingPrice.text = sellingPrice.toString()
-        profitLay.commissionFee.text = platformCharge.toString()
-        profitLay.deliveryFee.text = pickupCharge.toString()
-        profitLay.totalProfit.text = sellerProfit.toString()
+        profitLay.commissionFee.text = "$platformChargeForShow"
+        profitLay.deliveryFee.text = "$pickupCharge"
+        profitLay.totalProfit.text = "$sellerProfit"
 
     }
 

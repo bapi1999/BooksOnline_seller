@@ -30,7 +30,7 @@
         android:textColor="@color/red_a700"
         android:textSize="17sp"
         android:textStyle="bold"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/email_input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -92,18 +92,17 @@
         app:layout_constraintStart_toStartOf="@+id/password_input"
         app:layout_constraintTop_toBottomOf="@+id/password_input" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <Button
         android:id="@+id/login_btn"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:background="@drawable/s_shape_bg_1"
         android:backgroundTint="@color/purple_500"
         android:text="Login"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="17sp"
-        android:textStyle="bold"
+        app:cornerRadius="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/forgot_password" />

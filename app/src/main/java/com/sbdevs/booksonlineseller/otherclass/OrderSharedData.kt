@@ -9,5 +9,8 @@ class OrderSharedData {
         var acceptSellerOrderList:MutableList<SellerOrderModel> = ArrayList()
         var packSellerOrderList:MutableList<SellerOrderModel> = ArrayList()
 
+        var isSellerVerified = false
+        var isAddressVerified = false
+
     }
 }

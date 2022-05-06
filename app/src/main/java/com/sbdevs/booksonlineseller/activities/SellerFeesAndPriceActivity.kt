@@ -3,6 +3,8 @@ package com.sbdevs.booksonlineseller.activities
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -25,6 +27,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.math.BigDecimal
+import java.util.*
+import kotlin.collections.HashMap
 
 const val TOPIC = "/topics/myTopic2"
 
@@ -51,7 +56,7 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
 
         calculateBtn.setOnClickListener {
-            checkInput()
+//            checkInput()
 
         }
 
@@ -70,30 +75,46 @@ class SellerFeesAndPriceActivity : AppCompatActivity() {
             }
         }
 
+        enterPriceInput.editText!!.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                TODO("Not yet implemented")
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val priceOffer = s.toString()
+                if(!priceOffer.isNullOrEmpty()){
+                    calculateProfit(priceOffer.toInt())
+                }else{
+                    calculateProfit(0)
+                }
+
+
+            }
+
+        })
+
+
 
     }
 
-    private fun checkInput(){
-        val value = enterPriceInput.editText!!.text.toString().trim()
-        if (value.isEmpty()){
-            enterPriceInput.error = "Field can't be empty"
-
-        }else{
-            enterPriceInput.error = ""
-           calculateProfit(value.toInt())
-        }
-    }
 
     private fun calculateProfit(sellingPrice:Int){
         val lay2 = binding.lay2
-        val platformCharge = sellingPrice/10F
-        val pickupCharge = FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
-        val profit:Float = sellingPrice - platformCharge-pickupCharge
+        val constFee = BigDecimal("10.0")
+        val platformChargeForShow = sellingPrice/10F // for showing the text
+        val platformCharge = sellingPrice.toBigDecimal().divide(constFee)
+        val pickupCharge:BigDecimal = FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
+        val temp:BigDecimal = platformCharge.add(pickupCharge)
+        val profit:BigDecimal = sellingPrice.toBigDecimal().subtract(temp)
 
         lay2.sellingPrice.text = sellingPrice.toString()
-        lay2.commissionFee.text = platformCharge.toString()
-        lay2.deliveryFee.text = pickupCharge.toString()
-        lay2.totalProfit.text = profit.toString()
+        lay2.commissionFee.text = "$platformChargeForShow"
+        lay2.deliveryFee.text = "$pickupCharge"
+        lay2.totalProfit.text = "$profit"
 
     }
 

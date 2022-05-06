@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.AddProductActivity
 import com.sbdevs.booksonlineseller.activities.MyStoreActivity
+import com.sbdevs.booksonlineseller.activities.PoliciesActivity
 import com.sbdevs.booksonlineseller.activities.SellerFeesAndPriceActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentProfileMenuBinding
 
@@ -66,6 +67,27 @@ class ProfileMenuFragment : Fragment() {
                 R.id.profit_calculator ->{
                     val intent = Intent(context, SellerFeesAndPriceActivity::class.java)
                     startActivity(intent)
+                    true
+                }
+
+                R.id.termCondition ->{
+                    val myIntent = Intent(requireContext(), PoliciesActivity::class.java)
+                    myIntent.putExtra("PolicyCode",1)// 1 = Terms and services
+                    startActivity(myIntent)
+                    true
+                }
+
+                R.id.privacy_policy ->{
+                    val myIntent = Intent(requireContext(), PoliciesActivity::class.java)
+                    myIntent.putExtra("PolicyCode",2)// 2 = Privacy Policy
+                    startActivity(myIntent)
+                    true
+                }
+
+                R.id.return_policy ->{
+                    val myIntent = Intent(requireContext(), PoliciesActivity::class.java)
+                    myIntent.putExtra("PolicyCode",3)//3 = Return Policy
+                    startActivity(myIntent)
                     true
                 }
 

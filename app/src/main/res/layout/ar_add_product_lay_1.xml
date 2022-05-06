@@ -120,18 +120,7 @@
             android:hint="ISBN(optional)" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/textView40"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Dimension (in centimeter)"
-        android:textColor="@color/grey_900"
-        android:textSize="17sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/isbnNumber" />
+
 
     <LinearLayout
         android:id="@+id/bookDimensionContainer"
@@ -140,15 +129,27 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView40">
+        app:layout_constraintTop_toBottomOf="@+id/isbnNumber">
+
+        <TextView
+            android:id="@+id/textView40"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dimension * (in centimeter)"
+            android:textColor="@color/grey_700"
+            android:textSize="17sp"
+            android:textStyle="bold" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/bookDimensionWidth"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
+            app:hintEnabled="false"
+            android:layout_marginTop="6dp"
+            app:errorEnabled="true"
             android:layout_height="wrap_content"
             android:layout_marginEnd="2dp"
             android:layout_weight="1">
@@ -156,41 +157,39 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="61dp"
-                android:hint="Width(cm)"
-                android:inputType="numberDecimal" />
+                android:hint="W x L x H (cm)"
+                android:textSize="17sp"
+                android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/bookDimensionLength"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+
+        <TextView
+            android:id="@+id/textView41"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
+            android:text="Weight in gm(Optional)"
+            android:textColor="@color/grey_700"
+            android:textSize="17sp"
+            android:textStyle="bold"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/bookWeight"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            app:hintEnabled="false"
+            android:layout_marginTop="6dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="2dp"
             android:layout_weight="1">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Length(cm)"
+                android:layout_height="61dp"
+                android:hint="Weight (gm)"
+                android:textSize="17sp"
                 android:inputType="numberDecimal" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/bookDimensionHeight"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_weight="1">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Height(cm)"
-                android:inputType="numberDecimal" />
-        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
 
@@ -213,7 +212,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description"
+            android:hint="Description (Optional)"
             android:inputType="text"/>
     </com.google.android.material.textfield.TextInputLayout>
 

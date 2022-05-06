@@ -2,6 +2,7 @@ package com.sbdevs.booksonlineseller.fragments.product
 
 import android.app.Dialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.dynamiclinks.ktx.*
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -31,12 +33,11 @@ import com.sbdevs.booksonlineseller.models.ProductReviewModel
 import com.sbdevs.booksonlineseller.databinding.FragmentProductDetailsBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import com.sbdevs.booksonlineseller.fragments.order.OtherOrdersFragment
+import com.sbdevs.booksonlineseller.otherclass.FixedPriceClass
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
+import java.math.BigDecimal
 
 class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListener {
     private var _binding:FragmentProductDetailsBinding? =null
@@ -62,9 +63,12 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
     private val loadingDialog = LoadingDialog()
 
     private lateinit var enterStockQty:TextInputLayout
-    private lateinit var thumbnailUrl:String
     private lateinit var productDeleteWarningDialog : Dialog
     private lateinit var stockContainer:LinearLayout
+
+    private var dynamicTitle = ""
+    private var dynamicDescription = ""
+    private var dynamicImage = ""
 
 
     override fun onCreateView(
@@ -140,6 +144,9 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.layProfit.hideAndShoWText.visibility = gone
+
         binding.lay4.updateStockBtn.setOnClickListener {
             loadingDialog.show(childFragmentManager,"show")
             updateStock()
@@ -179,7 +186,6 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
             val args = Bundle()
             args.putStringArrayList("image_list",productImgList)
-            args.putString("thumbUrl",thumbnailUrl)
 
             changeProductImageFragment.arguments = args
 
@@ -195,6 +201,15 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
         binding.deleteProductBtn.setOnClickListener {
             productDeleteWarningDialog.show()
+        }
+
+        binding.lay1.shareFabButton.setOnClickListener {
+            loadingDialog.show(childFragmentManager,"show")
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                delay(2000)
+                createDynamicLink()
+            }
+
         }
 
     }
@@ -219,6 +234,7 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     var tagsString = ""
 
                     val productName = it.getString("book_title")!!
+                    dynamicTitle = productName
 
                     val priceOriginal = it.getLong("price_original")!!.toLong()
                     val priceSelling = it.getLong("price_selling")!!.toLong()
@@ -229,7 +245,6 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     val description = it.getString("book_details")!!
                     val categoryList: ArrayList<String> = it.get("categories") as ArrayList<String>
                     val tagList: ArrayList<String> = it.get("tags") as ArrayList<String>
-                    thumbnailUrl = it.getString("product_thumbnail").toString()
                     val hideProduct: Boolean = it.getBoolean("hide_this_product")!!
 
                     val bookWriter = it.getString("book_writer")
@@ -243,6 +258,8 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
                     val bookDimension = it.getString("book_dimension")
                     //val dimensionArray: List<String> = bookDimension!!.split("x")
                     productImgList = it.get("productImage_List") as ArrayList<String>
+                    dynamicImage = productImgList[0]
+                    Log.e("Link","$dynamicImage")
 
                     val returnAvailable = it.getString("Replacement_policy")!!
                     binding.lay31.textView55.text = returnAvailable
@@ -482,9 +499,6 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
             }.await()
         }
 
-        val thumbRef:StorageReference = storage.getReferenceFromUrl(thumbnailUrl)
-        thumbRef.delete().await()
-
         firebaseFirestore.collection("PRODUCTS").document(productId).delete()
             .addOnSuccessListener {
 
@@ -520,14 +534,55 @@ class ProductDetailsFragment : Fragment(),ProductImgAdapter.MyOnItemClickListene
 
     private fun calculateProfit(sellingPrice:Long){
         val layProfit = binding.layProfit
-        val platformCharge = sellingPrice/10F
-        val pickupCharge = 30F
-        val profit:Float = sellingPrice - platformCharge-pickupCharge
+        val constFee = BigDecimal("10.0")
+        val platformChargeForShow = sellingPrice/10F // for showing the text
+        val platformCharge = sellingPrice.toBigDecimal().divide(constFee)
+        val pickupCharge: BigDecimal = FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
+        val temp: BigDecimal = platformCharge.add(pickupCharge)
+        val profit: BigDecimal = sellingPrice.toBigDecimal().subtract(temp)
 
         layProfit.sellingPrice.text = sellingPrice.toString()
-        layProfit.commissionFee.text = platformCharge.toString()
-        layProfit.deliveryFee.text = pickupCharge.toString()
-        layProfit.totalProfit.text = profit.toString()
+        layProfit.commissionFee.text = "$platformChargeForShow"
+        layProfit.deliveryFee.text = "$pickupCharge"
+        layProfit.totalProfit.text = "$profit"
+
+    }
+
+    private fun createDynamicLink() {
+
+        val sharelink2 = "https://www.example.com/?"+"productid=${productId}"
+
+        Firebase.dynamicLinks.shortLinkAsync {
+
+            link = Uri.parse(sharelink2)
+            domainUriPrefix = "https://bookonline.page.link/?"
+            androidParameters("com.sbdevs.bookonline") {
+                minimumVersion = 1
+            }
+            iosParameters("com.example.ios") {
+                appStoreId = "123456789"
+                minimumVersion = "1.0.1"
+            }
+            socialMetaTagParameters {
+                title = dynamicTitle
+                description = dynamicTitle
+                imageUrl = Uri.parse(dynamicImage.toString())
+//                imageUrl = Uri.parse("https://firebasestorage.googleapis.com/v0/b/ecommerceapp2-891bc.appspot.com/o/image%2Fn14J5htPW3d3Q1N2IM3NcFIjbqz2%2Fproducts%2FIMG_20220505_190304541.jpg?alt=media&token=507fd1d5-1d9a-43a7-bfc5-45345cc66a33")
+            }
+
+        }.addOnSuccessListener { (shortLink, flowchartLink) ->
+            loadingDialog.dismiss()
+            Log.e("Long Link:  ", "$shortLink")
+            val intent = Intent()
+            intent.action = Intent.ACTION_SEND
+            intent.putExtra(Intent.EXTRA_TEXT, shortLink.toString())
+            intent.type = "text/plain"
+            startActivity(intent)
+        }.addOnFailureListener {
+            loadingDialog.dismiss()
+            Log.e("create dynamic link error", "${it.message}")
+        }
+
 
     }
 

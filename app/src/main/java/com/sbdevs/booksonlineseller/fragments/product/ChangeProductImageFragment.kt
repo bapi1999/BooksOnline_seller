@@ -202,7 +202,7 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
         binding.lay4.selectImageBtn.setOnClickListener {
             ImagePicker.with(this)
                 .crop()
-                .compress(600)
+                .compress(700)
                 .maxResultSize(900, 900) //Final image resolution will be less than 1080 x 1080
                 .createIntent { intent ->
                     loadingDialog.show(childFragmentManager, "Show")
@@ -300,8 +300,7 @@ class ChangeProductImageFragment : Fragment(), NewUploadImageAdapter.MyOnItemCli
         for (i in 0 until uriList.size) {
             val allRef: StorageReference =
                 storageReference.child("image/" + user!!.uid + "/")
-                    .child("$currentYear/")
-                    .child("$productID/")
+                    .child("products/")
                     .child(nameList[i])
 
             allRef.putFile(uriList[i])

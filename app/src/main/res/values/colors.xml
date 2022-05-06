@@ -42,6 +42,7 @@
     <color name="viewAll">#0288D1</color>
     <color name="blueLink">#0199FF</color>
 
+    <color name="red_50">#FFEBEE</color>
     <color name="red_100">#FFCDD2</color>
     <color name="red_500">#F44336</color>
     <color name="red_600">#E53935</color>

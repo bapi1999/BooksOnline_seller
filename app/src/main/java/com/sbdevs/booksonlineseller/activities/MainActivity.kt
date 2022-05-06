@@ -7,11 +7,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.databinding.ActivityMainBinding
 import com.google.firebase.Timestamp
@@ -22,10 +19,10 @@ import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import com.sbdevs.booksonlineseller.fragments.NotificationsFragment
 import com.sbdevs.booksonlineseller.fragments.order.OrdersFragment
 import com.sbdevs.booksonlineseller.models.NotificationModel
+import com.sbdevs.booksonlineseller.otherclass.OrderSharedData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -41,14 +38,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var timeStamp: Timestamp
     private var notificationList:List<NotificationModel> = ArrayList()
     private val loadingDialog = LoadingDialog()
-    private lateinit var bottomSheetDialog: BottomSheetDialog
 
     private val gone = View.GONE
     private val visible = View.VISIBLE
+    private val inVisible = View.INVISIBLE
 
-    //for bottom message dialog
-    private lateinit var applyBtn: Button
-    private lateinit var normalMessage: TextView
+    private lateinit var addBusinessDetailsBtn: Button
     private lateinit var warningMessage: TextView
     //=========================
 
@@ -59,18 +54,11 @@ class MainActivity : AppCompatActivity() {
 
         notificationBadgeText  = binding.layNotify.notificationBadgeCounter
 
-//        loadingDialog.show(supportFragmentManager,"show")
 
-        bottomSheetDialog = BottomSheetDialog(this, R.style.CustomBottomSheetDialog)
-        val view: View = layoutInflater.inflate(R.layout.sl_first_message_bottom_dialog, null)
-        bottomSheetDialog.setContentView(view)
-        bottomSheetDialog.setCancelable(false)
+        addBusinessDetailsBtn= binding.noBusinessLay.button2
+        warningMessage=binding.noBusinessLay.textView3
+        addBusinessDetailsBtn.setOnClickListener {
 
-        applyBtn= bottomSheetDialog.findViewById(R.id.dismiss_btn)!!
-        normalMessage= bottomSheetDialog.findViewById(R.id.message_notrmal)!!
-        warningMessage= bottomSheetDialog.findViewById(R.id.message_warning)!!
-        applyBtn.setOnClickListener {
-            bottomSheetDialog.dismiss()
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
@@ -108,16 +96,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
-    private fun dialogFunction(dialog: BottomSheetDialog,message:String,messageType:Long) {
-        val applyBtn: AppCompatButton = dialog.findViewById(R.id.dismiss_btn)!!
-        val normalMessage: TextView = dialog.findViewById(R.id.message_notrmal)!!
-        val warningMessage: TextView = dialog.findViewById(R.id.message_warning)!!
-
-
-    }
-
-
     private fun getNotificationForOptionMenu(timeStamp1:Timestamp,textView: TextView) {
 
         val ref = firebaseFirestore.collection("USERS")
@@ -135,7 +113,6 @@ class MainActivity : AppCompatActivity() {
 
                 notificationList = it.toObjects(NotificationModel::class.java)
 
-//                binding.layNotify.notificationBadgeCounter.text= notificationList.size.toString()
                 if (notificationList.isEmpty()){
                     textView.visibility = View.GONE
                 }else{
@@ -163,7 +140,6 @@ class MainActivity : AppCompatActivity() {
 
             ref.update(notiMAp).addOnSuccessListener {
                 timeStamp = fixedTimestamp
-                //Toast.makeText(this,"$timeStamp",Toast.LENGTH_LONG).show()
             }
         }
 
@@ -190,25 +166,36 @@ class MainActivity : AppCompatActivity() {
                 val isBusinessAdded = it.getBoolean("Is_BusinessDetail_Added")!!
                 val isVerified = it.getBoolean("is_address_verified")!!
 
+
+                val st2 = "You are not a verified seller yet."
+                val stBuilder: StringBuilder = StringBuilder()
                 if (isBusinessAdded){
 
                     if (isVerified){
-                        warningMessage.visibility = gone
-                        normalMessage.visibility = gone
-                        bottomSheetDialog.dismiss()
+                        binding.noBusinessContainer.visibility = gone
+                        binding.mainFrameLayout.visibility = visible
+                        OrderSharedData.isAddressVerified = true
                     }else{
-                        warningMessage.visibility = visible
+                        binding.noBusinessContainer.visibility = visible
+                        binding.mainFrameLayout.visibility = inVisible
+                        addBusinessDetailsBtn.visibility = gone
                         val st = getString(R.string.seller_address_not_verified)
-                        warningMessage.text = st
-                        bottomSheetDialog.show()
+
+                        stBuilder.append(st2).append(" ").append(st)
+                        warningMessage.text = stBuilder.toString()
+                        OrderSharedData.isAddressVerified = false
                     }
 
+                    OrderSharedData.isSellerVerified = true
 
                 }else{
-                    warningMessage.visibility = visible
+                    binding.noBusinessContainer.visibility = visible
+                    binding.mainFrameLayout.visibility = inVisible
                     val st = getString(R.string.you_are_not_a_verified_seller)
                     warningMessage.text = st
-                    bottomSheetDialog.show()
+                    addBusinessDetailsBtn.visibility = visible
+                    OrderSharedData.isSellerVerified = false
+
                 }
 
 

@@ -25,6 +25,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.sbdevs.booksonlineseller.R
 import com.sbdevs.booksonlineseller.activities.AddBusinessDetailsActivity
 import com.sbdevs.booksonlineseller.activities.MainActivity
+import com.sbdevs.booksonlineseller.activities.PoliciesActivity
 import com.sbdevs.booksonlineseller.databinding.FragmentSignUpBinding
 import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +45,6 @@ class SignUpFragment : Fragment() {
     lateinit var pass: TextInputLayout
     lateinit var confirmPass:TextInputLayout
     private lateinit var termAndPolicyBox:CheckBox
-    private lateinit var returnPolicyBox:CheckBox
     lateinit var errorTxt: TextView
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+"
 
@@ -62,7 +62,6 @@ class SignUpFragment : Fragment() {
         pass = binding.signupLay.passwordInput
         confirmPass = binding.signupLay.confirmPassInput
         termAndPolicyBox = binding.signupLay.checkBox6
-        returnPolicyBox = binding.signupLay.checkBox8
 
         binding.signupLay.loginText.setOnClickListener {
             val action = SignUpFragmentDirections.actionSignUpFragmentToLoginFragment()
@@ -79,8 +78,21 @@ class SignUpFragment : Fragment() {
             termAndPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.teal_200)
         }
 
-        returnPolicyBox.setOnCheckedChangeListener { buttonView, isChecked ->
-            returnPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.teal_200)
+
+        binding.signupLay.termConditionText.setOnClickListener {
+            val myIntent = Intent(requireContext(), PoliciesActivity::class.java)
+            myIntent.putExtra("PolicyCode",1)// 1 = Terms and services
+            startActivity(myIntent)
+        }
+        binding.signupLay.privacyPolicyText.setOnClickListener {
+            val myIntent = Intent(requireContext(), PoliciesActivity::class.java)
+            myIntent.putExtra("PolicyCode",2)// 2 = Privacy Policy
+            startActivity(myIntent)
+        }
+        binding.signupLay.returnPolicyText.setOnClickListener {
+            val myIntent = Intent(requireContext(), PoliciesActivity::class.java)
+            myIntent.putExtra("PolicyCode",3)//3 = Return Policy
+            startActivity(myIntent)
         }
 
         return binding.root
@@ -173,19 +185,10 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    private fun checkReturnPolicyBox(): Boolean {
-        return if (returnPolicyBox.isChecked) {
-            returnPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.teal_200)
-            true
-        } else {
-            returnPolicyBox.buttonTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
-            false
-        }
-    }
 
     private fun checkAllDetails() {
-        if (!checkMail() or !checkUserName() or !checkPassword() or !checkConfirmPassword()
-            or !checkTermsAndPolicyBox() or !checkReturnPolicyBox()) {
+        if (!checkMail() or !checkUserName() or !checkPassword()
+            or !checkConfirmPassword() or !checkTermsAndPolicyBox() ) {
             Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
             loadingDialog.dismiss()
             return
@@ -284,7 +287,6 @@ class SignUpFragment : Fragment() {
                 val userRef =  docRef.collection("USER_DATA")
                 userRef.document("MY_ADDRESSES").set(addressMap).await()
                 userRef.document("MY_CART").set(listSizeMap).await()
-                userRef.document("MY_ORDERS").set(listSizeMap).await()
                 userRef.document("MY_WISHLIST").set(listSizeMap).await()
 
 

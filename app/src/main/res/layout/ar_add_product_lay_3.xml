@@ -12,9 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:text="Category"
-        android:textColor="@color/grey_900"
+        android:text="Category *"
+        android:textColor="@color/grey_700"
         android:textSize="17sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -29,6 +30,7 @@
         android:background="@drawable/s_border_2"
         android:backgroundTint="@color/grey_600"
         android:orientation="vertical"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView66">
@@ -464,20 +466,20 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:gravity="end"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/categoryLayout"
         >
         <TextView
             android:id="@+id/textView67"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="4dp"
-            android:text="Tags"
-            android:textColor="@color/grey_900"
+            android:text="Tags *"
+            android:textColor="@color/grey_700"
             android:textSize="17sp"
-            app:drawableEndCompat="@drawable/ic_info_24"
-            app:drawableTint="@color/light_black"
+          android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/categoryLayout" />
 
@@ -502,14 +504,15 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
-
         <Button
             android:id="@+id/auto_tag_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="3dp"
             android:text="Generated Tag"
             android:textAllCaps="false"
+            app:cornerRadius="20dp"
+            android:textSize="13sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edit_tags" />
@@ -525,19 +528,20 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:gravity="end"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout3" >
         <TextView
             android:id="@+id/textView8"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="4dp"
-            android:text="Product SKU"
-            android:textColor="@color/grey_900"
+            android:text="Product SKU *"
+            android:textColor="@color/grey_700"
             android:textSize="17sp"
-            app:drawableEndCompat="@drawable/ic_info_24"
-            app:drawableTint="@color/light_black" />
+            android:textStyle="bold"
+            android:gravity="start"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/sku_input"
@@ -557,14 +561,15 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
-
         <Button
             android:id="@+id/auto_sku_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="3dp"
             android:text="Generated SKU"
-            android:textAllCaps="false" />
+            android:textSize="13sp"
+            android:textAllCaps="false"
+            app:cornerRadius="20dp" />
     </LinearLayout>
 
 

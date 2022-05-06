@@ -56,7 +56,6 @@
                 app:icon="@drawable/ic_info_24"
                 app:iconTint="@color/purple_200" />
 
-
             <include android:id="@+id/lay1"
                 layout="@layout/ar_add_product_lay_1" />
 
@@ -72,20 +71,20 @@
             <include android:id="@+id/lay4"
                 layout="@layout/ar_add_product_lay_4" />
 
-            <androidx.appcompat.widget.AppCompatButton
+
+            <Button
                 android:id="@+id/publish_product_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:text="Publish"
-                android:textSize="17dp"
                 android:layout_margin="16dp"
-                android:textColor="@color/white"
-                android:background="@drawable/s_shape_bg_1"
                 android:backgroundTint="@color/indigo_900"
+                android:text="Publish"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:cornerRadius="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/buyer_address_type"/>
+                app:layout_constraintTop_toBottomOf="@+id/buyer_address_type" />
 
         </LinearLayout>
     </ScrollView>

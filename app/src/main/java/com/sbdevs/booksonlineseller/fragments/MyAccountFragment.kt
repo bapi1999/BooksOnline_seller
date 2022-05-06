@@ -103,9 +103,11 @@ class MyAccountFragment : Fragment() {
 
 
     private fun isUserVerified(){
-        val docRef = firebaseFirestore.collection("USERS")
+        firebaseFirestore.collection("USERS")
             .document(user!!.uid).collection("SELLER_DATA")
-            .document("BUSINESS_DETAILS").get().addOnSuccessListener {
+            .document("BUSINESS_DETAILS").get()
+            .addOnSuccessListener {
+
                 val isBusinessAdded = it.getBoolean("Is_BusinessDetail_Added")!!
                 val isVerified = it.getBoolean("is_address_verified")!!
 
@@ -137,10 +139,13 @@ class MyAccountFragment : Fragment() {
                         verifyText.text = "verified"
                         binding.lay1.verifyContainer.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.successGreen)
                         verifyIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
+                        verifyIcon.visibility = visible
                     }else{
-                        verifyText.text = "Not verified"
+                        verifyText.text = "reviewing..."
                         verifyIcon.visibility = View.GONE
-                        binding.lay1.verifyContainer.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),R.color.red_700)
+                        binding.lay1.verifyContainer.backgroundTintList = AppCompatResources.getColorStateList(requireContext(),
+                            R.color.amber_900
+                        )
 
                     }
 
@@ -200,8 +205,8 @@ class MyAccountFragment : Fragment() {
 
                 val name = it.get("name")!!.toString().trim()
                 val email = it.get("email")!!.toString()
-                val phone = it.get("mobile_No")!!.toString()
-                val profile= it.get("mobile_No")!!.toString().trim()
+
+                val profile= it.get("profile")!!.toString().trim()
 
                 if (name==""){
                     binding.lay1.userName.text = "No Name"
@@ -214,7 +219,6 @@ class MyAccountFragment : Fragment() {
                 }
 
                 binding.lay1.userMail.text = email
-                binding.lay1.userPhone.text = phone
 
 
             }.addOnFailureListener {
@@ -237,6 +241,7 @@ class MyAccountFragment : Fragment() {
             .removeValue()
 
     }
+
 
 
 }

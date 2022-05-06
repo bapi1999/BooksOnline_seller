@@ -7,6 +7,160 @@
     android:layout_marginBottom="2dp">
 
     <LinearLayout
+        android:id="@+id/bookStateLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/s_shape_bg_3"
+        android:backgroundTint="@color/white"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:id="@+id/textView62"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Book Type*"
+            android:textColor="@color/grey_700"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            />
+
+        <RadioGroup
+            android:id="@+id/book_State_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="16dp">
+
+            <RadioButton
+                android:id="@+id/new_radioButton1"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:tag="new_printed"
+                android:text="New (Printed in )"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/new_radioButton2"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:tag="old_printed"
+                android:text="New ( Old printed)"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/used_radioButton"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:tag="used"
+                android:text="Used"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/refurb_radioButton"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:tag="refurbished"
+                android:text="Refurbished"
+                android:textSize="14sp" />
+        </RadioGroup>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/printDate_input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            app:hintEnabled="false"
+            app:errorEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Printed year"
+                android:inputType="number"
+                android:maxLength="4" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bookConditionLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/s_shape_bg_3"
+        android:backgroundTint="@color/white"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bookStateLayout">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Book Condition*"
+            android:textColor="@color/grey_700"
+            android:textSize="17sp"
+            android:textStyle="bold"/>
+
+        <RadioGroup
+            android:id="@+id/book_condition_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="16dp">
+
+            <RadioButton
+                android:id="@+id/cradioButton1"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:tag="new_condition"
+                android:text="New"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/cradioButton2"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:tag="almost_new"
+                android:text="Almost new"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/cradioButton3"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:tag="slightly_damaged"
+                android:text="Slightly damaged"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/cradioButton4"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:tag="fully_damaged"
+                android:text="Fully damaged"
+                android:textSize="14sp" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/return_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,45 +168,46 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/s_border_2"
+        android:background="@drawable/s_shape_bg_3"
         android:backgroundTint="@color/white"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/bookConditionLayout">
 
         <TextView
             android:id="@+id/textView54"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawablePadding="4dp"
-            android:text="Product Replacement Policy"
-            android:textColor="@color/grey_900"
+            android:text="Product Replacement Policy*"
+            android:textColor="@color/grey_700"
             android:textSize="17sp"
-            app:drawableEndCompat="@drawable/ic_info_24"
-            app:drawableTint="@color/grey_900" />
+            android:textStyle="bold"/>
 
         <RadioGroup
             android:id="@+id/productReturnToggle"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="8dp">
 
             <RadioButton
                 android:id="@+id/return_radio1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:tag="yes"
                 android:text="7 days Replacement Policy"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
 
             <RadioButton
                 android:id="@+id/return_radio2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:tag="no"
                 android:text="No Replacement Policy"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
         </RadioGroup>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

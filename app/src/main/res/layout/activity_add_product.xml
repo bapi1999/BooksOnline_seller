@@ -6,17 +6,38 @@
     android:layout_height="match_parent"
     tools:context=".activities.AddProductActivity">
 
-    <fragment
-        android:id="@+id/add_product_host_fragment"
-        android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/noBusinessContainer"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:defaultNavHost="true"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <include android:id="@+id/noBusinessLay"
+            layout="@layout/le_not_verified_seller_lay"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/fragmentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/add_product_navigation" />
+        app:layout_constraintTop_toTopOf="parent">
+        <fragment
+            android:id="@+id/add_product_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/add_product_navigation" />
+    </LinearLayout>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

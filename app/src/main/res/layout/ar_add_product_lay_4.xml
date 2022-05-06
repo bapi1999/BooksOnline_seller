@@ -16,11 +16,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:drawablePadding="4dp"
-        android:text="Set product image*: "
+        android:text="Set product image *"
         android:textSize="17sp"
-        android:textColor="@color/grey_900"
-        app:drawableEndCompat="@drawable/ic_info_24"
-        app:drawableTint="@color/grey_700"
+        android:textStyle="bold"
+        android:textColor="@color/grey_700"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -78,7 +77,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="TextView"
+        android:text=""
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

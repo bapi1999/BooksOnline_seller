@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/grey_100">
+    android:background="@color/grey_100"
+    android:elevation="5dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/user_image"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:src="@drawable/as_user_placeholder"
         app:civ_border_color="@color/white"
@@ -22,8 +23,8 @@
         android:id="@+id/user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Nikhilesh Kumar Singha"
@@ -34,21 +35,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/user_image" />
-
-    <TextView
-        android:id="@+id/user_phone"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:ellipsize="end"
-        android:layout_marginStart="16dp"
-        android:maxLines="1"
-        android:text="+91 8976543210"
-        android:textColor="@color/grey_900"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_name" />
 
     <TextView
         android:id="@+id/user_mail"
@@ -62,7 +48,7 @@
         android:textSize="16sp"
         android:maxLines="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_phone" />
+        app:layout_constraintTop_toBottomOf="@+id/user_name" />
 
     <ImageView
         android:id="@+id/edit_profile_btn"
@@ -73,7 +59,7 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_mail"
+        app:layout_constraintTop_toBottomOf="@+id/user_name"
         app:srcCompat="@drawable/i_edit"
         app:tint="@color/black" />
 
@@ -84,7 +70,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/user_image"
         app:layout_constraintEnd_toEndOf="@+id/user_image"
         app:srcCompat="@drawable/ic_photo_camera_black_48dp"
-        app:tint="@color/white" />
+        app:tint="@color/red_100" />
 
     <LinearLayout
         android:id="@+id/verify_container"
@@ -93,7 +79,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/s_shape_bg_1"
-        android:backgroundTint="@color/grey_900"
+        android:backgroundTint="@color/grey_700"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="5dp"
@@ -103,11 +89,11 @@
 
         <ImageView
             android:id="@+id/verify_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_weight="1"
             android:visibility="gone"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             app:srcCompat="@drawable/ic_check_circle_outline_24"
             app:tint="@color/white" />
 
@@ -116,14 +102,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingStart="4dp"
+            android:paddingEnd="10dp"
             android:text="Loading..."
             android:textAllCaps="true"
             android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
-            android:paddingEnd= "10dp"/>
+            android:textSize="12sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 

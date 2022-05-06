@@ -23,8 +23,12 @@ import com.sbdevs.booksonlineseller.fragments.LoadingDialog
 import com.sbdevs.booksonlineseller.otherclass.FixedPriceClass
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
+import java.math.BigDecimal
+import java.time.Year
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 class EditProductActivity : AppCompatActivity() {
 
@@ -32,7 +36,6 @@ class EditProductActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditProductBinding
 
     private val firebaseFirestore = Firebase.firestore
-    private val user = Firebase.auth.currentUser
 
     private lateinit var bookName: TextInputLayout
     private lateinit var publisherName: TextInputLayout
@@ -48,14 +51,13 @@ class EditProductActivity : AppCompatActivity() {
     private lateinit var discountPrice: TextInputLayout
     private lateinit var printDateInput: TextInputLayout
     private lateinit var dimensionWidth: TextInputLayout
-    private lateinit var dimensionLength: TextInputLayout
-    private lateinit var dimensionHeight: TextInputLayout
+    private lateinit var weight: TextInputLayout
     private lateinit var categoryInput: TextInputLayout
 
-
+    private var currentYear: Int = 0
     private var bookStateRadio: RadioButton? = null
     private var bookConditionRadio: RadioButton? = null
-    private lateinit var stockQuantity: EditText
+    private lateinit var stockQuantity: TextInputLayout
 
     private lateinit var productReturnRadioTogole: RadioGroup
     private var productReturnRadio: RadioButton? = null
@@ -69,7 +71,7 @@ class EditProductActivity : AppCompatActivity() {
     private val loadingDialog = LoadingDialog()
 
     private var showAndHideProfit = false
-    private var sellerProfit:Double = 0.0
+    private var sellerProfit:BigDecimal = BigDecimal(1)
     private val gone = View.GONE
     private val visible = View.VISIBLE
 
@@ -94,13 +96,12 @@ class EditProductActivity : AppCompatActivity() {
         pageCount = lay1.pageCount
         isbnNo = lay1.isbnNumber
         dimensionWidth = lay1.bookDimensionWidth
-        dimensionLength = lay1.bookDimensionLength
-        dimensionHeight = lay1.bookDimensionHeight
+        weight = lay1.bookWeight
 
         description = lay1.bookDescription
         bookPrice = lay2.bookPrice
         discountPrice = lay2.discountPrice
-        printDateInput = lay2.printDateInput
+        printDateInput = lay21.printDateInput
         categoryInput = lay3.categoryInput
         tagInput = lay3.editTags
         skuInput = lay3.skuInput
@@ -115,7 +116,7 @@ class EditProductActivity : AppCompatActivity() {
             }
         }
 
-
+        currentYear = Year.now().value
 
         bookPrice.editText!!.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -191,7 +192,7 @@ class EditProductActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        val lay2 = binding.lay2
+        val lay2 = binding.lay21
 
 
         binding.publishProductBtn.setOnClickListener {
@@ -199,10 +200,16 @@ class EditProductActivity : AppCompatActivity() {
             checkAllDetails(it,productId)
         }
 
+        binding.lay21.newRadioButton1.text = "New (Printed in ${currentYear})"
         lay2.bookStateToggle.setOnCheckedChangeListener { group, checkedId ->
             bookStateRadio = group.findViewById(checkedId)
             when (checkedId) {
-                R.id.new_radioButton -> {
+                R.id.new_radioButton1 -> {
+                    printDateInput.editText?.hint = "Printed Year *"
+                    printDateInput.editText?.setText("$currentYear")
+                    printDateMandatory = true
+                }
+                R.id.new_radioButton2 -> {
                     printDateInput.editText?.hint = "Printed Year *"
                     printDateMandatory = true
                 }
@@ -210,6 +217,22 @@ class EditProductActivity : AppCompatActivity() {
                     printDateInput.editText?.hint = "Printed Year(if any)"
                     printDateMandatory = false
                 }
+            }
+        }
+
+
+        binding.lay2.stockUp.setOnClickListener {
+            val stock = stockQuantity.editText?.text.toString().toFloat().roundToInt()
+            var newStock = stock+1
+            stockQuantity.editText?.setText(newStock.toString())
+        }
+        binding.lay2.stockDown.setOnClickListener {
+            val stock = stockQuantity.editText?.text.toString().toFloat().roundToInt()
+            var newStock = stock-1
+            if (newStock<0){
+                stockQuantity.editText?.setText("0")
+            }else{
+                stockQuantity.editText?.setText(newStock.toString())
             }
         }
 
@@ -257,6 +280,7 @@ class EditProductActivity : AppCompatActivity() {
                 var tagsString = ""
 
                 val productName = it.getString("book_title")!!
+                val sku = it.getString("SKU")
 
                 val priceOriginal = it.getLong("price_original")!!.toLong()
                 val priceSelling = it.getLong("price_selling")!!.toLong()
@@ -276,10 +300,10 @@ class EditProductActivity : AppCompatActivity() {
                 val bookPageCount = it.getString("book_pageCount")
                 val isbnNumber = it.getString("book_ISBN")
                 val bookDimension = it.getString("book_dimension")
-                val dimensionArray: List<String> = bookDimension!!.split("x")
+                val bookWeight = it.getString("weight")
                 replacementPolicy = it.getString("Replacement_policy")!!
 
-                stockQuantity.setText(stock.toString())
+                stockQuantity.editText?.setText(stock.toString())
 
                 for (categories in categoryList) {
                     categoryString += "$categories,"
@@ -306,23 +330,32 @@ class EditProductActivity : AppCompatActivity() {
                 pageCount.editText?.setText(bookPageCount)
                 isbnNo.editText?.setText(isbnNumber)
 
-                dimensionWidth.editText?.setText(dimensionArray[0].trim())
-                dimensionLength.editText?.setText(dimensionArray[1].trim())
-                dimensionHeight.editText?.setText(dimensionArray[2].trim())
+                dimensionWidth.editText?.setText(bookDimension)
+                weight.editText?.setText(bookWeight)
+
+
+                if(!sku.isNullOrEmpty()){
+                    skuInput.editText?.setText(sku)
+                }
+
 
 
                 when(productState){
-                    "new"->{
-                        binding.lay2.bookStateToggle.check(R.id.new_radioButton)
-                        bookStateRadio = binding.lay2.newRadioButton
+                    "new_printed"->{
+                        binding.lay21.bookStateToggle.check(R.id.new_radioButton1)
+                        bookStateRadio = binding.lay21.newRadioButton1
+                    }
+                    "old_printed"->{
+                        binding.lay21.bookStateToggle.check(R.id.new_radioButton2)
+                        bookStateRadio = binding.lay21.newRadioButton2
                     }
                     "used"->{
-                        binding.lay2.bookStateToggle.check(R.id.used_radioButton)
-                        bookStateRadio = binding.lay2.usedRadioButton
+                        binding.lay21.bookStateToggle.check(R.id.used_radioButton)
+                        bookStateRadio = binding.lay21.usedRadioButton
                     }
                     "refurbished"->{
-                        binding.lay2.bookStateToggle.check(R.id.refurb_radioButton)
-                        bookStateRadio = binding.lay2.refurbRadioButton
+                        binding.lay21.bookStateToggle.check(R.id.refurb_radioButton)
+                        bookStateRadio = binding.lay21.refurbRadioButton
                     }
                 }
 
@@ -339,21 +372,21 @@ class EditProductActivity : AppCompatActivity() {
 
                 when(bookCondition){
 
-                    "good"->{
-                        binding.lay2.bookConditionToggle.check(R.id.cradioButton1)
-                        bookConditionRadio = binding.lay2.cradioButton1
+                    "new_condition"->{
+                        binding.lay21.bookConditionToggle.check(R.id.cradioButton1)
+                        bookConditionRadio = binding.lay21.cradioButton1
                     }
                     "almost_new"->{
-                        binding.lay2.bookConditionToggle.check(R.id.cradioButton2)
-                                bookConditionRadio = binding.lay2.cradioButton2
+                        binding.lay21.bookConditionToggle.check(R.id.cradioButton2)
+                                bookConditionRadio = binding.lay21.cradioButton2
                     }
-                    "half_bad"->{
-                        binding.lay2.bookConditionToggle.check(R.id.cradioButton3)
-                        bookConditionRadio = binding.lay2.cradioButton3
+                    "slightly_damaged"->{
+                        binding.lay21.bookConditionToggle.check(R.id.cradioButton3)
+                        bookConditionRadio = binding.lay21.cradioButton3
                     }
-                    "bad"->{
-                        binding.lay2.bookConditionToggle.check(R.id.cradioButton4)
-                        bookConditionRadio = binding.lay2.cradioButton4
+                    "fully_damaged"->{
+                        binding.lay21.bookConditionToggle.check(R.id.cradioButton4)
+                        bookConditionRadio = binding.lay21.cradioButton4
                     }
 
                 }
@@ -370,7 +403,21 @@ class EditProductActivity : AppCompatActivity() {
 
                 categoryInput.editText?.setText(categoryString)
 
-                tagInput.editText?.setText(tagsString)
+
+                val newTagString = tagsString
+                    .replace("new_printed","")
+                    .replace("old_printed","")
+                    .replace("used","")
+                    .replace("refurbished","")
+                    .replace("new_condition","")
+                    .replace("almost_new","")
+                    .replace("slightly_damaged","")
+                    .replace("fully_damaged","")
+                    .replace(",,", ",")
+                    .replace(",,,", ",")
+                    .replace(",,,,", ",")
+
+                tagInput.editText?.setText(newTagString)
 
                 loadingDialog.dismiss()
 
@@ -474,31 +521,6 @@ class EditProductActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkDimensionLength(): Boolean {
-        val input: String = dimensionLength.editText?.text.toString().trim()
-        return if (input.isEmpty()) {
-            dimensionLength.isErrorEnabled = true
-            dimensionLength.error = "Field can't be empty"
-            false
-        } else {
-            dimensionLength.isErrorEnabled = false
-            dimensionLength.error = null
-            true
-        }
-    }
-
-    private fun checkDimensionHeight(): Boolean {
-        val input: String = dimensionHeight.editText?.text.toString().trim()
-        return if (input.isEmpty()) {
-            dimensionHeight.isErrorEnabled = true
-            dimensionHeight.error = "Field can't be empty"
-            false
-        } else {
-            dimensionHeight.isErrorEnabled = false
-            dimensionHeight.error = null
-            true
-        }
-    }
 
     private fun checkDescription(): Boolean {
         val input: String = description.editText?.text.toString().trim()
@@ -531,11 +553,11 @@ class EditProductActivity : AppCompatActivity() {
 
     private fun checkType(): Boolean {
         return if (bookStateRadio == null) {
-            binding.lay2.bookStateLayout.backgroundTintList =
-                AppCompatResources.getColorStateList(this, R.color.red_a700)
+            binding.lay21.bookStateLayout.backgroundTintList =
+                AppCompatResources.getColorStateList(this, R.color.red_50)
             false
         } else {
-            binding.lay2.bookStateLayout.backgroundTintList =
+            binding.lay21.bookStateLayout.backgroundTintList =
                 AppCompatResources.getColorStateList(this, R.color.white)
             true
         }
@@ -543,11 +565,11 @@ class EditProductActivity : AppCompatActivity() {
 
     private fun checkCondition(): Boolean {
         return if (bookConditionRadio == null) {
-            binding.lay2.bookConditionLayout.backgroundTintList =
-                AppCompatResources.getColorStateList(this, R.color.red_a700)
+            binding.lay21.bookConditionLayout.backgroundTintList =
+                AppCompatResources.getColorStateList(this, R.color.red_50)
             false
         } else {
-            binding.lay2.bookConditionLayout.backgroundTintList =
+            binding.lay21.bookConditionLayout.backgroundTintList =
                 AppCompatResources.getColorStateList(this, R.color.white)
             true
         }
@@ -595,20 +617,17 @@ class EditProductActivity : AppCompatActivity() {
 
 
     private fun checkStock(): Boolean {
-        val stockQuantityString = stockQuantity.text.toString()
+        val stockQuantityString = stockQuantity.editText?.text.toString()
 
         return if (stockQuantityString.isEmpty()) {
-            stockQuantity.backgroundTintList =
-                AppCompatResources.getColorStateList(this, R.color.red_a700)
+            stockQuantity.error = "Field can't be empty"
             false
         } else {
             if (stockQuantityString.toInt() < 0) {
-                stockQuantity.backgroundTintList =
-                    AppCompatResources.getColorStateList(this, R.color.red_a700)
+                stockQuantity.error = "Stock quantity is lower than 0"
                 false
             } else {
-                stockQuantity.backgroundTintList =
-                    AppCompatResources.getColorStateList(this, R.color.purple_500)
+                stockQuantity.error = null
                 true
             }
 
@@ -634,7 +653,7 @@ class EditProductActivity : AppCompatActivity() {
     private fun checkProductReturnState():Boolean{
         return if (productReturnRadio == null) {
             binding.lay21.returnContainer.backgroundTintList =
-                AppCompatResources.getColorStateList(this, R.color.red_a700)
+                AppCompatResources.getColorStateList(this, R.color.red_50)
             false
         } else {
             binding.lay21.returnContainer.backgroundTintList =
@@ -647,8 +666,7 @@ class EditProductActivity : AppCompatActivity() {
     private fun checkAllDetails(v: View?, productID:String) {
 
         if (!checkName() or !checkPublisher() or !checkWriter() or !checkLanguage() or !checkPageCount()
-            or !checkDimensionWidth() or !checkDimensionLength() or !checkDimensionHeight()
-            or !checkDescription() or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()
+            or !checkDimensionWidth() or !checkPrice() or !checkType() or !checkCondition() or !checkCategory()
             or !checkTags() or !checkSKU() or !checkStock() or !checkPrintDate() or !checkProductReturnState()
         ) {
             loadingDialog.dismiss()
@@ -669,14 +687,6 @@ class EditProductActivity : AppCompatActivity() {
 
     private fun updateProduct( documentName: String) {
 
-
-        val width: String = dimensionWidth.editText?.text.toString().trim()
-        val length: String = dimensionLength.editText?.text.toString().trim()
-        val height: String = dimensionHeight.editText?.text.toString().trim()
-        val dimBuilder: StringBuilder = StringBuilder()
-        dimBuilder.append(width).append(" x ").append(length).append(" x ").append(height)
-
-
         val addProductMap: MutableMap<String, Any> = HashMap()
         addProductMap["book_title"] = bookName.editText!!.text.toString()
         addProductMap["book_writer"] = writerName.editText!!.text.toString()
@@ -685,7 +695,7 @@ class EditProductActivity : AppCompatActivity() {
         addProductMap["book_ISBN"] = isbnNo.editText!!.text.toString()
         addProductMap["book_language"] = language.editText!!.text.toString()
         addProductMap["book_pageCount"] = pageCount.editText!!.text.toString()
-        addProductMap["book_dimension"] = dimBuilder.toString()
+        addProductMap["book_dimension"] = dimensionWidth.editText?.text.toString().trim()
 
         if (discountPrice.editText!!.text.toString().isEmpty()) {
             addProductMap["price_selling"] = bookPrice.editText!!.text.toString().toLong()
@@ -709,14 +719,19 @@ class EditProductActivity : AppCompatActivity() {
             }
         }
 
-        addProductMap["in_stock_quantity"] = stockQuantity.text.toString().toLong()
+        addProductMap["in_stock_quantity"] =stockQuantity.editText?.text.toString().toFloat().roundToLong()
         addProductMap["categories"] = categoryList
         addProductMap["tags"] = tagList
 
         addProductMap["PRODUCT_UPDATE_ON"] = FieldValue.serverTimestamp()
         addProductMap["Replacement_policy"] = replacementPolicy
-        addProductMap["SELLER_PROFIT"] = sellerProfit
+        addProductMap["SELLER_PROFIT"] = sellerProfit.toString()
         addProductMap["SKU"] = skuInput.editText?.text.toString().trim()
+        if ( weight.editText?.text.toString().isNullOrEmpty()){
+            addProductMap["weight"] ="Not available"
+        }else{
+            addProductMap["weight"] = weight.editText?.text.toString()
+        }
 
         firebaseFirestore.collection("PRODUCTS").document(documentName).update(addProductMap)
             .addOnSuccessListener {
@@ -741,6 +756,8 @@ class EditProductActivity : AppCompatActivity() {
 
     private fun tagsToList(): MutableList<String> {
         val tag: String = tagInput.editText?.text.toString().trim().lowercase()
+        val bookCondition = bookConditionRadio?.tag.toString().trim()
+        val bookType = bookStateRadio?.tag.toString().trim()
         //val tagArray = tag.split(",").toTypedArray()
 
         val firstFilterTag = tag.replace(".", ",").replace(":", ",")
@@ -755,7 +772,9 @@ class EditProductActivity : AppCompatActivity() {
 
 
         tagList.addAll(tagArray)
-
+        tagList.add(bookCondition)
+        tagList.add(bookType)
+        tagList.remove("")
 
 
         return tagList
@@ -765,10 +784,15 @@ class EditProductActivity : AppCompatActivity() {
         val category: String = categoryInput.editText?.text.toString().trim().lowercase()
         //val tagArray = tag.split(",").toTypedArray()
 
-        val firstFilterTag = category.replace("-", ",").replace(" ", ",").replace(",,", ",")
+        val firstFilterTag = category.replace("-", ",")
+            .replace(" ", ",")
+            .replace(",,", ",")
+            .replace(",,,", ",")
+            .replace(",,,,", ",")
 
         val categoryArray: List<String> = firstFilterTag.split(",")
         categoryList.addAll(categoryArray)
+        categoryList.remove("")
 
         categoryList
 
@@ -778,14 +802,18 @@ class EditProductActivity : AppCompatActivity() {
 
     private fun calculateProfit(sellingPrice:Int){
         val profitLay = binding.lay2.lay2
-        val platformCharge = sellingPrice/10F
-        val pickupCharge = FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
-        sellerProfit = (sellingPrice - platformCharge-pickupCharge).toDouble()
+        val constFee = BigDecimal("10.0")
+        val platformChargeForShow = sellingPrice/10F // for showing the text
+        val platformCharge = sellingPrice.toBigDecimal().divide(constFee)
+        val pickupCharge: BigDecimal = FixedPriceClass.pickupCharge //change the pickup charge in fixedPriceClass
+        val temp: BigDecimal = platformCharge.add(pickupCharge)
+        sellerProfit = sellingPrice.toBigDecimal().subtract(temp)
+
 
         profitLay.sellingPrice.text = sellingPrice.toString()
-        profitLay.commissionFee.text = platformCharge.toString()
-        profitLay.deliveryFee.text = pickupCharge.toString()
-        profitLay.totalProfit.text = sellerProfit.toString()
+        profitLay.commissionFee.text = "$platformChargeForShow"
+        profitLay.deliveryFee.text = "$pickupCharge"
+        profitLay.totalProfit.text = "$sellerProfit"
 
     }
 
